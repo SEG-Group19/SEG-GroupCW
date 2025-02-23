@@ -1,0 +1,40 @@
+name: Java CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the code
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # 2. Install xvfb
+      - name: Install xvfb
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+      
+      # 3. Set up JDK 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 4. Cache Maven dependencies (optional, but speeds things up)
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-
+
+      # 5. Build and test the project
+      - name: Build with Maven
+        run: xvfb-run -a mvn -f dashboard/pom.xml clean package
