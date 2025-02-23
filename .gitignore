@@ -1,0 +1,13 @@
+# Ignore Maven target directory
+target/
+**/target/
+
+# Ignore IDE settings and other build files
+*.idea/
+*.ipr
+*.iws
+*.iml
+out/
+
+# Mac DS_Store
+.DS_Store
