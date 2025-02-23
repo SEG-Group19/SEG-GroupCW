@@ -19,7 +19,7 @@ public class App extends Application {
         layout.setAlignment(Pos.CENTER);
 
         // A label to display messages
-        Label label = new Label("Initial message");
+        Label label = new Label("Testing message");
         label.setId("lblMessage");
 
         // Example button
