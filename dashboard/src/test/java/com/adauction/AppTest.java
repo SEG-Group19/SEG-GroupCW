@@ -16,6 +16,8 @@ public class AppTest extends ApplicationTest {
     public void start(Stage stage) {
         // Launch the application in this test environment
         new App().start(stage);
+        stage.toFront();
+        stage.requestFocus();
     }
 
     @Test
