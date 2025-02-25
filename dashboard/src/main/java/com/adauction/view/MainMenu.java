@@ -21,7 +21,10 @@ public class MainMenu {
      */
     public static Scene getScene(Stage stage) {
         Button btnInputData = new Button("Input Data");
+        btnInputData.setId("btnInputData");
+
         Button btnViewMetrics = new Button("View Metrics");
+        btnViewMetrics.setId("btnViewMetrics");
 
         VBox layout = new VBox(20);
         layout.setAlignment(Pos.CENTER);

@@ -21,12 +21,42 @@ public class AppTest extends ApplicationTest {
     }
 
     @Test
-    void shouldUpdateLabelWhenButtonClicked() {
-        // Click the button
-        clickOn("#myButton");
+    void testMainMenu() {
+        // Verify that the Main Menu scene is displayed with both buttons
+        FxAssert.verifyThat("#btnInputData", hasText("Input Data"));
+        FxAssert.verifyThat("#btnViewMetrics", hasText("View Metrics"));
+    }
 
-        // Verify that the label's text changes
-        FxAssert.verifyThat("#lblMessage", hasText("Hello from button!"));
+    @Test
+    void testInputDataScreen() {
+        // Click the Input Data button
+        clickOn("#btnInputData");
+
+        // Verify that the Input Data screen is displayed
+        FxAssert.verifyThat("#titleLabel", hasText("Input Data"));
+
+        // Click the Back button
+        clickOn("#btnBack");
+
+        // Verify that the Main Menu screen is displayed
+        FxAssert.verifyThat("#btnInputData", hasText("Input Data"));
+        FxAssert.verifyThat("#btnViewMetrics", hasText("View Metrics"));
+    }
+
+    @Test
+    void testViewMetricsScreen() {
+        // Click the View Metrics button
+        clickOn("#btnViewMetrics");
+
+        // Verify that the View Metrics screen is displayed
+        FxAssert.verifyThat("#titleLabel", hasText("View Metrics"));
+
+        // Click the Back button
+        clickOn("#btnBack");
+
+        // Verify that the Main Menu screen is displayed
+        FxAssert.verifyThat("#btnInputData", hasText("Input Data"));
+        FxAssert.verifyThat("#btnViewMetrics", hasText("View Metrics"));
     }
 
     @AfterAll

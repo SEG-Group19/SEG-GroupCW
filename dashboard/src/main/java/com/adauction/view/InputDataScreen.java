@@ -4,6 +4,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -21,10 +22,18 @@ public class InputDataScreen {
         BorderPane layout = new BorderPane();
         layout.setPrefSize(600, 400);
 
+        // Title of page
+        Label title = new Label("Input Data");
+        title.setId("titleLabel");
+        title.setStyle("-fx-font-size: 24; -fx-font-weight: bold;");
+
         // A Back button to return to the Main Menu.
         Button btnBack = new Button("Back to Main Menu");
+        btnBack.setId("btnBack");
         btnBack.setOnAction(e -> stage.setScene(MainMenu.getScene(stage)));
+
         layout.setBottom(btnBack);
+        layout.setTop(title);
         layout.setPadding(new Insets(20, 20, 20, 20));
         BorderPane.setAlignment(btnBack, Pos.CENTER);
 
