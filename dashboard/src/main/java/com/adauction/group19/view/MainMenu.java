@@ -1,7 +1,5 @@
-package com.adauction.view;
+package com.adauction.group19.view;
 
-import com.adauction.view.InputDataScreen;
-import com.adauction.view.ViewMetricsScreen;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;

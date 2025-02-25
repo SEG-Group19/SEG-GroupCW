@@ -1,4 +1,4 @@
-package com.adauction.view;
+package com.adauction.group19.view;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -9,21 +9,21 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
- * This class represents the Input Data screen.
+ * This class represents the View Metrics screen.
  */
-public class InputDataScreen {
+public class ViewMetricsScreen {
 
     /**
-     * Returns the Input Data screen.
+     * Returns the View Metrics screen.
      * @param stage The stage to set the scene on.
-     * @return The Input Data screen.
+     * @return The View Metrics screen.
      */
     public static Scene getScene(Stage stage) {
         BorderPane layout = new BorderPane();
         layout.setPrefSize(600, 400);
 
         // Title of page
-        Label title = new Label("Input Data");
+        Label title = new Label("View Metrics");
         title.setId("titleLabel");
         title.setStyle("-fx-font-size: 24; -fx-font-weight: bold;");
 

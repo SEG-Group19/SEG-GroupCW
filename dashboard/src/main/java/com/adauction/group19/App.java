@@ -1,6 +1,6 @@
-package com.adauction;
+package com.adauction.group19;
 
-import com.adauction.view.MainMenu;
+import com.adauction.group19.view.MainMenu;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
