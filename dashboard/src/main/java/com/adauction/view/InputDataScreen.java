@@ -1,0 +1,33 @@
+package com.adauction.view;
+
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
+
+/**
+ * This class represents the View Metrics screen.
+ */
+public class InputDataScreen {
+
+    /**
+     * Returns the Input Data screen.
+     * @param stage The stage to set the scene on.
+     * @return The Input Data screen.
+     */
+    public static Scene getScene(Stage stage) {
+        BorderPane layout = new BorderPane();
+        layout.setPrefSize(600, 400);
+
+        // A Back button to return to the Main Menu.
+        Button btnBack = new Button("Back to Main Menu");
+        btnBack.setOnAction(e -> stage.setScene(MainMenu.getScene(stage)));
+        layout.setBottom(btnBack);
+        layout.setPadding(new Insets(20, 20, 20, 20));
+        BorderPane.setAlignment(btnBack, Pos.CENTER);
+
+        return new Scene(layout, 600, 400);
+    }
+}
