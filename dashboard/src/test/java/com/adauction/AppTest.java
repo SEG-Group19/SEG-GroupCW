@@ -21,31 +21,42 @@ public class AppTest extends ApplicationTest {
     }
 
     @Test
-    void shouldContainButtonWithText() {
-        // Verifies that the button with id 'myButton' has "Click me!" text
-        FxAssert.verifyThat("#myButton", hasText("Click me!"));
+    void testMainMenu() {
+        // Verify that the Main Menu scene is displayed with both buttons
+        FxAssert.verifyThat("#btnInputData", hasText("Input Data"));
+        FxAssert.verifyThat("#btnViewMetrics", hasText("View Metrics"));
     }
 
     @Test
-    void shouldUpdateLabelWhenButtonClicked() {
-        // Click the button
-        clickOn("#myButton");
+    void testInputDataScreen() {
+        // Click the Input Data button
+        clickOn("#btnInputData");
 
-        // Verify that the label's text changes
-        FxAssert.verifyThat("#lblMessage", hasText("Hello from button!"));
+        // Verify that the Input Data screen is displayed
+        FxAssert.verifyThat("#titleLabel", hasText("Input Data"));
+
+        // Click the Back button
+        clickOn("#btnBack");
+
+        // Verify that the Main Menu screen is displayed
+        FxAssert.verifyThat("#btnInputData", hasText("Input Data"));
+        FxAssert.verifyThat("#btnViewMetrics", hasText("View Metrics"));
     }
 
     @Test
-    void testAdd() {
-        // Arrange
-        int a = 2;
-        int b = 3;
+    void testViewMetricsScreen() {
+        // Click the View Metrics button
+        clickOn("#btnViewMetrics");
 
-        // Act
-        int result = App.add(a, b);
+        // Verify that the View Metrics screen is displayed
+        FxAssert.verifyThat("#titleLabel", hasText("View Metrics"));
 
-        // Assert
-        Assertions.assertEquals(5, result, "Adding 2 and 3 should equal 5");
+        // Click the Back button
+        clickOn("#btnBack");
+
+        // Verify that the Main Menu screen is displayed
+        FxAssert.verifyThat("#btnInputData", hasText("Input Data"));
+        FxAssert.verifyThat("#btnViewMetrics", hasText("View Metrics"));
     }
 
     @AfterAll
