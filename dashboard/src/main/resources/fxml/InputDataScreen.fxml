@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" alignment="CENTER" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.adauction.group19.controller.InputDataController">
+
+    <Label text="Upload Campaign Data" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <HBox spacing="10">
+        <TextField fx:id="impressionFilePath" promptText="Select Impression Log"/>
+        <Button text="Browse" onAction="#handleImpressionFileSelect"/>
+    </HBox>
+
+    <HBox spacing="10">
+        <TextField fx:id="clickFilePath" promptText="Select Click Log"/>
+        <Button text="Browse" onAction="#handleClickFileSelect"/>
+    </HBox>
+
+    <HBox spacing="10">
+        <TextField fx:id="serverFilePath" promptText="Select Server Log"/>
+        <Button text="Browse" onAction="#handleServerFileSelect"/>
+    </HBox>
+
+    <Button text="Upload Files" onAction="#handleFileUpload"/>
+
+</VBox>

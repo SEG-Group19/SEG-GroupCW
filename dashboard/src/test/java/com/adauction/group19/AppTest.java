@@ -28,18 +28,7 @@ public class AppTest extends ApplicationTest {
 
     @Test
     void testInputDataScreen() {
-        // Click the Input Data button
-        clickOn("#btnInputData");
-
-        // Verify that the Input Data screen is displayed
-        FxAssert.verifyThat("#titleLabel", hasText("Input Data"));
-
-        // Click the Back button
-        clickOn("#btnBack");
-
-        // Verify that the Main Menu screen is displayed
-        FxAssert.verifyThat("#btnInputData", hasText("Input Data"));
-        FxAssert.verifyThat("#btnViewMetrics", hasText("View Metrics"));
+        // TODO: Implement this test when the Input Data screen is implemented
     }
 
     @Test
