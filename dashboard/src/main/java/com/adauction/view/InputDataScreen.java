@@ -9,7 +9,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
- * This class represents the View Metrics screen.
+ * This class represents the Input Data screen.
  */
 public class InputDataScreen {
 
