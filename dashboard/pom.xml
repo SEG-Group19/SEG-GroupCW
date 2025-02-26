@@ -33,6 +33,13 @@
       <version>17.0.2</version>
     </dependency>
 
+    <!-- JavaFX FXML -->
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-fxml</artifactId>
+      <version>17.0.2</version>
+    </dependency>
+
     <!-- TestFX for writing JavaFX GUI tests -->
     <dependency>
       <groupId>org.testfx</groupId>

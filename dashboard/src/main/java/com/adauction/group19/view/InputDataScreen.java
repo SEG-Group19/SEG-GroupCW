@@ -1,12 +1,11 @@
 package com.adauction.group19.view;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import com.adauction.group19.controller.InputDataController;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import java.io.IOException;
 
 /**
  * This class represents the Input Data screen.
@@ -19,24 +18,17 @@ public class InputDataScreen {
      * @return The Input Data screen.
      */
     public static Scene getScene(Stage stage) {
-        BorderPane layout = new BorderPane();
-        layout.setPrefSize(600, 400);
+        try {
+            FXMLLoader loader = new FXMLLoader(InputDataScreen.class.getResource("/fxml/InputDataScreen.fxml"));
+            Parent root = loader.load();
 
-        // Title of page
-        Label title = new Label("Input Data");
-        title.setId("titleLabel");
-        title.setStyle("-fx-font-size: 24; -fx-font-weight: bold;");
+            InputDataController controller = loader.getController();
+            controller.setStage(stage);
 
-        // A Back button to return to the Main Menu.
-        Button btnBack = new Button("Back to Main Menu");
-        btnBack.setId("btnBack");
-        btnBack.setOnAction(e -> stage.setScene(MainMenu.getScene(stage)));
-
-        layout.setBottom(btnBack);
-        layout.setTop(title);
-        layout.setPadding(new Insets(20, 20, 20, 20));
-        BorderPane.setAlignment(btnBack, Pos.CENTER);
-
-        return new Scene(layout, 600, 400);
+            return new Scene(root, 600, 400);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

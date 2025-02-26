@@ -1,11 +1,18 @@
 package com.adauction.group19;
 
+import com.adauction.group19.controller.InputDataController;
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.testfx.api.FxAssert;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.util.WaitForAsyncUtils;
+
+import java.io.File;
+import java.net.URL;
+import java.nio.file.Paths;
 
 import static org.testfx.matcher.control.LabeledMatchers.hasText;
 
@@ -31,31 +38,70 @@ public class AppTest extends ApplicationTest {
         // Click the Input Data button
         clickOn("#btnInputData");
 
-        // Verify that the Input Data screen is displayed
-        FxAssert.verifyThat("#titleLabel", hasText("Input Data"));
+        // Verify we're on the Input Data screen
+        FxAssert.verifyThat("#titleLabel", hasText("Upload Campaign Data"));
 
-        // Click the Back button
-        clickOn("#btnBack");
-
-        // Verify that the Main Menu screen is displayed
+        // Go back to the Main Menu
+        clickOn("#goBackButton");
         FxAssert.verifyThat("#btnInputData", hasText("Input Data"));
         FxAssert.verifyThat("#btnViewMetrics", hasText("View Metrics"));
     }
 
     @Test
     void testViewMetricsScreen() {
-        // Click the View Metrics button
+        // Click the Input Data button
         clickOn("#btnViewMetrics");
 
-        // Verify that the View Metrics screen is displayed
+        // Verify we're on the Input Data screen
         FxAssert.verifyThat("#titleLabel", hasText("View Metrics"));
 
-        // Click the Back button
-        clickOn("#btnBack");
-
-        // Verify that the Main Menu screen is displayed
+        // Go back to the Main Menu
+        clickOn("#goBackButton");
         FxAssert.verifyThat("#btnInputData", hasText("Input Data"));
         FxAssert.verifyThat("#btnViewMetrics", hasText("View Metrics"));
+    }
+
+    @Test
+    public void testFileUploadAndDataParsing() {
+        // Navigate to input data screen
+        clickOn("#btnInputData");
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Get test file paths
+        File impressionFile = getTestFile("impression_log.csv");
+        File clickFile = getTestFile("click_log.csv");
+        File serverFile = getTestFile("server_log.csv");
+
+        // Access the controller instance
+        InputDataController controller = InputDataController.instance;
+
+        // Inject test files into the controller
+        Platform.runLater(() -> {
+            controller.setImpressionFile(impressionFile);
+            controller.setClickFile(clickFile);
+            controller.setServerFile(serverFile);
+        });
+        WaitForAsyncUtils.waitForFxEvents();
+
+        // Click the upload button
+        clickOn("#uploadButton");
+
+        // Wait for data to upload
+        sleep(2000);
+
+        // Verify that the data was parsed correctly
+        clickOn("#goBackButton");
+        clickOn("#btnViewMetrics");
+
+        // Verify that the metrics are displayed correctly
+        FxAssert.verifyThat("#totalImpressionsLabel", hasText("486104"));
+        FxAssert.verifyThat("#totalClicksLabel", hasText("23923"));
+        FxAssert.verifyThat("#totalConversionsLabel", hasText("2026"));
+    }
+
+    private File getTestFile(String filename) {
+        URL resource = getClass().getClassLoader().getResource(filename);
+        return Paths.get(resource.getPath()).toFile();
     }
 
     @AfterAll
