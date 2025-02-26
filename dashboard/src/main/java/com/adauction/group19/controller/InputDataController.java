@@ -1,5 +1,7 @@
 package com.adauction.group19.controller;
 
+import com.adauction.group19.model.CampaignData;
+import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.service.FileParserService;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -70,7 +72,10 @@ public class InputDataController {
         // All 3 files must be present for upload
         if (impressionFile != null && clickFile != null && serverFile != null) {
             FileParserService fileParserService = new FileParserService();
-            fileParserService.parseCampaignData(impressionFile, clickFile, serverFile);
+            CampaignData campaignData = fileParserService.parseCampaignData(impressionFile, clickFile, serverFile);
+
+            CampaignDataStore.getInstance().setCampaignData(campaignData);
+
             System.out.println("Files uploaded successfully!");
         } else {
             System.out.println("Please select all three files before uploading.");
