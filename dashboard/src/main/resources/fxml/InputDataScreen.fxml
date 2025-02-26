@@ -31,4 +31,6 @@
 
     <Button text="Upload Files" onAction="#handleFileUpload"/>
 
+    <Button text="Go back" onAction="#handleBackButton"/>
+
 </VBox>

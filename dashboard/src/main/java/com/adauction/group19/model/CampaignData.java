@@ -65,4 +65,36 @@ public class CampaignData {
      * @return The server logs for the campaign.
      */
     public List<Object[]> getServerLogs() { return serverLogs; }
+
+    // Extra methods for calculating important metrics
+
+    /**
+     * Returns the total number of impressions.
+     * @return the total number of impressions.
+     */
+    public int getTotalImpressions() {
+        return impressions.size();
+    }
+
+    /**
+     * Returns the total number of clicks.
+     * @return the total number of clicks.
+     */
+    public int getTotalClicks() {
+        return clicks.size();
+    }
+
+    /**
+     * Returns the total number of conversions.
+     * @return the total number of conversions.
+     */
+    public int getTotalConversions() {
+        int totalConversions = 0;
+        for (Object[] serverLog : serverLogs) {
+            if ((boolean) serverLog[3]) {
+                totalConversions++;
+            }
+        }
+        return totalConversions;
+    }
 }

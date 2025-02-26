@@ -1,5 +1,6 @@
 package com.adauction.group19.view;
 
+import com.adauction.group19.controller.InputDataController;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
@@ -20,6 +21,10 @@ public class InputDataScreen {
         try {
             FXMLLoader loader = new FXMLLoader(InputDataScreen.class.getResource("/fxml/InputDataScreen.fxml"));
             Parent root = loader.load();
+
+            InputDataController controller = loader.getController();
+            controller.setStage(stage);
+
             return new Scene(root, 600, 400);
         } catch (IOException e) {
             e.printStackTrace();

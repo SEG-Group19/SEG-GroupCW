@@ -3,7 +3,10 @@ package com.adauction.group19.controller;
 import com.adauction.group19.model.CampaignData;
 import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.service.FileParserService;
+import com.adauction.group19.view.MainMenu;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -30,6 +33,11 @@ public class InputDataController {
     private File impressionFile;
     private File clickFile;
     private File serverFile;
+
+    /**
+     * The stage for the screen.
+     */
+    private Stage stage;
 
     /**
      * Handles the selection of the impression file.
@@ -90,5 +98,26 @@ public class InputDataController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select File");
         return fileChooser.showOpenDialog(new Stage());
+    }
+
+    /**
+     * Sets the stage for the screen.
+     * @param stage The stage to set.
+     */
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
+    /**
+     * Handles the go back button.
+     * @param actionEvent The action event.
+     */
+    public void handleBackButton(ActionEvent actionEvent) {
+        if (stage != null) {
+            Scene mainMenuScene = MainMenu.getScene(stage);
+            stage.setScene(mainMenuScene);
+        } else {
+            System.out.println("Stage is not set.");
+        }
     }
 }
