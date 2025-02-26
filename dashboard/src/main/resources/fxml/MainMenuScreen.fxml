@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="10" alignment="CENTER" xmlns="http://javafx.com/javafx"
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.adauction.group19.controller.MainMenuController"
       stylesheets="@../css/styles.css">
@@ -11,14 +11,14 @@
     <VBox styleClass="main-container">
         <Label id="titleLabel" text="AdVantage"/>
 
-        <VBox styleClass="">
-            <Button id="btnInputData" onAction="#handleInputDataButton">
+        <VBox>
+            <Button styleClass="primary-button" id="btnInputData" onAction="#handleInputDataButton">
                 <graphic>
                     <Label id="btnInputDataLabel" text="📋 Upload data"/>
                 </graphic>
             </Button>
 
-            <Button id="btnViewMetrics" onAction="#handleViewMetricsButton">
+            <Button styleClass="primary-button" id="btnViewMetrics" onAction="#handleViewMetricsButton">
                 <graphic>
                     <Label id="btnViewMetricsLabel" text="📈 View metrics"/>
                 </graphic>

@@ -2,35 +2,40 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 
-<VBox spacing="10" alignment="CENTER" xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.adauction.group19.controller.InputDataController">
+<StackPane style="-fx-padding: 0 0;" alignment="CENTER" xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.adauction.group19.controller.InputDataController"
+           stylesheets="@../css/styles.css">
+    <VBox>
 
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
+        <VBox styleClass="main-container">
+            <Label id="titleLabel" text="Upload Campaign Data" style="-fx-font-size: 36px;"/>
 
-    <Label id="titleLabel" text="Upload Campaign Data" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <VBox>
+                <HBox spacing="10">
+                    <TextField fx:id="impressionFilePath" promptText="Select Impression Log"/>
+                    <Button styleClass="secondary-button" text="Browse" onAction="#handleImpressionFileSelect"/>
+                </HBox>
 
-    <HBox spacing="10">
-        <TextField fx:id="impressionFilePath" promptText="Select Impression Log"/>
-        <Button text="Browse" onAction="#handleImpressionFileSelect"/>
-    </HBox>
+                <HBox spacing="10">
+                    <TextField fx:id="clickFilePath" promptText="Select Click Log"/>
+                    <Button styleClass="secondary-button" text="Browse" onAction="#handleClickFileSelect"/>
+                </HBox>
 
-    <HBox spacing="10">
-        <TextField fx:id="clickFilePath" promptText="Select Click Log"/>
-        <Button text="Browse" onAction="#handleClickFileSelect"/>
-    </HBox>
+                <HBox spacing="10">
+                    <TextField fx:id="serverFilePath" promptText="Select Server Log"/>
+                    <Button styleClass="secondary-button" text="Browse" onAction="#handleServerFileSelect"/>
+                </HBox>
+            </VBox>
 
-    <HBox spacing="10">
-        <TextField fx:id="serverFilePath" promptText="Select Server Log"/>
-        <Button text="Browse" onAction="#handleServerFileSelect"/>
-    </HBox>
+            <Button id="uploadButton" styleClass="primary-button" text="📁 Upload files" onAction="#handleFileUpload"/>
+        </VBox>
 
-    <Button id="uploadButton" text="Upload Files" onAction="#handleFileUpload"/>
+    </VBox>
 
-    <Button id="goBackButton" text="Go back" onAction="#handleBackButton"/>
-
-</VBox>
+    <AnchorPane pickOnBounds="false">
+        <Button styleClass="primary-button" id="goBackButton" text="⬅ Go back" onAction="#handleBackButton"
+                AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20"/>
+    </AnchorPane>
+</StackPane>
