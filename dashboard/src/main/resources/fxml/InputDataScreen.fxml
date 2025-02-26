@@ -12,7 +12,7 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Label text="Upload Campaign Data" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    <Label id="titleLabel" text="Upload Campaign Data" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
     <HBox spacing="10">
         <TextField fx:id="impressionFilePath" promptText="Select Impression Log"/>
@@ -29,8 +29,8 @@
         <Button text="Browse" onAction="#handleServerFileSelect"/>
     </HBox>
 
-    <Button text="Upload Files" onAction="#handleFileUpload"/>
+    <Button id="uploadButton" text="Upload Files" onAction="#handleFileUpload"/>
 
-    <Button text="Go back" onAction="#handleBackButton"/>
+    <Button id="goBackButton" text="Go back" onAction="#handleBackButton"/>
 
 </VBox>

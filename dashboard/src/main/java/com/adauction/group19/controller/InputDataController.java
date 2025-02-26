@@ -20,12 +20,17 @@ import java.util.Optional;
  */
 public class InputDataController {
 
+    public static InputDataController instance;
+
     /**
      * The text fields for the file paths.
      */
-    @FXML private TextField impressionFilePath;
-    @FXML private TextField clickFilePath;
-    @FXML private TextField serverFilePath;
+    @FXML
+    private TextField impressionFilePath;
+    @FXML
+    private TextField clickFilePath;
+    @FXML
+    private TextField serverFilePath;
 
     /**
      * The files for the uploaded data.
@@ -38,6 +43,36 @@ public class InputDataController {
      * The stage for the screen.
      */
     private Stage stage;
+
+    @FXML
+    public void initialize() {
+        // Store a reference for testing purposes.
+        instance = this;
+    }
+
+    /**
+     * Sets the impression file.
+     * @param impressionFile The impression file to set.
+     */
+    public void setImpressionFile(File impressionFile) {
+        this.impressionFile = impressionFile;
+    }
+
+    /**
+     * Sets the click file.
+     * @param clickFile The click file to set.
+     */
+    public void setClickFile(File clickFile) {
+        this.clickFile = clickFile;
+    }
+
+    /**
+     * Sets the server file.
+     * @param serverFile The server file to set.
+     */
+    public void setServerFile(File serverFile) {
+        this.serverFile = serverFile;
+    }
 
     /**
      * Handles the selection of the impression file.
@@ -76,7 +111,7 @@ public class InputDataController {
      * Handles the upload of the files.
      */
     @FXML
-    private void handleFileUpload() {
+    public void handleFileUpload() {
         // All 3 files must be present for upload
         if (impressionFile != null && clickFile != null && serverFile != null) {
             FileParserService fileParserService = new FileParserService();

@@ -12,7 +12,7 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Label text="Metrics test" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    <Label id="titleLabel" text="View Metrics" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
     <HBox>
         <Label text="Total Impressions: "/>
@@ -29,6 +29,6 @@
         <Label fx:id="totalConversionsLabel" text="Data not set yet"/>
     </HBox>
 
-    <Button text="Go back" onAction="#handleBackButton"/>
+    <Button id="goBackButton" text="Go back" onAction="#handleBackButton"/>
 
 </VBox>
