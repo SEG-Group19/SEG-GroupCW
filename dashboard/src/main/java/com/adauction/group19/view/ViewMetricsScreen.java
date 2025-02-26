@@ -6,13 +6,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
 /**
@@ -68,13 +67,60 @@ public class ViewMetricsScreen {
             metricsPanel.getChildren().addAll(lblMetrics, chkImpressions, chkClicks, chkUniques, chkBounces,
                 chkConversions, chkTotalCost, chkCTR, chkCPA, chkCPC, chkCPM, chkBounceRate);
 
+            /*
+            Graph area
+             */
+            NumberAxis xAxis = new NumberAxis();
+            NumberAxis yAxis = new NumberAxis();
+            LineChart <Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+            lineChart.setTitle("Selected Metrics Graph");
+
+            //sample data, placeholder
+            XYChart.Series<Number, Number> series = new XYChart.Series<>();
+            series.setName("Sample Data");
+            series.getData().add(new XYChart.Data<>(1, 23));
+            series.getData().add(new XYChart.Data<>(2, 14));
+            series.getData().add(new XYChart.Data<>(3, 15));
+            series.getData().add(new XYChart.Data<>(4, 24));
+
+            lineChart.getData().add(series);
+
+            VBox graphPanel = new VBox(10, lineChart);
+            graphPanel.setPadding(new Insets(20));
+            graphPanel.setAlignment(Pos.CENTER);
+
+            /*
+            time scale slider
+             */
+            HBox sliderBox = new HBox(10);
+            sliderBox.setAlignment(Pos.CENTER);
+            sliderBox.setPadding(new Insets(10));
+
+            Label lblTimeScale = new Label("Day: 1"); //label to display selected day
+
+            Slider timeSlider = new Slider(1, 30, 1); // Min = 1, Max = 30, Default = 1
+            timeSlider.setShowTickLabels(true);
+            timeSlider.setShowTickMarks(true);
+            timeSlider.setMajorTickUnit(5);
+            timeSlider.setMinorTickCount(4);
+            timeSlider.setSnapToTicks(true);
+
+            timeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+                    lblTimeScale.setText("Day: " + newVal.intValue()); // Ensure integer display
+            });
+            sliderBox.getChildren().addAll(new Label("Time Scale:"), timeSlider, lblTimeScale);
+
+            VBox bottomControls = new VBox(10, sliderBox);
+            bottomControls.setAlignment(Pos.CENTER);
 
             /*
             Layout Management
              */
             BorderPane root = new BorderPane(); //to be removed
             root.setLeft(metricsPanel);
+            root.setCenter(graphPanel);
             root.setTop(btnBack);
+            root.setBottom(bottomControls);
 
             return new Scene(root, 1000, 600);
         /*
