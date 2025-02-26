@@ -1,0 +1,51 @@
+.root {
+    -fx-alignment: center;
+    -fx-padding: 0px 270px;
+    -fx-background-image: url("/images/background.png");
+    -fx-font-family: "Roboto Regular";
+}
+
+VBox {
+    -fx-alignment: center;
+    -fx-spacing: 20;
+}
+
+.main-container {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-background-radius: 25px;
+    -fx-spacing: 50;
+    -fx-padding: 50px 0;
+    -fx-alignment: center;
+    -fx-border-color: rgba(0, 0, 0, 0.4);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 25, 0.2, 0, 4);
+    -fx-border-radius: 25px;
+    -fx-border-width: 1px;
+}
+
+#titleLabel {
+    -fx-font-size: 64;
+    -fx-text-fill: white;
+    -fx-font-family: "Roboto Bold";
+}
+
+.button {
+    -fx-background-color: rgba(104, 43, 215, 1);
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+    -fx-background-radius: 10px;
+    -fx-padding: 10px 30px;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.1), 15, 0.5, 0, 0);
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #661ec3, #4a138c);
+}
+
+.button .label {
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+}

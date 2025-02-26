@@ -29,8 +29,8 @@ public class AppTest extends ApplicationTest {
     @Test
     void testMainMenu() {
         // Verify that the Main Menu scene is displayed with both buttons
-        FxAssert.verifyThat("#btnInputData", hasText("Input Data"));
-        FxAssert.verifyThat("#btnViewMetrics", hasText("View Metrics"));
+        FxAssert.verifyThat("#btnInputDataLabel", hasText("\uD83D\uDCCB Upload data"));
+        FxAssert.verifyThat("#btnViewMetricsLabel", hasText("\uD83D\uDCC8 View metrics"));
     }
 
     @Test
@@ -43,8 +43,8 @@ public class AppTest extends ApplicationTest {
 
         // Go back to the Main Menu
         clickOn("#goBackButton");
-        FxAssert.verifyThat("#btnInputData", hasText("Input Data"));
-        FxAssert.verifyThat("#btnViewMetrics", hasText("View Metrics"));
+        FxAssert.verifyThat("#btnInputDataLabel", hasText("\uD83D\uDCCB Upload data"));
+        FxAssert.verifyThat("#btnViewMetricsLabel", hasText("\uD83D\uDCC8 View metrics"));
     }
 
     @Test
@@ -57,8 +57,8 @@ public class AppTest extends ApplicationTest {
 
         // Go back to the Main Menu
         clickOn("#goBackButton");
-        FxAssert.verifyThat("#btnInputData", hasText("Input Data"));
-        FxAssert.verifyThat("#btnViewMetrics", hasText("View Metrics"));
+        FxAssert.verifyThat("#btnInputDataLabel", hasText("\uD83D\uDCCB Upload data"));
+        FxAssert.verifyThat("#btnViewMetricsLabel", hasText("\uD83D\uDCC8 View metrics"));
     }
 
     @Test

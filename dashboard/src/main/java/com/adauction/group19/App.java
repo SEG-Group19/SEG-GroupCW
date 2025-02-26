@@ -3,6 +3,7 @@ package com.adauction.group19;
 import com.adauction.group19.view.MainMenu;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 /**
@@ -17,6 +18,10 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Online Advertising Dashboard");
+
+        Font.loadFont(getClass().getResource("/fonts/Roboto-Light.ttf").toExternalForm(), 12);
+        Font.loadFont(getClass().getResource("/fonts/Roboto-Bold.ttf").toExternalForm(), 12);
+        Font.loadFont(getClass().getResource("/fonts/Roboto-Regular.ttf").toExternalForm(), 12);
 
         // Open the Main Menu by default
         Scene mainMenuScene = MainMenu.getScene(primaryStage);
