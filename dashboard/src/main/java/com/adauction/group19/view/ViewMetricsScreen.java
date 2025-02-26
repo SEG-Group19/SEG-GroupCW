@@ -9,6 +9,8 @@ import java.io.IOException;
 
 /**
  * This class represents the View Metrics screen.
+ * Primary purpose is to load the FXML file and connect it to the controller.
+ * Serves as a bridge between the application and the FXML-based UI.
  */
 public class ViewMetricsScreen {
         private static final String FXML_PATH = "/fxml/ViewMetricsScreen.fxml";

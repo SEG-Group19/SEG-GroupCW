@@ -97,4 +97,87 @@ public class CampaignData {
         }
         return totalConversions;
     }
+    /**
+     * Returns the total number of unique users (based on unique IP or session tracking).
+     * @return the total number of unique users.
+     */
+    public int getTotalUniques() {
+        return impressions.size(); // Placeholder, should be modified if unique user tracking is available
+    }
+
+    /**
+     * Returns the total number of bounces (users who viewed only 1 page).
+     * @return the total number of bounces.
+     */
+    public int getTotalBounces() {
+        int totalBounces = 0;
+        for (Object[] serverLog : serverLogs) {
+            int pagesViewed = (int) serverLog[2];
+            if (pagesViewed == 1) {
+                totalBounces++;
+            }
+        }
+        return totalBounces;
+    }
+
+    /**
+     * Returns the total cost of impressions and clicks combined.
+     * @return the total cost of the campaign.
+     */
+    public double getTotalCost() {
+        double totalCost = 0;
+        for (Object[] impression : impressions) {
+            totalCost += (double) impression[5];
+        }
+        for (Object[] click : clicks) {
+            totalCost += (double) click[1];
+        }
+        return totalCost;
+    }
+
+    /**
+     * Returns the Click-Through Rate (CTR) = (Total Clicks / Total Impressions) * 100.
+     * @return the CTR percentage.
+     */
+    public double getCTR() {
+        if (getTotalImpressions() == 0) return 0;
+        return ((double) getTotalClicks() / getTotalImpressions()) * 100;
+    }
+
+    /**
+     * Returns the Cost Per Acquisition (CPA) = Total Cost / Total Conversions.
+     * @return the CPA value.
+     */
+    public double getCPA() {
+        if (getTotalConversions() == 0) return 0;
+        return getTotalCost() / getTotalConversions();
+    }
+
+    /**
+     * Returns the Cost Per Click (CPC) = Total Cost / Total Clicks.
+     * @return the CPC value.
+     */
+    public double getCPC() {
+        if (getTotalClicks() == 0) return 0;
+        return getTotalCost() / getTotalClicks();
+    }
+
+    /**
+     * Returns the Cost Per Thousand Impressions (CPM) = (Total Cost / Total Impressions) * 1000.
+     * @return the CPM value.
+     */
+    public double getCPM() {
+        if (getTotalImpressions() == 0) return 0;
+        return (getTotalCost() / getTotalImpressions()) * 1000;
+    }
+
+    /**
+     * Returns the Bounce Rate = (Total Bounces / Total Clicks) * 100.
+     * @return the bounce rate percentage.
+     */
+    public double getBounceRate() {
+        if (getTotalClicks() == 0) return 0;
+        return ((double) getTotalBounces() / getTotalClicks()) * 100;
+    }
+
 }
