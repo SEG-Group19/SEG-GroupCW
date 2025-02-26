@@ -3,32 +3,57 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.LineChart?>
 
-<VBox spacing="10" alignment="CENTER" xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.adauction.group19.controller.MetricsScreenController">
+<?import javafx.scene.chart.NumberAxis?>
+<BorderPane xmlns="http://javafx.com/javafx"
+  xmlns:fx="http://javafx.com/fxml"
+  fx:controller="com.adauction.group19.controller.MetricsScreenController">
 
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
+    <top>
+        <Button fx:id="btnBack" text="← Back" onAction="#handleBackButton"/>
+    </top>
 
-    <Label id="titleLabel" text="View Metrics" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    <left>
+        <VBox spacing="10" alignment="TOP_LEFT" style="-fx-background-color: #F4F4F4; -fx-padding: 20px;">
+            <Label text="Select Metrics:"/>
+            <CheckBox fx:id="chkImpressions" text="Number of Impressions"/>
+            <CheckBox fx:id="chkClicks" text="Number of Clicks"/>
+            <CheckBox fx:id="chkUniques" text="Number of Uniques"/>
+            <CheckBox fx:id="chkBounces" text="Number of Bounces"/>
+            <CheckBox fx:id="chkConversions" text="Number of Conversions"/>
+            <CheckBox fx:id="chkTotalCost" text="Total Cost"/>
+            <CheckBox fx:id="chkCTR" text="CTR"/>
+            <CheckBox fx:id="chkCPA" text="CPA"/>
+            <CheckBox fx:id="chkCPC" text="CPC"/>
+            <CheckBox fx:id="chkCPM" text="CPM"/>
+            <CheckBox fx:id="chkBounceRate" text="Bounce Rate"/>
+        </VBox>
+    </left>
 
-    <HBox>
-        <Label text="Total Impressions: "/>
-        <Label fx:id="totalImpressionsLabel" text="Data not set yet"/>
-    </HBox>
+    <center>
+        <LineChart fx:id="lineChart" xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml">
+            <xAxis>
+                <NumberAxis fx:id="xAxis"/>
+            </xAxis>
+            <yAxis>
+                <NumberAxis fx:id="yAxis"/>
+            </yAxis>
+        </LineChart>
 
-    <HBox>
-        <Label text="Total Clicks: "/>
-        <Label fx:id="totalClicksLabel" text="Data not set yet"/>
-    </HBox>
+    </center>
 
-    <HBox>
-        <Label text="Total Conversions: "/>
-        <Label fx:id="totalConversionsLabel" text="Data not set yet"/>
-    </HBox>
+    <bottom>
+        <VBox alignment="CENTER">
+            <Label text="Time Scale"/>
+            <HBox alignment="CENTER">
+                <Label text="Day: "/>
+                <Slider fx:id="timeSlider" min="1" max="30" value="1" majorTickUnit="5" minorTickCount="4" snapToTicks="true"/>
+                <Label fx:id="lblTimeScale" text="1"/>
+            </HBox>
+        </VBox>
+    </bottom>
 
-    <Button id="goBackButton" text="Go back" onAction="#handleBackButton"/>
+</BorderPane>
 
-</VBox>
