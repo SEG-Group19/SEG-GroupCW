@@ -10,8 +10,18 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
+/**
+ * This class provides services for parsing files containing campaign data.
+ */
 public class FileParserService {
 
+    /**
+     * Parse the campaign data from the given files.
+     * @param impressionFile The file containing impression data.
+     * @param clickFile The file containing click data.
+     * @param serverFile The file containing server log data.
+     * @return The parsed campaign data.
+     */
     public CampaignData parseCampaignData(File impressionFile, File clickFile, File serverFile) {
         CampaignData campaignData = new CampaignData();
 
@@ -23,6 +33,11 @@ public class FileParserService {
         return campaignData;
     }
 
+    /**
+     * Parse the impression data from the given file.
+     * @param file The file containing impression data.
+     * @param campaignData The campaign data to add the impressions to.
+     */
     private void parseImpressions(File file, CampaignData campaignData) {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
@@ -96,6 +111,11 @@ public class FileParserService {
         System.out.println("Impression log parsed successfully");
     }
 
+    /**
+     * Parse the click data from the given file.
+     * @param file The file containing click data.
+     * @param campaignData The campaign data to add the clicks to.
+     */
     private void parseClicks(File file, CampaignData campaignData) {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
@@ -122,6 +142,11 @@ public class FileParserService {
         System.out.println("Click log parsed successfully");
     }
 
+    /**
+     * Parse the server log data from the given file.
+     * @param file The file containing server log data.
+     * @param campaignData The campaign data to add the server log entries to.
+     */
     private void parseServerLogs(File file, CampaignData campaignData) {
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;

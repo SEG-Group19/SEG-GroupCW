@@ -9,16 +9,29 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.util.Optional;
 
+/**
+ * This class represents the controller for the Input Data screen.
+ * Used to handle the file uploads from the input data screen.
+ */
 public class InputDataController {
 
+    /**
+     * The text fields for the file paths.
+     */
     @FXML private TextField impressionFilePath;
     @FXML private TextField clickFilePath;
     @FXML private TextField serverFilePath;
 
+    /**
+     * The files for the uploaded data.
+     */
     private File impressionFile;
     private File clickFile;
     private File serverFile;
 
+    /**
+     * Handles the selection of the impression file.
+     */
     @FXML
     private void handleImpressionFileSelect() {
         impressionFile = chooseFile();
@@ -27,6 +40,9 @@ public class InputDataController {
         }
     }
 
+    /**
+     * Handles the selection of the click file.
+     */
     @FXML
     private void handleClickFileSelect() {
         clickFile = chooseFile();
@@ -35,6 +51,9 @@ public class InputDataController {
         }
     }
 
+    /**
+     * Handles the selection of the server file.
+     */
     @FXML
     private void handleServerFileSelect() {
         serverFile = chooseFile();
@@ -43,8 +62,12 @@ public class InputDataController {
         }
     }
 
+    /**
+     * Handles the upload of the files.
+     */
     @FXML
     private void handleFileUpload() {
+        // All 3 files must be present for upload
         if (impressionFile != null && clickFile != null && serverFile != null) {
             FileParserService fileParserService = new FileParserService();
             fileParserService.parseCampaignData(impressionFile, clickFile, serverFile);
@@ -54,6 +77,10 @@ public class InputDataController {
         }
     }
 
+    /**
+     * Opens a file chooser dialog to select a file.
+     * @return The selected file.
+     */
     private File chooseFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select File");
