@@ -2,6 +2,7 @@ package com.adauction.group19.model;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -198,10 +199,12 @@ public class CampaignData {
      * Date-based metrics
      */
     public int getImpressionsForDate(LocalDateTime date) {
-        return (int) impressions.stream()
+        long count = impressions.stream()
             .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
             .count();
+        return (int) count;
     }
+
 
     public int getClicksForDate(LocalDateTime date) {
         return (int) clicks.stream()
@@ -263,8 +266,94 @@ public class CampaignData {
 
     public double getBounceRateForDate(LocalDateTime date) {
         int clicks = getClicksForDate(date);
+        int bounces = getBouncesForDate(date);
+
+        if (clicks == 0) return 0; // Prevent division by zero
+
+        double bounceRate = ((double) bounces / clicks) * 100; // Correctly compute percentage
+        return Math.min(bounceRate, 100); // Ensure the value does not exceed 100%
+    }
+
+    /**
+     * @return the earliest date in the campaign data.
+     */
+    public LocalDate getFirstDate() {
+        return impressions.stream()
+            .map(entry -> ((LocalDateTime) entry[0]).toLocalDate()) // Extract dates
+            .min(LocalDate::compareTo) // Get the earliest date
+            .orElse(LocalDate.now()); // Default to today if no data exists
+    }
+
+    public int getHourlyImpressions(LocalDateTime dateTime) {
+        return (int) impressions.stream()
+            .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
+                && ((LocalDateTime) entry[0]).toLocalDate().equals(dateTime.toLocalDate()))
+            .count();
+    }
+
+    public int getHourlyClicks(LocalDateTime dateTime) {
+        return (int) clicks.stream()
+            .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
+                && ((LocalDateTime) entry[0]).toLocalDate().equals(dateTime.toLocalDate()))
+            .count();
+    }
+
+    public int getHourlyConversions(LocalDateTime dateTime) {
+        return (int) serverLogs.stream()
+            .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
+                && ((LocalDateTime) entry[0]).toLocalDate().equals(dateTime.toLocalDate()))
+            .filter(entry -> (boolean) entry[3])
+            .count();
+    }
+
+    public double getHourlyTotalCost(LocalDateTime dateTime) {
+        double total = impressions.stream()
+            .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
+                && ((LocalDateTime) entry[0]).toLocalDate().equals(dateTime.toLocalDate()))
+            .mapToDouble(entry -> (double) entry[5])
+            .sum();
+        total += clicks.stream()
+            .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
+                && ((LocalDateTime) entry[0]).toLocalDate().equals(dateTime.toLocalDate()))
+            .mapToDouble(entry -> (double) entry[1])
+            .sum();
+        return total;
+    }
+
+    public double getHourlyCTR(LocalDateTime dateTime) {
+        int impressions = getHourlyImpressions(dateTime);
+        if (impressions == 0) return 0;
+        return ((double) getHourlyClicks(dateTime) / impressions) * 100;
+    }
+
+    public double getHourlyCPA(LocalDateTime dateTime) {
+        int conversions = getHourlyConversions(dateTime);
+        if (conversions == 0) return 0;
+        return getHourlyTotalCost(dateTime) / conversions;
+    }
+
+    public double getHourlyCPC(LocalDateTime dateTime) {
+        int clicks = getHourlyClicks(dateTime);
         if (clicks == 0) return 0;
-        return ((double) getBouncesForDate(date) / clicks) * 100;
+        return getHourlyTotalCost(dateTime) / clicks;
+    }
+
+    public double getHourlyCPM(LocalDateTime dateTime) {
+        int impressions = getHourlyImpressions(dateTime);
+        if (impressions == 0) return 0;
+        return (getHourlyTotalCost(dateTime) / impressions) * 1000;
+    }
+
+    public double getHourlyBounceRate(LocalDateTime dateTime) {
+        int clicks = getHourlyClicks(dateTime);
+        int bounces = (int) serverLogs.stream()
+            .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
+                && ((LocalDateTime) entry[0]).toLocalDate().equals(dateTime.toLocalDate()))
+            .filter(entry -> (int) entry[2] == 1)
+            .count();
+        if (clicks == 0) return 0;
+        double bounceRate = ((double) bounces / clicks) * 100;
+        return Math.min(bounceRate, 100);
     }
 
 

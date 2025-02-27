@@ -4,6 +4,7 @@ import com.adauction.group19.model.CampaignData;
 import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.view.MainMenu;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -80,10 +81,6 @@ public class MetricsScreenController {
             // Create empty default labels on the chart
             updateGraphAndLabels(selectedDays);
         } else {
-            System.out.println("Campaign data loaded successfully.");
-            System.out.println("Total Impressions: " + campaignData.getTotalImpressions());
-            System.out.println("Total Clicks: " + campaignData.getTotalClicks());
-
             // Load the campaign data into the UI
             loadCampaignData();
 
@@ -128,26 +125,35 @@ public class MetricsScreenController {
         if (checkBox.isSelected() && campaignData != null) {
             XYChart.Series<String, Number> series = new XYChart.Series<>();
             series.setName(seriesName);
-            int total = 0;
+
+            double total = 0; // Ensure total starts fresh for the selected range
 
             for (String xLabel : xLabels) {
-                int value = getMetricValueForDate(seriesName, xLabel); // Get real value from data
+                double value = getMetricValueForDate(seriesName, xLabel);
                 series.getData().add(new XYChart.Data<>(xLabel, value));
-                total += value;
+                total += value; // Accumulate values only from selected range
             }
 
             lineChart.getData().add(series);
 
-            // Update label with formatted value
+            // Display correct totals per time range
             if (Arrays.asList("Total Cost", "CPA", "CPC", "CPM").contains(seriesName)) {
-                label.setText("($" + total + ")");
+                label.setText("($" + String.format("%.2f", total) + ")");
             } else if (Arrays.asList("CTR", "Bounce Rate").contains(seriesName)) {
-                label.setText("(" + total + "%)");
+                label.setText("(" + String.format("%.2f", total) + "%)");
             } else {
-                label.setText("(" + total + ")");
+                label.setText("(" + (int) total + ")");
             }
+        } else {
+            label.setText("(0)"); // Reset label when unchecked
         }
     }
+
+
+
+
+
+
 
     /**
      * Retrieves the actual value of a metric for a given date/time.
@@ -155,41 +161,53 @@ public class MetricsScreenController {
      * @param dateLabel The formatted date/time label.
      * @return The metric value for the given date.
      */
-    private int getMetricValueForDate(String seriesName, String dateLabel) {
+    private double getMetricValueForDate(String seriesName, String dateLabel) {
         if (campaignData == null) {
-            return 0; // No data available
+            return 0.0;
         }
 
-        // Convert dateLabel back to LocalDateTime if needed
         LocalDateTime date = parseDateLabel(dateLabel);
+        boolean isOneDayView = dateLabel.length() > 10; // Detects if time (HH:mm) is present
+        double value = 0.0;
 
         switch (seriesName) {
             case "Impressions":
-                return campaignData.getImpressionsForDate(date);
+                value = isOneDayView ? campaignData.getHourlyImpressions(date) : campaignData.getImpressionsForDate(date);
+                break;
             case "Clicks":
-                return campaignData.getClicksForDate(date);
-            case "Uniques":
-                return campaignData.getUniquesForDate(date);
-            case "Bounces":
-                return campaignData.getBouncesForDate(date);
+                value = isOneDayView ? campaignData.getHourlyClicks(date) : campaignData.getClicksForDate(date);
+                break;
             case "Conversions":
-                return campaignData.getConversionsForDate(date);
+                value = isOneDayView ? campaignData.getHourlyConversions(date) : campaignData.getConversionsForDate(date);
+                break;
             case "Total Cost":
-                return (int) campaignData.getTotalCostForDate(date);
+                value = isOneDayView ? campaignData.getHourlyTotalCost(date) : campaignData.getTotalCostForDate(date);
+                break;
             case "CTR":
-                return (int) campaignData.getCTRForDate(date);
+                value = isOneDayView ? campaignData.getHourlyCTR(date) : campaignData.getCTRForDate(date);
+                break;
             case "CPA":
-                return (int) campaignData.getCPAForDate(date);
+                value = isOneDayView ? campaignData.getHourlyCPA(date) : campaignData.getCPAForDate(date);
+                break;
             case "CPC":
-                return (int) campaignData.getCPCForDate(date);
+                value = isOneDayView ? campaignData.getHourlyCPC(date) : campaignData.getCPCForDate(date);
+                break;
             case "CPM":
-                return (int) campaignData.getCPMForDate(date);
+                value = isOneDayView ? campaignData.getHourlyCPM(date) : campaignData.getCPMForDate(date);
+                break;
             case "Bounce Rate":
-                return (int) campaignData.getBounceRateForDate(date);
+                value = isOneDayView ? campaignData.getHourlyBounceRate(date) : campaignData.getBounceRateForDate(date);
+                break;
             default:
-                return 0;
+                value = 0.0;
         }
+
+        System.out.println("Result for " + seriesName + " at " + date + ": " + value);
+        return value;
     }
+
+
+
 
     /**
      * Parses a date label string into a LocalDateTime object.
@@ -198,19 +216,27 @@ public class MetricsScreenController {
      */
     private LocalDateTime parseDateLabel(String dateLabel) {
         try {
-            if (dateLabel.length() == 10) { // If only YYYY-MM-DD, parse as LocalDate and assume start of the day
+            LocalDate firstDate = campaignData.getFirstDate(); // Get the earliest date
+
+            if (dateLabel.length() == 10) { // If YYYY-MM-DD
                 return LocalDate.parse(dateLabel, DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay();
-            } else if (dateLabel.length() == 16) { // If YYYY-MM-DD HH:mm, parse as LocalDateTime
+            } else if (dateLabel.length() == 16) { // If YYYY-MM-DD HH:mm
                 return LocalDateTime.parse(dateLabel, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+            } else if (dateLabel.length() == 5) { // If HH:mm (hourly)
+                return LocalTime.parse(dateLabel, DateTimeFormatter.ofPattern("HH:mm")).atDate(firstDate);
             } else {
                 System.err.println("Unexpected date format: " + dateLabel);
-                return LocalDateTime.now(); // Default to prevent crashes
+                return LocalDateTime.now();
             }
         } catch (Exception e) {
             System.err.println("Error parsing date: " + dateLabel + " - " + e.getMessage());
-            return LocalDateTime.now(); // Default value if parsing fails
+            return LocalDateTime.now();
         }
     }
+
+
+
+
 
 
 
@@ -220,8 +246,23 @@ public class MetricsScreenController {
 
     private void updateGraphAndLabels(int days) {
         lineChart.getData().clear();
+        // Reset labels to ensure previous selections don’t affect current values
+        lblImpressions.setText("(0)");
+        lblClicks.setText("(0)");
+        lblConversions.setText("(0)");
+        lblTotalCost.setText("($0.00)");
+        lblCTR.setText("(0.00%)");
+        lblCPA.setText("($0.00)");
+        lblCPC.setText("($0.00)");
+        lblCPM.setText("($0.00)");
+        lblBounceRate.setText("(0.00%)");
+
+
 
         List<String> xLabels = getXAxisLabels(days); // Get date/time labels
+
+        // Debug: Print how many labels exist for filtering
+        System.out.println("X-Axis Labels Count: " + xLabels.size());
 
         // Set up X-axis as a CategoryAxis with custom labels
         xAxis.setCategories(FXCollections.observableArrayList(xLabels));
@@ -241,7 +282,6 @@ public class MetricsScreenController {
         addMetricSeries("CPC", chkCPC, lblCPC, days, xLabels);
         addMetricSeries("CPM", chkCPM, lblCPM, days, xLabels);
         addMetricSeries("Bounce Rate", chkBounceRate, lblBounceRate, days, xLabels);
-
     }
 
     /**
@@ -252,107 +292,39 @@ public class MetricsScreenController {
     private List<String> getXAxisLabels(int days) {
         List<String> labels = new ArrayList<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm");
 
-        // Get actual impression timestamps from CampaignData
         CampaignData campaignData = CampaignDataStore.getInstance().getCampaignData();
-
-        if (campaignData == null) {
-            System.err.println("Campaign data is null in getXAxisLabels. Generating default labels.");
-
-            // Generate default labels based on current date
-            Calendar cal = Calendar.getInstance();
-            Date today = cal.getTime();
-
-            if (days == 1) {
-                // If 1 day selected, show hours (0-23)
-                for (int i = 0; i < 24; i++) {
-                    labels.add(String.format("%02d:00", i));
-                }
-            } else if (days == 5 || days == 7) {
-                // If 5 or 7 days selected, generate daily labels with time intervals
-                for (int i = days - 1; i >= 0; i--) {
-                    cal.setTime(today);
-                    cal.add(Calendar.DAY_OF_MONTH, -i);
-                    String dateStr = dateFormat.format(cal.getTime());
-
-                    // Add 4 time points for each day (00:00, 06:00, 12:00, 18:00)
-                    labels.add(dateStr + " 00:00");
-                    labels.add(dateStr + " 06:00");
-                    labels.add(dateStr + " 12:00");
-                    labels.add(dateStr + " 18:00");
-                }
-            } else {
-                // If 14 days selected, just show dates
-                for (int i = days - 1; i >= 0; i--) {
-                    cal.setTime(today);
-                    cal.add(Calendar.DAY_OF_MONTH, -i);
-                    labels.add(dateFormat.format(cal.getTime()));
-                }
-            }
-
+        if (campaignData == null || campaignData.getImpressionDates().isEmpty()) {
+            System.err.println("Campaign data or impression dates are missing.");
             return labels;
         }
 
-        // If campaign data exists, use actual impression dates
         List<LocalDateTime> impressionDates = campaignData.getImpressionDates();
-
-        if (impressionDates == null || impressionDates.isEmpty()) {
-            System.err.println("Impression dates are empty. Generating default labels.");
-            // Reuse the same default label generation as above
-            Calendar cal = Calendar.getInstance();
-            Date today = cal.getTime();
-
-            if (days == 1) {
-                for (int i = 0; i < 24; i++) {
-                    labels.add(String.format("%02d:00", i));
-                }
-            } else if (days == 5 || days == 7) {
-                for (int i = days - 1; i >= 0; i--) {
-                    cal.setTime(today);
-                    cal.add(Calendar.DAY_OF_MONTH, -i);
-                    String dateStr = dateFormat.format(cal.getTime());
-                    labels.add(dateStr + " 00:00");
-                    labels.add(dateStr + " 06:00");
-                    labels.add(dateStr + " 12:00");
-                    labels.add(dateStr + " 18:00");
-                }
-            } else {
-                for (int i = days - 1; i >= 0; i--) {
-                    cal.setTime(today);
-                    cal.add(Calendar.DAY_OF_MONTH, -i);
-                    labels.add(dateFormat.format(cal.getTime()));
-                }
-            }
-
-            return labels;
-        }
-
-        // Extract unique dates from timestamps
-        Set<String> uniqueDates = impressionDates.stream()
-            .map(date -> date.toLocalDate().toString())
-            .collect(Collectors.toCollection(TreeSet::new));
+        LocalDate firstDate = impressionDates.stream()
+            .map(LocalDateTime::toLocalDate)
+            .min(LocalDate::compareTo)
+            .orElse(LocalDate.now());
 
         if (days == 1) {
-            // If 1 day selected, show hours (0-23)
+            // Generate hourly labels only for the first recorded date
             for (int i = 0; i < 24; i++) {
-                labels.add(String.format("%02d:00", i));
-            }
-        } else if (days == 5 || days == 7) {
-            // If 5 or 7 days selected, show date + hours (every 6 hours)
-            for (String date : uniqueDates.stream().limit(days).collect(Collectors.toList())) {
-                labels.add(date + " 00:00");
-                labels.add(date + " 06:00");
-                labels.add(date + " 12:00");
-                labels.add(date + " 18:00");
+                labels.add(firstDate + " " + String.format("%02d:00", i)); // YYYY-MM-DD HH:00
             }
         } else {
-            // If 14 days selected, just show dates
-            labels.addAll(uniqueDates.stream().limit(days).collect(Collectors.toList()));
+            // Generate daily labels for multi-day selections
+            for (int i = 0; i < days; i++) {
+                LocalDate date = firstDate.plusDays(i);
+                labels.add(date.toString()); // YYYY-MM-DD
+            }
         }
 
+        System.out.println("Generated " + labels.size() + " X-axis labels for " + days + " days.");
         return labels;
     }
+
+
+
+
 
 
     /**
