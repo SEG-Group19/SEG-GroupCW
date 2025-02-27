@@ -25,7 +25,7 @@ public class InputDataScreen {
             InputDataController controller = loader.getController();
             controller.setStage(stage);
 
-            return new Scene(root, 600, 400);
+            return new Scene(root, 1000, 600);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
