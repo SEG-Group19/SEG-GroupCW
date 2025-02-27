@@ -26,7 +26,7 @@ public class ViewMetricsScreen {
                         Parent root = loader.load();
 
                         MetricsScreenController controller = loader.getController();
-                        controller.setStage(stage);
+                        controller.setStage(stage); 
                         controller.loadCampaignData();
 
                         return new Scene(root, 1000, 600);

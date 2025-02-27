@@ -49,4 +49,5 @@ public class CampaignDataStore {
     public CampaignData getCampaignData() {
         return campaignData;
     }
+
 }

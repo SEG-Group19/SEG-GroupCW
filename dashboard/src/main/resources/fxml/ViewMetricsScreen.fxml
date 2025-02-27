@@ -5,6 +5,7 @@
 <?import javafx.scene.chart.LineChart?>
 
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.CategoryAxis?>
 <BorderPane xmlns="http://javafx.com/javafx"
   xmlns:fx="http://javafx.com/fxml"
   fx:controller="com.adauction.group19.controller.MetricsScreenController">
@@ -87,7 +88,7 @@
         <VBox alignment="CENTER" spacing="15" style="-fx-padding: 20px;">
             <LineChart fx:id="lineChart">
                 <xAxis>
-                    <NumberAxis fx:id="xAxis"/>
+                    <CategoryAxis fx:id="xAxis"/>
                 </xAxis>
                 <yAxis>
                     <NumberAxis fx:id="yAxis"/>

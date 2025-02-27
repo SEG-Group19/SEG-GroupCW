@@ -1,5 +1,7 @@
 package com.adauction.group19.model;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -179,5 +181,94 @@ public class CampaignData {
         if (getTotalClicks() == 0) return 0;
         return ((double) getTotalBounces() / getTotalClicks()) * 100;
     }
+
+    public SimpleDateFormat getDate() {
+        return new SimpleDateFormat("yyyy-MM-dd");
+    }
+
+    public List<LocalDateTime> getImpressionDates() {
+        List<LocalDateTime> impressionDates = new ArrayList<>();
+        for (Object[] impression : impressions) {
+            impressionDates.add((LocalDateTime) impression[0]);
+        }
+        return impressionDates;
+    }
+
+    /**
+     * Date-based metrics
+     */
+    public int getImpressionsForDate(LocalDateTime date) {
+        return (int) impressions.stream()
+            .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
+            .count();
+    }
+
+    public int getClicksForDate(LocalDateTime date) {
+        return (int) clicks.stream()
+            .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
+            .count();
+    }
+
+    public int getUniquesForDate(LocalDateTime date) {
+        return getTotalUniques(); // Placeholder, needs unique user tracking logic
+    }
+
+    public int getBouncesForDate(LocalDateTime date) {
+        return (int) serverLogs.stream()
+            .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()) && (int) entry[2] == 1)
+            .count();
+    }
+
+    public int getConversionsForDate(LocalDateTime date) {
+        return (int) serverLogs.stream()
+            .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()) && (boolean) entry[3])
+            .count();
+    }
+
+    public double getTotalCostForDate(LocalDateTime date) {
+        double total = impressions.stream()
+            .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
+            .mapToDouble(entry -> (double) entry[5])
+            .sum();
+        total += clicks.stream()
+            .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
+            .mapToDouble(entry -> (double) entry[1])
+            .sum();
+        return total;
+    }
+
+    public double getCTRForDate(LocalDateTime date) {
+        int impressions = getImpressionsForDate(date);
+        if (impressions == 0) return 0;
+        return ((double) getClicksForDate(date) / impressions) * 100;
+    }
+
+    public double getCPAForDate(LocalDateTime date) {
+        int conversions = getConversionsForDate(date);
+        if (conversions == 0) return 0;
+        return getTotalCostForDate(date) / conversions;
+    }
+
+    public double getCPCForDate(LocalDateTime date) {
+        int clicks = getClicksForDate(date);
+        if (clicks == 0) return 0;
+        return getTotalCostForDate(date) / clicks;
+    }
+
+    public double getCPMForDate(LocalDateTime date) {
+        int impressions = getImpressionsForDate(date);
+        if (impressions == 0) return 0;
+        return (getTotalCostForDate(date) / impressions) * 1000;
+    }
+
+    public double getBounceRateForDate(LocalDateTime date) {
+        int clicks = getClicksForDate(date);
+        if (clicks == 0) return 0;
+        return ((double) getBouncesForDate(date) / clicks) * 100;
+    }
+
+
+
+
 
 }
