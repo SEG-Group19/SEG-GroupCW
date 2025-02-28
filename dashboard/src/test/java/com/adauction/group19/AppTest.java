@@ -2,7 +2,6 @@ package com.adauction.group19;
 
 import com.adauction.group19.controller.InputDataController;
 import javafx.application.Platform;
-import javafx.scene.Node;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;

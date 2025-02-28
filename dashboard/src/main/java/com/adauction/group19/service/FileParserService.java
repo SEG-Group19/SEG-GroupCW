@@ -48,12 +48,14 @@ public class FileParserService {
                 }
                 // Process each line (CSV format)
                 String[] data = line.split(",");
-                // Parse date
+                // Parse date from column 1 (index 0)
                 LocalDateTime dateTime = parseDateTime(data[0]);
-                // Parse gender
+                // Parse ID from column 2 (index 1)
+                String id = data[1];
+                // Parse gender from column 3 (index 2)
                 Gender gender = data[2].equals("Male") ? Gender.MALE : Gender.FEMALE;
 
-                // Parse age range
+                // Parse age range from column 4 (index 3)
                 AgeRange ageRange;
                 switch (data[3]) {
                     case "<25":
@@ -76,10 +78,10 @@ public class FileParserService {
                         break;
                 }
 
-                // Parse income
+                // Parse income from column 5 (index 4)
                 Income income = Income.valueOf(data[4].toUpperCase());
 
-                // Parse context
+                // Parse context from column 6 (index 5)
                 Context context;
                 switch (data[5]) {
                     case "Blog":
@@ -99,10 +101,11 @@ public class FileParserService {
                         break;
                 }
 
-                // Parse impression cost
+                // Parse impression cost from column 7 (index 6)
                 double impressionCost = Double.parseDouble(data[6]);
 
-                campaignData.addImpression(dateTime, gender, ageRange, income, context, impressionCost);
+                // Add the impression, now including the ID
+                campaignData.addImpression(dateTime, id, gender, ageRange, income, context, impressionCost);
             }
         } catch (IOException e) {
             System.err.println("Error reading impression log: " + e.getMessage());
@@ -110,6 +113,7 @@ public class FileParserService {
 
         System.out.println("Impression log parsed successfully");
     }
+
 
     /**
      * Parse the click data from the given file.
