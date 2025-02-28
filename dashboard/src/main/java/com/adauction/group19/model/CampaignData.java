@@ -1,11 +1,13 @@
 package com.adauction.group19.model;
 
-import java.text.DateFormat;
+import java.time.Duration;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class represents the data for a campaign.
@@ -27,9 +29,12 @@ public class CampaignData {
      * @param context context of the impression
      * @param impressionCost cost of the impression
      */
-    public void addImpression(LocalDateTime dateTime, Gender gender, AgeRange ageRange, Income income, Context context, double impressionCost) {
-        impressions.add(new Object[]{dateTime, gender, ageRange, income, context, impressionCost});
+    public void addImpression(LocalDateTime dateTime, String id, Gender gender, AgeRange ageRange, Income income, Context context, double impressionCost) {
+        // Now, index 0: dateTime, index 1: id, index 2: gender, index 3: ageRange,
+        // index 4: income, index 5: context, index 6: impressionCost.
+        impressions.add(new Object[]{dateTime, id, gender, ageRange, income, context, impressionCost});
     }
+
 
     /**
      * Adds a click to the campaign data.
@@ -105,23 +110,40 @@ public class CampaignData {
      * @return the total number of unique users.
      */
     public int getTotalUniques() {
-        return impressions.size(); // Placeholder, should be modified if unique user tracking is available
+        Set<Object> uniqueIds = new HashSet<>();
+        for (Object[] impression : impressions) {
+            uniqueIds.add(impression[1]); // assuming index 1 is the user ID
+        }
+        return uniqueIds.size();
     }
 
+
     /**
-     * Returns the total number of bounces (users who viewed only 1 page).
+     * Returns the total number of bounces.
      * @return the total number of bounces.
      */
     public int getTotalBounces() {
         int totalBounces = 0;
         for (Object[] serverLog : serverLogs) {
+            LocalDateTime entryDateTime = (LocalDateTime) serverLog[0];
+            LocalDateTime exitDateTime = (LocalDateTime) serverLog[1];
             int pagesViewed = (int) serverLog[2];
-            if (pagesViewed == 1) {
+            long timeOnPageSeconds = 0;
+
+            // Only compute time on page if both timestamps are non-null
+            if (entryDateTime != null && exitDateTime != null) {
+                timeOnPageSeconds = Duration.between(entryDateTime, exitDateTime).getSeconds();
+            }
+
+            // Count as a bounce if the user viewed only one page
+            // OR if both timestamps are present and the time on page is less than 4 seconds.
+            if (pagesViewed == 1 || (entryDateTime != null && exitDateTime != null && timeOnPageSeconds < 4)) {
                 totalBounces++;
             }
         }
         return totalBounces;
     }
+
 
     /**
      * Returns the total cost of impressions and clicks combined.
@@ -130,7 +152,7 @@ public class CampaignData {
     public double getTotalCost() {
         double totalCost = 0;
         for (Object[] impression : impressions) {
-            totalCost += (double) impression[5];
+            totalCost += (double) impression[6];
         }
         for (Object[] click : clicks) {
             totalCost += (double) click[1];
@@ -213,14 +235,34 @@ public class CampaignData {
     }
 
     public int getUniquesForDate(LocalDateTime date) {
-        return getTotalUniques(); // Placeholder, needs unique user tracking logic
+        Set<Object> uniqueIds = new HashSet<>();
+        for (Object[] impression : impressions) {
+            LocalDate impressionDate = ((LocalDateTime) impression[0]).toLocalDate();
+            if (impressionDate.equals(date.toLocalDate())) {
+                uniqueIds.add(impression[1]);
+            }
+        }
+        return uniqueIds.size();
     }
+
 
     public int getBouncesForDate(LocalDateTime date) {
         return (int) serverLogs.stream()
-            .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()) && (int) entry[2] == 1)
+            .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
+            .filter(entry -> {
+                LocalDateTime entryDT = (LocalDateTime) entry[0];
+                LocalDateTime exitDT = (LocalDateTime) entry[1];
+                int pagesViewed = (int) entry[2];
+                long timeOnPageSeconds = 0;
+                if (entryDT != null && exitDT != null) {
+                    timeOnPageSeconds = Duration.between(entryDT, exitDT).getSeconds();
+                }
+                // Bounce if only one page or time on page is less than 4 seconds.
+                return pagesViewed == 1 || (entryDT != null && exitDT != null && timeOnPageSeconds < 4);
+            })
             .count();
     }
+
 
     public int getConversionsForDate(LocalDateTime date) {
         return (int) serverLogs.stream()

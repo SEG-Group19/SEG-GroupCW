@@ -125,18 +125,61 @@ public class MetricsScreenController {
         if (checkBox.isSelected() && campaignData != null) {
             XYChart.Series<String, Number> series = new XYChart.Series<>();
             series.setName(seriesName);
+            double total = 0;
 
-            double total = 0; // Ensure total starts fresh for the selected range
-
-            for (String xLabel : xLabels) {
-                double value = getMetricValueForDate(seriesName, xLabel);
-                series.getData().add(new XYChart.Data<>(xLabel, value));
-                total += value; // Accumulate values only from selected range
+            if (seriesName.equals("Uniques") || seriesName.equals("Bounces")) {
+                if (days == 1) {
+                    // Hourly view: use the daily aggregate for the single day across all hours.
+                    LocalDateTime day = parseDateLabel(xLabels.get(0));
+                    double dailyValue = seriesName.equals("Uniques")
+                        ? campaignData.getUniquesForDate(day)
+                        : campaignData.getBouncesForDate(day);
+                    for (String xLabel : xLabels) {
+                        series.getData().add(new XYChart.Data<>(xLabel, dailyValue));
+                    }
+                    total = dailyValue;
+                } else {
+                    // Multi-day view: for each day, get the day's value and also compute the overall period value.
+                    if (seriesName.equals("Uniques")) {
+                        // Build a union of unique IDs over the period.
+                        Set<Object> periodUniqueIds = new HashSet<>();
+                        for (String xLabel : xLabels) {
+                            LocalDateTime day = parseDateLabel(xLabel);
+                            int dayUnique = campaignData.getUniquesForDate(day);
+                            series.getData().add(new XYChart.Data<>(xLabel, dayUnique));
+                            // Instead of just summing counts, collect IDs from impressions on that day.
+                            for (Object[] impression : campaignData.getImpressions()) {
+                                LocalDate d = ((LocalDateTime) impression[0]).toLocalDate();
+                                if (d.equals(day.toLocalDate())) {
+                                    periodUniqueIds.add(impression[1]); // id is stored at index 1
+                                }
+                            }
+                        }
+                        total = periodUniqueIds.size();
+                    } else {
+                        // For Bounces, sum the bounce count over the period.
+                        int periodBounces = 0;
+                        for (String xLabel : xLabels) {
+                            LocalDateTime day = parseDateLabel(xLabel);
+                            int dayBounces = campaignData.getBouncesForDate(day);
+                            series.getData().add(new XYChart.Data<>(xLabel, dayBounces));
+                            periodBounces += dayBounces;
+                        }
+                        total = periodBounces;
+                    }
+                }
+            } else {
+                // For additive metrics, just compute each value and sum them.
+                for (String xLabel : xLabels) {
+                    double value = getMetricValueForDate(seriesName, xLabel);
+                    series.getData().add(new XYChart.Data<>(xLabel, value));
+                    total += value;
+                }
             }
 
             lineChart.getData().add(series);
 
-            // Display correct totals per time range
+            // Set label text based on metric type.
             if (Arrays.asList("Total Cost", "CPA", "CPC", "CPM").contains(seriesName)) {
                 label.setText("($" + String.format("%.2f", total) + ")");
             } else if (Arrays.asList("CTR", "Bounce Rate").contains(seriesName)) {
@@ -145,9 +188,11 @@ public class MetricsScreenController {
                 label.setText("(" + (int) total + ")");
             }
         } else {
-            label.setText("(0)"); // Reset label when unchecked
+            label.setText("(0)");
         }
     }
+
+
 
 
 
@@ -167,7 +212,7 @@ public class MetricsScreenController {
         }
 
         LocalDateTime date = parseDateLabel(dateLabel);
-        boolean isOneDayView = dateLabel.length() > 10; // Detects if time (HH:mm) is present
+        boolean isOneDayView = dateLabel.length() > 10; // if label includes time (HH:mm)
         double value = 0.0;
 
         switch (seriesName) {
@@ -198,6 +243,13 @@ public class MetricsScreenController {
             case "Bounce Rate":
                 value = isOneDayView ? campaignData.getHourlyBounceRate(date) : campaignData.getBounceRateForDate(date);
                 break;
+            case "Uniques":
+                // When not in hourly view, return the unique count for that day.
+                value = campaignData.getUniquesForDate(date);
+                break;
+            case "Bounces":
+                value = campaignData.getBouncesForDate(date);
+                break;
             default:
                 value = 0.0;
         }
@@ -205,6 +257,7 @@ public class MetricsScreenController {
         System.out.println("Result for " + seriesName + " at " + date + ": " + value);
         return value;
     }
+
 
 
 
