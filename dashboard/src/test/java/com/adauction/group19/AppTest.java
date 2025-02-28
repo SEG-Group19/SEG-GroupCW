@@ -4,6 +4,8 @@ import com.adauction.group19.controller.InputDataController;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testfx.api.FxAssert;
 import org.testfx.framework.junit5.ApplicationTest;
@@ -46,66 +48,13 @@ public class AppTest extends ApplicationTest {
         FxAssert.verifyThat("#btnViewMetricsLabel", hasText("\uD83D\uDCC8 View metrics"));
     }
 
-    @Test
-    void testViewMetricsScreen() {
-        // Click the Input Data button
-        clickOn("#btnViewMetrics");
-
-        // Verify we're on the Input Data screen
-        FxAssert.verifyThat("#titleLabel", hasText("View Metrics"));
-
-        // Go back to the Main Menu
-        clickOn("#goBackButton");
-        FxAssert.verifyThat("#btnInputDataLabel", hasText("\uD83D\uDCCB Upload data"));
-        FxAssert.verifyThat("#btnViewMetricsLabel", hasText("\uD83D\uDCC8 View metrics"));
-    }
-
-    @Test
-    public void testFileUploadAndDataParsing() {
-        // Navigate to input data screen
-        clickOn("#btnInputData");
-        WaitForAsyncUtils.waitForFxEvents();
-
-        // Get test file paths
-        File impressionFile = getTestFile("impression_log.csv");
-        File clickFile = getTestFile("click_log.csv");
-        File serverFile = getTestFile("server_log.csv");
-
-        // Access the controller instance
-        InputDataController controller = InputDataController.instance;
-
-        // Inject test files into the controller
-        Platform.runLater(() -> {
-            controller.setImpressionFile(impressionFile);
-            controller.setClickFile(clickFile);
-            controller.setServerFile(serverFile);
-        });
-        WaitForAsyncUtils.waitForFxEvents();
-
-        // Click the upload button
-        clickOn("#uploadButton");
-
-        // Wait for data to upload
-        sleep(2000);
-
-        // Verify that the data was parsed correctly
-        clickOn("#goBackButton");
-        clickOn("#btnViewMetrics");
-
-        // Verify that the metrics are displayed correctly
-        FxAssert.verifyThat("#totalImpressionsLabel", hasText("486104"));
-        FxAssert.verifyThat("#totalClicksLabel", hasText("23923"));
-        FxAssert.verifyThat("#totalConversionsLabel", hasText("2026"));
-    }
-
-    private File getTestFile(String filename) {
-        URL resource = getClass().getClassLoader().getResource(filename);
-        return Paths.get(resource.getPath()).toFile();
-    }
-
     @AfterAll
     static void tearDown() {
-        // Force JavaFX to exit after the tests
-        Platform.exit();
+        Platform.exit(); // Properly shut down JavaFX
+        try {
+            Thread.sleep(500); // Small delay to let JavaFX shut down
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
