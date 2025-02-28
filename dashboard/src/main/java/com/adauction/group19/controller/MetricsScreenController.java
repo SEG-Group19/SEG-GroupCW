@@ -59,14 +59,68 @@ public class MetricsScreenController {
             lblUniques.setText("(" + campaignData.getTotalUniques() + ")");
             lblBounces.setText("(" + campaignData.getTotalBounces() + ")");
             lblConversions.setText("(" + campaignData.getTotalConversions() + ")");
-            lblTotalCost.setText("($" + campaignData.getTotalCost() + ")"); // Example: formatted as currency
-            lblCTR.setText("(" + campaignData.getCTR() + "%)");
-            lblCPA.setText("($" + campaignData.getCPA() + ")");
-            lblCPC.setText("($" + campaignData.getCPC() + ")");
-            lblCPM.setText("($" + campaignData.getCPM() + ")");
-            lblBounceRate.setText("(" + campaignData.getBounceRate() + "%)");
+
+            // Format to 2 decimal places
+            lblTotalCost.setText("($" + formatDouble(campaignData.getTotalCost()) + ")");
+            lblCTR.setText("(" + formatDouble(campaignData.getCTR()) + "%)");
+            lblCPA.setText("($" + formatDouble(campaignData.getCPA()) + ")");
+            lblCPC.setText("($" + formatDouble(campaignData.getCPC()) + ")");
+            lblCPM.setText("($" + formatDouble(campaignData.getCPM()) + ")");
+            lblBounceRate.setText("(" + formatDouble(campaignData.getBounceRate()) + "%)");
         }
     }
+    private String formatDouble(double value) {
+        return String.format("%.2f", value); // Rounds to 2 decimal places
+    }
+    /**
+     * Restores the default label values for the given series.
+     * @param seriesName The name of the series.
+     * @param label The label to update.
+     */
+    private void restoreDefaultLabelValue(String seriesName, Label label) {
+        if (campaignData != null) {
+            switch (seriesName) {
+                case "Impressions":
+                    label.setText("(" + campaignData.getTotalImpressions() + ")");
+                    break;
+                case "Clicks":
+                    label.setText("(" + campaignData.getTotalClicks() + ")");
+                    break;
+                case "Uniques":
+                    label.setText("(" + campaignData.getTotalUniques() + ")");
+                    break;
+                case "Bounces":
+                    label.setText("(" + campaignData.getTotalBounces() + ")");
+                    break;
+                case "Conversions":
+                    label.setText("(" + campaignData.getTotalConversions() + ")");
+                    break;
+                case "Total Cost":
+                    label.setText("($" + formatDouble(campaignData.getTotalCost()) + ")");
+                    break;
+                case "CTR":
+                    label.setText("(" + formatDouble(campaignData.getCTR()) + "%)");
+                    break;
+                case "CPA":
+                    label.setText("($" + formatDouble(campaignData.getCPA()) + ")");
+                    break;
+                case "CPC":
+                    label.setText("($" + formatDouble(campaignData.getCPC()) + ")");
+                    break;
+                case "CPM":
+                    label.setText("($" + formatDouble(campaignData.getCPM()) + ")");
+                    break;
+                case "Bounce Rate":
+                    label.setText("(" + formatDouble(campaignData.getBounceRate()) + "%)");
+                    break;
+                default:
+                    label.setText("(0)"); // Fallback case
+            }
+        }
+    }
+
+
+
 
     /**
      * Initializes event listeners after FXML is loaded.
@@ -100,18 +154,36 @@ public class MetricsScreenController {
     private int selectedDays = 14; // Default to 1 day
 
     private void setupCheckboxListeners() {
-        chkImpressions.setOnAction(e -> updateGraphAndLabels(selectedDays));
-        chkClicks.setOnAction(e -> updateGraphAndLabels(selectedDays));
-        chkUniques.setOnAction(e -> updateGraphAndLabels(selectedDays));
-        chkBounces.setOnAction(e -> updateGraphAndLabels(selectedDays));
-        chkConversions.setOnAction(e -> updateGraphAndLabels(selectedDays));
-        chkTotalCost.setOnAction(e -> updateGraphAndLabels(selectedDays));
-        chkCTR.setOnAction(e -> updateGraphAndLabels(selectedDays));
-        chkCPA.setOnAction(e -> updateGraphAndLabels(selectedDays));
-        chkCPC.setOnAction(e -> updateGraphAndLabels(selectedDays));
-        chkCPM.setOnAction(e -> updateGraphAndLabels(selectedDays));
-        chkBounceRate.setOnAction(e -> updateGraphAndLabels(selectedDays));
+        chkImpressions.setOnAction(e -> toggleMetric("Impressions", chkImpressions, lblImpressions));
+        chkClicks.setOnAction(e -> toggleMetric("Clicks", chkClicks, lblClicks));
+        chkUniques.setOnAction(e -> toggleMetric("Uniques", chkUniques, lblUniques));
+        chkBounces.setOnAction(e -> toggleMetric("Bounces", chkBounces, lblBounces));
+        chkConversions.setOnAction(e -> toggleMetric("Conversions", chkConversions, lblConversions));
+        chkTotalCost.setOnAction(e -> toggleMetric("Total Cost", chkTotalCost, lblTotalCost));
+        chkCTR.setOnAction(e -> toggleMetric("CTR", chkCTR, lblCTR));
+        chkCPA.setOnAction(e -> toggleMetric("CPA", chkCPA, lblCPA));
+        chkCPC.setOnAction(e -> toggleMetric("CPC", chkCPC, lblCPC));
+        chkCPM.setOnAction(e -> toggleMetric("CPM", chkCPM, lblCPM));
+        chkBounceRate.setOnAction(e -> toggleMetric("Bounce Rate", chkBounceRate, lblBounceRate));
     }
+    /*
+      * Toggles a metric series on or off based on the checkbox state.
+     */
+    private void toggleMetric(String seriesName, CheckBox checkBox, Label label) {
+        if (checkBox.isSelected()) {
+            // Add metric series to the chart
+            addMetricSeries(seriesName, checkBox, label, selectedDays, getXAxisLabels(selectedDays));
+        } else {
+            // Remove only the specific series
+            lineChart.getData().removeIf(series -> series.getName().equals(seriesName));
+
+            // Restore the 14-day total when unchecked
+            restoreDefaultLabelValue(seriesName, label);
+        }
+    }
+
+
+
 
     /**
      * Adds a metric series to the line chart.
@@ -193,13 +265,6 @@ public class MetricsScreenController {
     }
 
 
-
-
-
-
-
-
-
     /**
      * Retrieves the actual value of a metric for a given date/time.
      * @param seriesName The metric to fetch (e.g., "Impressions").
@@ -253,8 +318,6 @@ public class MetricsScreenController {
             default:
                 value = 0.0;
         }
-
-        System.out.println("Result for " + seriesName + " at " + date + ": " + value);
         return value;
     }
 
@@ -287,55 +350,40 @@ public class MetricsScreenController {
         }
     }
 
-
-
-
-
-
-
-
-
-
-
     private void updateGraphAndLabels(int days) {
-        lineChart.getData().clear();
-        // Reset labels to ensure previous selections don’t affect current values
-        lblImpressions.setText("(0)");
-        lblClicks.setText("(0)");
-        lblConversions.setText("(0)");
-        lblTotalCost.setText("($0.00)");
-        lblCTR.setText("(0.00%)");
-        lblCPA.setText("($0.00)");
-        lblCPC.setText("($0.00)");
-        lblCPM.setText("($0.00)");
-        lblBounceRate.setText("(0.00%)");
+        this.selectedDays = days; // Update selected time scale
+        List<String> xLabels = getXAxisLabels(days); // Get new X-axis labels
 
-
-
-        List<String> xLabels = getXAxisLabels(days); // Get date/time labels
-
-        // Debug: Print how many labels exist for filtering
-        System.out.println("X-Axis Labels Count: " + xLabels.size());
-
-        // Set up X-axis as a CategoryAxis with custom labels
+        // Set up X-axis categories
         xAxis.setCategories(FXCollections.observableArrayList(xLabels));
         xAxis.setLabel(days == 1 ? "Time (HH:mm)" : "Date & Time");
 
-        lineChart.setAnimated(false);
+        lineChart.setAnimated(false); // Prevent animation lag
 
-        // Add each metric using the helper function
-        addMetricSeries("Impressions", chkImpressions, lblImpressions, days, xLabels);
-        addMetricSeries("Clicks", chkClicks, lblClicks, days, xLabels);
-        addMetricSeries("Uniques", chkUniques, lblUniques, days, xLabels);
-        addMetricSeries("Bounces", chkBounces, lblBounces, days, xLabels);
-        addMetricSeries("Conversions", chkConversions, lblConversions, days, xLabels);
-        addMetricSeries("Total Cost", chkTotalCost, lblTotalCost, days, xLabels);
-        addMetricSeries("CTR", chkCTR, lblCTR, days, xLabels);
-        addMetricSeries("CPA", chkCPA, lblCPA, days, xLabels);
-        addMetricSeries("CPC", chkCPC, lblCPC, days, xLabels);
-        addMetricSeries("CPM", chkCPM, lblCPM, days, xLabels);
-        addMetricSeries("Bounce Rate", chkBounceRate, lblBounceRate, days, xLabels);
+        // Preserve only selected checkboxes instead of resetting everything
+        updateMetricSeries("Impressions", chkImpressions, lblImpressions, days, xLabels);
+        updateMetricSeries("Clicks", chkClicks, lblClicks, days, xLabels);
+        updateMetricSeries("Uniques", chkUniques, lblUniques, days, xLabels);
+        updateMetricSeries("Bounces", chkBounces, lblBounces, days, xLabels);
+        updateMetricSeries("Conversions", chkConversions, lblConversions, days, xLabels);
+        updateMetricSeries("Total Cost", chkTotalCost, lblTotalCost, days, xLabels);
+        updateMetricSeries("CTR", chkCTR, lblCTR, days, xLabels);
+        updateMetricSeries("CPA", chkCPA, lblCPA, days, xLabels);
+        updateMetricSeries("CPC", chkCPC, lblCPC, days, xLabels);
+        updateMetricSeries("CPM", chkCPM, lblCPM, days, xLabels);
+        updateMetricSeries("Bounce Rate", chkBounceRate, lblBounceRate, days, xLabels);
     }
+
+    private void updateMetricSeries(String seriesName, CheckBox checkBox, Label label, int days, List<String> xLabels) {
+        if (checkBox.isSelected()) {
+            // Remove old data for this series
+            lineChart.getData().removeIf(series -> series.getName().equals(seriesName));
+
+            // Re-add the updated data
+            addMetricSeries(seriesName, checkBox, label, days, xLabels);
+        }
+    }
+
 
     /**
      * Handles 3 scenarios: campaign data null, no impression dates, and actual impression dates.
@@ -370,8 +418,6 @@ public class MetricsScreenController {
                 labels.add(date.toString()); // YYYY-MM-DD
             }
         }
-
-        System.out.println("Generated " + labels.size() + " X-axis labels for " + days + " days.");
         return labels;
     }
 

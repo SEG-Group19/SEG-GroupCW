@@ -273,14 +273,31 @@ public class CampaignData {
     public double getTotalCostForDate(LocalDateTime date) {
         double total = impressions.stream()
             .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
-            .mapToDouble(entry -> (double) entry[5])
+            .mapToDouble(entry -> {
+                if (entry[6] instanceof Double) { // Correct index for Impression Cost
+                    return (double) entry[6];
+                } else {
+                    System.err.println("Unexpected type in impressions cost: " + entry[6].getClass().getName());
+                    return 0.0; // Ignore invalid values
+                }
+            })
             .sum();
+
         total += clicks.stream()
             .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
-            .mapToDouble(entry -> (double) entry[1])
+            .mapToDouble(entry -> {
+                if (entry[1] instanceof Double) { // Click Cost should be at index 1
+                    return (double) entry[1];
+                } else {
+                    System.err.println("Unexpected type in clicks cost: " + entry[1].getClass().getName());
+                    return 0.0;
+                }
+            })
             .sum();
+
         return total;
     }
+
 
     public double getCTRForDate(LocalDateTime date) {
         int impressions = getImpressionsForDate(date);
@@ -352,15 +369,32 @@ public class CampaignData {
         double total = impressions.stream()
             .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
                 && ((LocalDateTime) entry[0]).toLocalDate().equals(dateTime.toLocalDate()))
-            .mapToDouble(entry -> (double) entry[5])
+            .mapToDouble(entry -> {
+                if (entry[6] instanceof Double) { // Ensure correct index
+                    return (double) entry[6];
+                } else {
+                    System.err.println("Unexpected type in hourly impressions cost: " + entry[6].getClass().getName());
+                    return 0.0; // Ignore invalid values
+                }
+            })
             .sum();
+
         total += clicks.stream()
             .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
                 && ((LocalDateTime) entry[0]).toLocalDate().equals(dateTime.toLocalDate()))
-            .mapToDouble(entry -> (double) entry[1])
+            .mapToDouble(entry -> {
+                if (entry[1] instanceof Double) {
+                    return (double) entry[1];
+                } else {
+                    System.err.println("Unexpected type in hourly clicks cost: " + entry[1].getClass().getName());
+                    return 0.0;
+                }
+            })
             .sum();
+
         return total;
     }
+
 
     public double getHourlyCTR(LocalDateTime dateTime) {
         int impressions = getHourlyImpressions(dateTime);
