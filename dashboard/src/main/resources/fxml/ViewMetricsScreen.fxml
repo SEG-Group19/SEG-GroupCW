@@ -13,7 +13,7 @@
   style="-fx-padding: 20px 20px;">
 
     <top>
-        <HBox style="-fx-padding: 15px;">
+        <HBox>
             <Button fx:id="goBackButton" text="⬅ Back" onAction="#handleBackButton" styleClass="primary-button"/>
         </HBox>
     </top>

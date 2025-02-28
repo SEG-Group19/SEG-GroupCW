@@ -33,7 +33,7 @@ public class MetricsScreenTest extends ApplicationTest {
   @Test
   public void testMetricsScreenComponents() {
     // Verify that basic UI elements exist.
-    FxAssert.verifyThat("#btnBack", LabeledMatchers.hasText("← Back"));
+    FxAssert.verifyThat("#goBackButton", LabeledMatchers.hasText("⬅ Back"));
     FxAssert.verifyThat("#lblImpressions", LabeledMatchers.hasText("(0)"));
     FxAssert.verifyThat("#btn1Day", LabeledMatchers.hasText("1 Day"));
   }
@@ -55,7 +55,7 @@ public class MetricsScreenTest extends ApplicationTest {
       CampaignDataStore.getInstance().setCampaignData(data);
 
       // Force a reload of the metrics screen by getting a new scene.
-      Stage stage = (Stage) lookup("#btnBack").query().getScene().getWindow();
+      Stage stage = (Stage) lookup("#goBackButton").query().getScene().getWindow();
       Scene newScene = ViewMetricsScreen.getScene(stage);
       stage.setScene(newScene);
     });
