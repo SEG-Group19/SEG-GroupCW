@@ -3,27 +3,35 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="CENTER" xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.adauction.group19.controller.MainMenuController"
-      stylesheets="@../css/styles.css">
+<StackPane style="-fx-padding: 0 0;" alignment="CENTER" xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.adauction.group19.controller.MainMenuController">
 
-    <VBox styleClass="main-container">
-        <Label id="titleLabel" text="AdVantage"/>
+    <VBox style="-fx-padding: 0 270px;">
 
-        <VBox>
-            <Button styleClass="primary-button" id="btnInputData" onAction="#handleInputDataButton">
-                <graphic>
-                    <Label id="btnInputDataLabel" text="📋 Upload data"/>
-                </graphic>
-            </Button>
+        <VBox styleClass="main-container">
+            <Label id="titleLabel" text="AdVantage"/>
 
-            <Button styleClass="primary-button" id="btnViewMetrics" onAction="#handleViewMetricsButton">
-                <graphic>
-                    <Label id="btnViewMetricsLabel" text="📈 View metrics"/>
-                </graphic>
-            </Button>
+            <VBox>
+                <Button styleClass="primary-button" id="btnInputData" onAction="#handleInputDataButton">
+                    <graphic>
+                        <Label id="btnInputDataLabel" text="📋 Upload data"/>
+                    </graphic>
+                </Button>
+
+                <Button styleClass="primary-button" id="btnViewMetrics" onAction="#handleViewMetricsButton">
+                    <graphic>
+                        <Label id="btnViewMetricsLabel" text="📈 View metrics"/>
+                    </graphic>
+                </Button>
+            </VBox>
         </VBox>
+
     </VBox>
 
-</VBox>
+    <AnchorPane pickOnBounds="false">
+        <Button styleClass="theme-button" fx:id="toggleThemeButton" text="☀" onAction="#handleToggleThemeButton"
+                AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20"/>
+    </AnchorPane>
+
+</StackPane>
