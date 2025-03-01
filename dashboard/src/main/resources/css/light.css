@@ -1,0 +1,78 @@
+.root {
+    -fx-background-image: url("/images/light-background.png");
+}
+
+.theme-button {
+    -fx-background-color: rgba(149, 113, 219, 1);
+    -fx-text-fill: black;
+    -fx-padding: 5px 10px;
+}
+
+#titleLabel {
+    -fx-text-fill: black;
+}
+
+.primary-button {
+    -fx-background-color: rgba(149, 113, 219, 1);
+    -fx-text-fill: black;
+}
+
+.primary-button:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.1), 15, 0.5, 0, 0);
+}
+
+.primary-button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #661ec3, #4a138c);
+}
+
+.primary-button .label {
+    -fx-text-fill: black;
+}
+
+.secondary-button {
+    -fx-text-fill: black;
+}
+
+TextField {
+    -fx-prompt-text-fill: rgb(0, 0, 0, 0.9);
+}
+
+.metric-select Label {
+    -fx-text-fill: black;
+}
+
+.metric-select HBox Label {
+    -fx-text-fill: black;
+}
+
+.metric-select HBox CheckBox {
+    -fx-text-fill: black;
+}
+
+.time-scale Label {
+    -fx-text-fill: black;
+}
+
+/* Chart Styles */
+.axis {
+    -fx-tick-label-fill: black;
+}
+
+.axis-label {
+    -fx-text-fill: black;
+}
+
+.chart-axis {
+    -fx-tick-mark-stroke: black;
+}
+
+.chart-title {
+    -fx-text-fill: black;
+}
+
+.chart-axis-label {
+    -fx-text-fill: black;
+}
+.chart-legend-item {
+    -fx-text-fill: black;
+}
