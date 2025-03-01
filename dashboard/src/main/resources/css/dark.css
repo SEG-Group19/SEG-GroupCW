@@ -2,6 +2,12 @@
     -fx-background-image: url("/images/dark-background.png");
 }
 
+.colour-button {
+    -fx-background-color: rgba(104, 43, 215, 1);
+    -fx-text-fill: white;
+    -fx-padding: 5px 10px;
+}
+
 #titleLabel {
     -fx-text-fill: white;
 }

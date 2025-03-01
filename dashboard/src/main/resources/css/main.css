@@ -4,6 +4,12 @@
     -fx-font-family: "Roboto Regular";
 }
 
+.colour-button {
+    -fx-font-size: 36px;
+    -fx-background-radius: 10px;
+    -fx-cursor: hand;
+}
+
 VBox {
     -fx-alignment: center;
     -fx-spacing: 20;
