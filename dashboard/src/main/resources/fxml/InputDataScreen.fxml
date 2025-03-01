@@ -6,7 +6,7 @@
 <StackPane style="-fx-padding: 0 0;" alignment="CENTER" xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="com.adauction.group19.controller.InputDataController"
-           stylesheets="@../css/styles.css">
+           stylesheets="@../css/main.css, @../css/dark.css">
     <VBox>
 
         <VBox styleClass="main-container">

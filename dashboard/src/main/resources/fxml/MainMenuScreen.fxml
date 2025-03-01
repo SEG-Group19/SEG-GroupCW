@@ -6,7 +6,7 @@
 <VBox alignment="CENTER" xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.adauction.group19.controller.MainMenuController"
-      stylesheets="@../css/styles.css">
+      stylesheets="@../css/main.css, @../css/dark.css">
 
     <VBox styleClass="main-container">
         <Label id="titleLabel" text="AdVantage"/>

@@ -1,7 +1,6 @@
 .root {
     -fx-alignment: center;
     -fx-padding: 0px 270px;
-    -fx-background-image: url("/images/background.png");
     -fx-font-family: "Roboto Regular";
 }
 
@@ -25,35 +24,22 @@ VBox {
 
 #titleLabel {
     -fx-font-size: 64;
-    -fx-text-fill: white;
     -fx-font-family: "Roboto Bold";
 }
 
 .primary-button {
-    -fx-background-color: rgba(104, 43, 215, 1);
-    -fx-text-fill: white;
     -fx-font-size: 24px;
     -fx-background-radius: 10px;
     -fx-padding: 10px 30px;
     -fx-cursor: hand;
 }
 
-.primary-button:hover {
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.1), 15, 0.5, 0, 0);
-}
-
-.primary-button:pressed {
-    -fx-background-color: linear-gradient(to bottom, #661ec3, #4a138c);
-}
-
 .primary-button .label {
-    -fx-text-fill: white;
     -fx-font-size: 24px;
 }
 
 .secondary-button {
     -fx-background-color: rgba(153, 153, 153, 1);
-    -fx-text-fill: white;
     -fx-font-size: 18px;
     -fx-background-radius: 5px;
     -fx-padding: 5px 20px;
@@ -65,57 +51,41 @@ TextField {
     -fx-background-radius: 5px;
     -fx-border-radius: 5px;
     -fx-border-color: rgba(255, 255, 255, 0.5);
-    -fx-text-fill: white;
     -fx-font-size: 18px;
     -fx-padding: 5px;
 }
 
 TextField Label {
-    -fx-text-fill: rgba(255, 255, 255, 0.6);
     -fx-font-size: 18px;
 }
 
 .metric-select Label {
-    -fx-text-fill: white;
     -fx-font-size: 24px;
 }
 
 .metric-select HBox Label {
-    -fx-text-fill: white;
     -fx-font-size: 16px;
 }
 
 .metric-select HBox CheckBox {
-    -fx-text-fill: white;
     -fx-font-size: 16px;
 }
 
 .time-scale Label {
-    -fx-text-fill: white;
     -fx-font-size: 20px;
 }
 
 /* Chart Styles */
-.axis {
-    -fx-tick-label-fill: white;
-}
 
 .axis-label {
-    -fx-text-fill: white;
     -fx-font-size: 14px;
 }
 
 .chart-axis {
-    -fx-tick-mark-stroke: white;
     -fx-tick-label-font-size: 14px;
 }
 
-.chart-title {
-    -fx-text-fill: white;
-}
-
 .chart-axis-label {
-    -fx-text-fill: white;
     -fx-font-size: 14px;
 }
 
@@ -128,6 +98,5 @@ TextField Label {
 }
 
 .chart-legend-item {
-    -fx-text-fill: white;
     -fx-font-size: 16px;
 }
