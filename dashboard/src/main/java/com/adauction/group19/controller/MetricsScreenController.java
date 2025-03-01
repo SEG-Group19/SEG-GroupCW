@@ -2,7 +2,7 @@ package com.adauction.group19.controller;
 
 import com.adauction.group19.model.CampaignData;
 import com.adauction.group19.service.CampaignDataStore;
-import com.adauction.group19.view.MainMenu;
+import com.adauction.group19.view.MainMenuScreen;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -17,7 +17,6 @@ import javafx.stage.Stage;
 import javafx.scene.chart.CategoryAxis;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.time.LocalDate;
 
 public class MetricsScreenController {
@@ -440,7 +439,7 @@ public class MetricsScreenController {
      */
     public void handleBackButton(ActionEvent actionEvent) {
         if (stage != null) {
-            Scene mainMenuScene = MainMenu.getScene(stage);
+            Scene mainMenuScene = MainMenuScreen.getScene(stage);
             stage.setScene(mainMenuScene);
         } else {
             System.out.println("Stage is not set.");

@@ -3,7 +3,7 @@ package com.adauction.group19.controller;
 import com.adauction.group19.model.CampaignData;
 import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.service.FileParserService;
-import com.adauction.group19.view.MainMenu;
+import com.adauction.group19.view.MainMenuScreen;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -12,7 +12,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.util.Optional;
 
 /**
  * This class represents the controller for the Input Data screen.
@@ -149,7 +148,7 @@ public class InputDataController {
      */
     public void handleBackButton(ActionEvent actionEvent) {
         if (stage != null) {
-            Scene mainMenuScene = MainMenu.getScene(stage);
+            Scene mainMenuScene = MainMenuScreen.getScene(stage);
             stage.setScene(mainMenuScene);
         } else {
             System.out.println("Stage is not set.");

@@ -1,6 +1,7 @@
 package com.adauction.group19.view;
 
 import com.adauction.group19.controller.InputDataController;
+import com.adauction.group19.utils.ThemeManager;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +26,10 @@ public class InputDataScreen {
             InputDataController controller = loader.getController();
             controller.setStage(stage);
 
-            return new Scene(root, 1000, 600);
+            Scene scene = new Scene(root, 1000, 600);
+            ThemeManager.applyTheme(scene);
+
+            return scene;
         } catch (IOException e) {
             e.printStackTrace();
             return null;

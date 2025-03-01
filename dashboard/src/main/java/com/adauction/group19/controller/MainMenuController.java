@@ -1,18 +1,20 @@
 package com.adauction.group19.controller;
 
-import com.adauction.group19.model.CampaignData;
-import com.adauction.group19.service.CampaignDataStore;
+import com.adauction.group19.utils.ThemeManager;
 import com.adauction.group19.view.InputDataScreen;
-import com.adauction.group19.view.MainMenu;
 import com.adauction.group19.view.ViewMetricsScreen;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class MainMenuController {
+
+    @FXML
+    private Button toggleThemeButton;
 
     /**
      * The stage for the screen.
@@ -53,6 +55,19 @@ public class MainMenuController {
         } else {
             System.out.println("Stage is not set.");
         }
+    }
+
+    /**
+     * Handles the toggle theme button. Toggles the theme of the scene.
+     * @param actionEvent The action event.
+     */
+    @FXML
+    private void handleToggleThemeButton(ActionEvent actionEvent) {
+        Scene scene = toggleThemeButton.getScene();
+        ThemeManager.toggleTheme(scene);
+
+        // Toggle the text of the button
+        toggleThemeButton.setText(ThemeManager.isDarkMode() ? "☀" : "🌙");
     }
 
 }

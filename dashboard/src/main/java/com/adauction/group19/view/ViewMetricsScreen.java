@@ -1,6 +1,7 @@
 package com.adauction.group19.view;
 
 import com.adauction.group19.controller.MetricsScreenController;
+import com.adauction.group19.utils.ThemeManager;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -29,7 +30,10 @@ public class ViewMetricsScreen {
                         controller.setStage(stage); 
                         controller.loadCampaignData();
 
-                        return new Scene(root, 1000, 600);
+                        Scene scene = new Scene(root, 1000, 600);
+                        ThemeManager.applyTheme(scene);
+
+                        return scene;
                 } catch (IOException e) {
                         e.printStackTrace();
                         return null;

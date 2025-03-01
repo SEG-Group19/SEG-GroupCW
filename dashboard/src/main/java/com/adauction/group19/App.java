@@ -1,6 +1,6 @@
 package com.adauction.group19;
 
-import com.adauction.group19.view.MainMenu;
+import com.adauction.group19.view.MainMenuScreen;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
@@ -24,7 +24,7 @@ public class App extends Application {
         Font.loadFont(getClass().getResource("/fonts/Roboto-Regular.ttf").toExternalForm(), 12);
 
         // Open the Main Menu by default
-        Scene mainMenuScene = MainMenu.getScene(primaryStage);
+        Scene mainMenuScene = MainMenuScreen.getScene(primaryStage);
         primaryStage.setScene(mainMenuScene);
         primaryStage.show();
     }

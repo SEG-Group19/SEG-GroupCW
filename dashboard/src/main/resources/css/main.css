@@ -4,7 +4,7 @@
     -fx-font-family: "Roboto Regular";
 }
 
-.colour-button {
+.theme-button {
     -fx-font-size: 36px;
     -fx-background-radius: 10px;
     -fx-cursor: hand;
