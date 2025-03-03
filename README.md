@@ -40,6 +40,30 @@ You may also want to run it headlessly, which can be done by running
 ```bash
 xvfb-run -a mvn clean test
 ```
+## File Structure
+```bash
+dashboard/
+├── src/
+│   ├── main/
+│   │   ├── java/com/adauction/group19/
+│   │   │   ├── controller/       # Controllers (business logic & UI control)
+│   │   │   ├── model/            # Data models & business logic
+│   │   │   ├── view/             # JavaFX Views (FXML + UI components)
+│   │   │   ├── utils/            # Helper classes (e.g., file handling, parsing)
+│   │   │   ├── service/          # Data handling & computation services
+│   │   │   ├── repository/       # Handles database interactions
+│   │   │   └── App.java          # Entry point for JavaFX application
+│   │   └── resources/
+│   │       ├── fxml/             # FXML files (separate UI from Java)
+│   │       ├── css/              # Stylesheets for JavaFX UI
+│   │       ├── fonts/            # Fonts for text in JavaFX UI
+│   │       ├── images/           # Icons and graphics
+│   │       └── config.properties # Config file (if needed)
+│   └── test/                     # JUnit tests
+├── pom.xml                       # Maven configuration file  
+├── README.md                     # Documentation
+└── .gitignore                    # Git ignores unnecessary files
+```
 
 ## Contributing
 To contribute read the version control documentation [here](https://github.com/SEG-Group19/SEG-GroupCW/blob/main/VERSION_CONTROL.md)
