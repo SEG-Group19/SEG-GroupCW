@@ -19,6 +19,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.time.LocalDate;
 
+/**
+ * This class represents the controller for the Metrics screen.
+ */
 public class MetricsScreenController {
 
     @FXML
@@ -152,6 +155,9 @@ public class MetricsScreenController {
      */
     private int selectedDays = 14; // Default to 1 day
 
+    /**
+     * Sets up listeners for the metric checkboxes.
+     */
     private void setupCheckboxListeners() {
         chkImpressions.setOnAction(e -> toggleMetric("Impressions", chkImpressions, lblImpressions));
         chkClicks.setOnAction(e -> toggleMetric("Clicks", chkClicks, lblClicks));
@@ -165,8 +171,9 @@ public class MetricsScreenController {
         chkCPM.setOnAction(e -> toggleMetric("CPM", chkCPM, lblCPM));
         chkBounceRate.setOnAction(e -> toggleMetric("Bounce Rate", chkBounceRate, lblBounceRate));
     }
-    /*
-      * Toggles a metric series on or off based on the checkbox state.
+
+    /**
+     * Toggles a metric series on or off based on the checkbox state.
      */
     private void toggleMetric(String seriesName, CheckBox checkBox, Label label) {
         if (checkBox.isSelected()) {
@@ -180,7 +187,6 @@ public class MetricsScreenController {
             restoreDefaultLabelValue(seriesName, label);
         }
     }
-
 
 
 
@@ -349,6 +355,10 @@ public class MetricsScreenController {
         }
     }
 
+    /**
+     * Updates the graph and labels based on the selected time scale.
+     * @param days The number of days selected.
+     */
     private void updateGraphAndLabels(int days) {
         this.selectedDays = days; // Update selected time scale
         List<String> xLabels = getXAxisLabels(days); // Get new X-axis labels
@@ -373,6 +383,14 @@ public class MetricsScreenController {
         updateMetricSeries("Bounce Rate", chkBounceRate, lblBounceRate, days, xLabels);
     }
 
+    /**
+     * Updates a metric series based on the checkbox state.
+     * @param seriesName The name of the series.
+     * @param checkBox The checkbox for the series.
+     * @param label The label to update.
+     * @param days The number of days selected.
+     * @param xLabels The list of X-axis labels.
+     */
     private void updateMetricSeries(String seriesName, CheckBox checkBox, Label label, int days, List<String> xLabels) {
         if (checkBox.isSelected()) {
             // Remove old data for this series
@@ -451,6 +469,7 @@ public class MetricsScreenController {
 
     /**
      * Handles time scale selection when a button is clicked.
+     * @param event The action event.
      */
     @FXML
     private void handleTimeScale(ActionEvent event) {

@@ -205,10 +205,18 @@ public class CampaignData {
         return ((double) getTotalBounces() / getTotalClicks()) * 100;
     }
 
+    /**
+     * Returns the Click-Through Rate (CTR
+     * @return the CTR percentage.
+     */
     public SimpleDateFormat getDate() {
         return new SimpleDateFormat("yyyy-MM-dd");
     }
 
+    /**
+     * Returns the Click-Through Rate (CTR) = (Total Clicks / Total Impressions) * 100.
+     * @return the CTR percentage.
+     */
     public List<LocalDateTime> getImpressionDates() {
         List<LocalDateTime> impressionDates = new ArrayList<>();
         for (Object[] impression : impressions) {
@@ -218,7 +226,9 @@ public class CampaignData {
     }
 
     /**
-     * Date-based metrics
+     * Returns the Click-Through Rate (CTR) = (Total Clicks / Total Impressions) * 100.
+     * @param date the date to get the impressions for.
+     * @return the number of impressions for the given date.
      */
     public int getImpressionsForDate(LocalDateTime date) {
         long count = impressions.stream()
@@ -227,13 +237,22 @@ public class CampaignData {
         return (int) count;
     }
 
-
+    /**
+     * Returns the number of clicks for the given date.
+     * @param date the date to get the clicks for.
+     * @return the number of clicks for the given date.
+     */
     public int getClicksForDate(LocalDateTime date) {
         return (int) clicks.stream()
             .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
             .count();
     }
 
+    /**
+     * Returns the number of unique users for the given date.
+     * @param date the date to get the uniques for.
+     * @return the number of unique users for the given date.
+     */
     public int getUniquesForDate(LocalDateTime date) {
         Set<Object> uniqueIds = new HashSet<>();
         for (Object[] impression : impressions) {
@@ -245,7 +264,11 @@ public class CampaignData {
         return uniqueIds.size();
     }
 
-
+    /**
+     * Returns the number of bounces for the given date.
+     * @param date the date to get the bounces for.
+     * @return the number of bounces for the given date.
+     */
     public int getBouncesForDate(LocalDateTime date) {
         return (int) serverLogs.stream()
             .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
@@ -263,13 +286,22 @@ public class CampaignData {
             .count();
     }
 
-
+    /**
+     * Returns the number of conversions for the given date.
+     * @param date the date to get the conversions for.
+     * @return the number of conversions for the given date.
+     */
     public int getConversionsForDate(LocalDateTime date) {
         return (int) serverLogs.stream()
             .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()) && (boolean) entry[3])
             .count();
     }
 
+    /**
+     * Returns the total cost for the given date.
+     * @param date the date to get the total cost for.
+     * @return the total cost for the given date.
+     */
     public double getTotalCostForDate(LocalDateTime date) {
         double total = impressions.stream()
             .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
@@ -298,31 +330,55 @@ public class CampaignData {
         return total;
     }
 
-
+    /**
+     * Returns the Click-Through Rate (CTR) = (Total Clicks / Total Impressions) * 100.
+     * @param date the date to get the CTR for.
+     * @return the CTR percentage for the given date.
+     */
     public double getCTRForDate(LocalDateTime date) {
         int impressions = getImpressionsForDate(date);
         if (impressions == 0) return 0;
         return ((double) getClicksForDate(date) / impressions) * 100;
     }
 
+    /**
+     * Returns the Cost Per Acquisition (CPA) = Total Cost / Total Conversions.
+     * @param date the date to get the CPA for.
+     * @return the CPA value for the given date.
+     */
     public double getCPAForDate(LocalDateTime date) {
         int conversions = getConversionsForDate(date);
         if (conversions == 0) return 0;
         return getTotalCostForDate(date) / conversions;
     }
 
+    /**
+     * Returns the Cost Per Click (CPC) = Total Cost / Total Clicks.
+     * @param date the date to get the CPC for.
+     * @return the CPC value for the given date.
+     */
     public double getCPCForDate(LocalDateTime date) {
         int clicks = getClicksForDate(date);
         if (clicks == 0) return 0;
         return getTotalCostForDate(date) / clicks;
     }
 
+    /**
+     * Returns the Cost Per Thousand Impressions (CPM) = (Total Cost / Total Impressions) * 1000.
+     * @param date the date to get the CPM for.
+     * @return the CPM value for the given date.
+     */
     public double getCPMForDate(LocalDateTime date) {
         int impressions = getImpressionsForDate(date);
         if (impressions == 0) return 0;
         return (getTotalCostForDate(date) / impressions) * 1000;
     }
 
+    /**
+     * Returns the Bounce Rate = (Total Bounces / Total Clicks) * 100.
+     * @param date the date to get the bounce rate for.
+     * @return the bounce rate percentage for the given date.
+     */
     public double getBounceRateForDate(LocalDateTime date) {
         int clicks = getClicksForDate(date);
         int bounces = getBouncesForDate(date);
@@ -334,6 +390,7 @@ public class CampaignData {
     }
 
     /**
+     * Returns the earliest date in the campaign data.
      * @return the earliest date in the campaign data.
      */
     public LocalDate getFirstDate() {
@@ -343,6 +400,11 @@ public class CampaignData {
             .orElse(LocalDate.now()); // Default to today if no data exists
     }
 
+    /**
+     * Gets the hourly impressions for a given date
+     * @param dateTime the date to get the hourly impressions for.
+     * @return the number of hourly impressions for the given date.
+     */
     public int getHourlyImpressions(LocalDateTime dateTime) {
         return (int) impressions.stream()
             .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
@@ -350,6 +412,11 @@ public class CampaignData {
             .count();
     }
 
+    /**
+     * Gets the hourly clicks for a given date.
+     * @param dateTime the date to get the hourly clicks for.
+     * @return the number of hourly clicks for the given date.
+     */
     public int getHourlyClicks(LocalDateTime dateTime) {
         return (int) clicks.stream()
             .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
@@ -357,6 +424,11 @@ public class CampaignData {
             .count();
     }
 
+    /**
+     * Gets the hourly conversions for a given date.
+     * @param dateTime the date to get the hourly conversions for.
+     * @return the number of hourly conversions for the given date.
+     */
     public int getHourlyConversions(LocalDateTime dateTime) {
         return (int) serverLogs.stream()
             .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
@@ -365,6 +437,11 @@ public class CampaignData {
             .count();
     }
 
+    /**
+     * Gets the hourly total cost for a given date.
+     * @param dateTime the date to get the hourly total cost for.
+     * @return the hourly total cost for the given date.
+     */
     public double getHourlyTotalCost(LocalDateTime dateTime) {
         double total = impressions.stream()
             .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
@@ -396,30 +473,55 @@ public class CampaignData {
     }
 
 
+    /**
+     * Returns the Click-Through Rate (CTR) = (Total Clicks / Total Impressions) * 100.
+     * @param dateTime the date and time to get the hourly CTR for.
+     * @return the hourly CTR percentage for the given date and time.
+     */
     public double getHourlyCTR(LocalDateTime dateTime) {
         int impressions = getHourlyImpressions(dateTime);
         if (impressions == 0) return 0;
         return ((double) getHourlyClicks(dateTime) / impressions) * 100;
     }
 
+    /**
+     * Returns the Cost Per Acquisition (CPA) = Total Cost / Total Conversions.
+     * @param dateTime the date and time to get the hourly CPA for.
+     * @return the hourly CPA value for the given date and time.
+     */
     public double getHourlyCPA(LocalDateTime dateTime) {
         int conversions = getHourlyConversions(dateTime);
         if (conversions == 0) return 0;
         return getHourlyTotalCost(dateTime) / conversions;
     }
 
+    /**
+     * Returns the Cost Per Click (CPC) = Total Cost / Total Clicks.
+     * @param dateTime the date and time to get the hourly CPC for.
+     * @return the hourly CPC value for the given date and time.
+     */
     public double getHourlyCPC(LocalDateTime dateTime) {
         int clicks = getHourlyClicks(dateTime);
         if (clicks == 0) return 0;
         return getHourlyTotalCost(dateTime) / clicks;
     }
 
+    /**
+     * Returns the Cost Per Thousand Impressions (CPM) = (Total Cost / Total Impressions) * 1000.
+     * @param dateTime the date and time to get the hourly CPM for.
+     * @return the hourly CPM value for the given date and time.
+     */
     public double getHourlyCPM(LocalDateTime dateTime) {
         int impressions = getHourlyImpressions(dateTime);
         if (impressions == 0) return 0;
         return (getHourlyTotalCost(dateTime) / impressions) * 1000;
     }
 
+    /**
+     * Returns the Bounce Rate = (Total Bounces / Total Clicks) * 100.
+     * @param dateTime the date and time to get the hourly bounce rate for.
+     * @return the hourly bounce rate percentage for the given date and time.
+     */
     public double getHourlyBounceRate(LocalDateTime dateTime) {
         int clicks = getHourlyClicks(dateTime);
         int bounces = (int) serverLogs.stream()
