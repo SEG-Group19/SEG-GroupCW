@@ -4,7 +4,7 @@
   <groupId>com.adauction.group19</groupId>
   <artifactId>adauction-app</artifactId>
   <name>Adauction JavaFX Project</name>
-  <version>0.4.1</version>
+  <version>1.0.0</version>
   <build>
     <plugins>
       <plugin>
