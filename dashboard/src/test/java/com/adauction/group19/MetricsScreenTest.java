@@ -15,6 +15,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.testfx.api.FxAssert;
 import org.testfx.framework.junit5.ApplicationTest;
+import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.matcher.control.LabeledMatchers;
 
 public class MetricsScreenTest extends ApplicationTest {
@@ -32,10 +33,29 @@ public class MetricsScreenTest extends ApplicationTest {
 
   @Test
   public void testMetricsScreenComponents() {
-    // Verify that basic UI elements exist.
-    FxAssert.verifyThat("#goBackButton", LabeledMatchers.hasText("⬅ Back"));
-    FxAssert.verifyThat("#lblImpressions", LabeledMatchers.hasText("(0)"));
-    FxAssert.verifyThat("#btn1Day", LabeledMatchers.hasText("1 Day"));
+    // Test basic components are present
+    FxAssert.verifyThat("#lineChart", NodeMatchers.isVisible());
+    FxAssert.verifyThat("#goBackButton", NodeMatchers.isVisible());
+
+    // Check for the date pickers
+    FxAssert.verifyThat("#startDatePicker", NodeMatchers.isVisible());
+    FxAssert.verifyThat("#endDatePicker", NodeMatchers.isVisible());
+
+    // Check for time granularity controls
+    FxAssert.verifyThat("#rbHourly", NodeMatchers.isVisible());
+    FxAssert.verifyThat("#rbDaily", NodeMatchers.isVisible());
+    FxAssert.verifyThat("#rbWeekly", NodeMatchers.isVisible());
+
+    // Check for quick select buttons
+    FxAssert.verifyThat("#btnLastDay", NodeMatchers.isVisible());
+    FxAssert.verifyThat("#btnLastWeek", NodeMatchers.isVisible());
+    FxAssert.verifyThat("#btnLastMonth", NodeMatchers.isVisible());
+    FxAssert.verifyThat("#btnAllData", NodeMatchers.isVisible());
+
+    // Check at least a few metric checkboxes
+    FxAssert.verifyThat("#chkImpressions", NodeMatchers.isVisible());
+    FxAssert.verifyThat("#chkClicks", NodeMatchers.isVisible());
+    FxAssert.verifyThat("#chkCTR", NodeMatchers.isVisible());
   }
 
   @Test

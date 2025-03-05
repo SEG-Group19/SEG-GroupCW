@@ -3,18 +3,30 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.chart.LineChart?>
-
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.chart.CategoryAxis?>
+
 <BorderPane xmlns="http://javafx.com/javafx"
   xmlns:fx="http://javafx.com/fxml"
   fx:controller="com.adauction.group19.controller.MetricsScreenController"
   style="-fx-padding: 20px 20px;">
 
     <top>
-        <HBox>
-            <Button fx:id="goBackButton" text="⬅ Back" onAction="#handleBackButton" styleClass="primary-button"/>
-        </HBox>
+        <VBox spacing="10">
+            <HBox>
+                <Button fx:id="goBackButton" text="⬅ Back" onAction="#handleBackButton" styleClass="primary-button"/>
+            </HBox>
+
+            <!-- Date Selection Controls - Above the graph -->
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="date-controls">
+                <Label text="Date Range:"/>
+                <DatePicker fx:id="startDatePicker" promptText="Start Date"/>
+                <Label text="to"/>
+                <DatePicker fx:id="endDatePicker" promptText="End Date"/>
+                <Button fx:id="applyDateRangeButton" text="Apply" onAction="#handleApplyDateRange"
+                  styleClass="primary-button" style="-fx-padding: 4 12; -fx-font-size: 11px;"/>
+            </HBox>
+        </VBox>
     </top>
 
     <left>
@@ -82,34 +94,45 @@
         </VBox>
     </left>
 
-
-
     <center>
         <VBox alignment="CENTER">
             <LineChart fx:id="lineChart">
                 <xAxis>
-                    <CategoryAxis fx:id="xAxis"/>
+                    <CategoryAxis fx:id="xAxis" label="Time"/>
                 </xAxis>
                 <yAxis>
-                    <NumberAxis fx:id="yAxis"/>
+                    <NumberAxis fx:id="yAxis" label="Value"/>
                 </yAxis>
             </LineChart>
 
-            <!-- Time Scale Section BELOW the graph -->
-            <!-- Time Scale Section BELOW the graph -->
-            <VBox alignment="CENTER" styleClass="time-scale">
-                <Label text="Time Scale"/>
-                <HBox alignment="CENTER" spacing="10">
-                    <Button fx:id="btn1Day" text="1 Day" onAction="#handleTimeScale" styleClass="secondary-button"/>
-                    <Button fx:id="btn5Days" text="5 Days" onAction="#handleTimeScale" styleClass="secondary-button"/>
-                    <Button fx:id="btn1Week" text="1 Week" onAction="#handleTimeScale" styleClass="secondary-button"/>
-                    <Button fx:id="btn2Weeks" text="2 Weeks" onAction="#handleTimeScale" styleClass="secondary-button"/>
+            <VBox>
+            <!-- Time Granularity Controls - Below the graph -->
+                <HBox alignment="CENTER" spacing="10" style="-fx-padding: 10 0 5 0;" >
+                    <Label text="Time Granularity:"/>
+
+                    <fx:define>
+                        <ToggleGroup fx:id="timeGranularity"/>
+                    </fx:define>
+
+                    <RadioButton fx:id="rbHourly" text="Hourly" toggleGroup="$timeGranularity" selected="true" onAction="#handleGranularityChange"/>
+                    <RadioButton fx:id="rbDaily" text="Daily" toggleGroup="$timeGranularity" onAction="#handleGranularityChange"/>
+                    <RadioButton fx:id="rbWeekly" text="Weekly" toggleGroup="$timeGranularity" onAction="#handleGranularityChange"/>
+                </HBox>
+
+                <!-- Quick Select Buttons - Below granularity controls -->
+                <HBox alignment="CENTER" spacing="10" style="-fx-padding: 5 0 10 0;">
+                    <Label text="Quick Select:"/>
+                    <Button fx:id="btnLastDay" text="Last 24h" onAction="#handleQuickDateRange"
+                      styleClass="secondary-button" style="-fx-padding: 3 8; -fx-font-size: 11px;"/>
+                    <Button fx:id="btnLastWeek" text="Last Week" onAction="#handleQuickDateRange"
+                      styleClass="secondary-button" style="-fx-padding: 3 8; -fx-font-size: 11px;"/>
+                    <Button fx:id="btnLastMonth" text="Last Month" onAction="#handleQuickDateRange"
+                      styleClass="secondary-button" style="-fx-padding: 3 8; -fx-font-size: 11px;"/>
+                    <Button fx:id="btnAllData" text="All Data" onAction="#handleQuickDateRange"
+                      styleClass="secondary-button" style="-fx-padding: 3 8; -fx-font-size: 11px;"/>
                 </HBox>
             </VBox>
-
         </VBox>
     </center>
 
-
 </BorderPane>
-
