@@ -30,7 +30,7 @@ public class ViewMetricsScreen {
                         controller.setStage(stage); 
                         controller.loadCampaignData();
 
-                        Scene scene = new Scene(root, 1000, 600);
+                        Scene scene = new Scene(root, 1200, 720);
                         ThemeManager.applyTheme(scene);
 
                         return scene;

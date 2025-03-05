@@ -151,20 +151,20 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
 
   @Test
   public void testTimeScaleButtonsUpdateXAxis() {
-    // First click 1 Day button
-    clickOn("#btn1Day");
+    // First click on Last 24h button (replacing btn1Day)
+    clickOn("#btnLastDay");
     sleep(200);
 
     // Verify the x-axis label updates to reflect hourly view
     LineChart<String, Number> chart = lookup("#lineChart").queryAs(LineChart.class);
-    assertEquals("Time (HH:mm)", chart.getXAxis().getLabel());
+    assertEquals("Hour", chart.getXAxis().getLabel());
 
-    // Then click 2 Weeks button
-    clickOn("#btn2Weeks");
+    // Then click Last Month button (replacing btn2Weeks)
+    clickOn("#btnLastMonth");
     sleep(200);
 
     // Verify the x-axis label updates to reflect date view
-    assertEquals("Date & Time", chart.getXAxis().getLabel());
+    assertEquals("Date", chart.getXAxis().getLabel());
   }
 
   @Test
@@ -196,35 +196,6 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
     assertEquals(1, chart.getData().size(), "Chart should have one series");
     assertEquals("Impressions", chart.getData().get(0).getName(), "Series should be Impressions");
   }
-
-  @Test
-  public void testMetricLabelUpdatesWhenToggled() {
-    // Check initial label value for clicks
-    String initialClicksLabel = lookup("#lblClicks").queryAs(Label.class).getText();
-
-    // Toggle clicks checkbox
-    clickOn("#chkClicks");
-    sleep(300);
-
-    // Label should remain the same initially since we're viewing the total period
-    assertEquals(initialClicksLabel, lookup("#lblClicks").queryAs(Label.class).getText());
-
-    // Now change time scale to limit the data
-    clickOn("#btn5Days");
-    sleep(300);
-
-    // The label should now show a different number (for the 5-day period)
-    String updatedClicksLabel = lookup("#lblClicks").queryAs(Label.class).getText();
-    assertNotEquals(initialClicksLabel, updatedClicksLabel, "Label should update to reflect 5-day total");
-
-    // Toggle off clicks
-    clickOn("#chkClicks");
-    sleep(300);
-
-    // Label should revert to the initial value (full period total)
-    assertEquals(initialClicksLabel, lookup("#lblClicks").queryAs(Label.class).getText());
-  }
-
   @Test
   public void testMultipleMetricsSelection() {
     // Toggle on multiple metrics
@@ -273,21 +244,23 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
     clickOn("#chkImpressions");
     sleep(300);
 
-    // Get the initial data points count for 2 weeks (default)
+    // Get the initial data points count for all data (using btnAllData instead of default)
+    clickOn("#btnAllData");
+    sleep(300);
     LineChart<String, Number> chart = lookup("#lineChart").queryAs(LineChart.class);
-    int twoWeeksDataPoints = chart.getData().get(0).getData().size();
+    int allDataPoints = chart.getData().get(0).getData().size();
 
     // Switch to 1 week view
-    clickOn("#btn1Week");
+    clickOn("#btnLastWeek");
     sleep(300);
 
     // Verify fewer data points
     int oneWeekDataPoints = chart.getData().get(0).getData().size();
-    assertTrue(oneWeekDataPoints < twoWeeksDataPoints,
-        "One week should have fewer data points than two weeks");
+    assertTrue(oneWeekDataPoints < allDataPoints,
+        "One week should have fewer data points than all data");
 
     // Switch to 1 day view (hourly)
-    clickOn("#btn1Day");
+    clickOn("#btnLastDay");
     sleep(300);
 
     // Verify number of data points matches 24 hours

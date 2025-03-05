@@ -29,7 +29,7 @@ public class MainMenuScreen {
             MainMenuController controller = loader.getController();
             controller.setStage(stage);
 
-            Scene scene = new Scene(root, 1000, 600);
+            Scene scene = new Scene(root, 1200, 720);
             ThemeManager.applyTheme(scene);
 
             return scene;
