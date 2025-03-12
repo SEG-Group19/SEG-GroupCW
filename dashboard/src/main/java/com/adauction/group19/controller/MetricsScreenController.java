@@ -4,6 +4,7 @@ import com.adauction.group19.model.CampaignData;
 import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.view.MainMenuScreen;
 
+import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
@@ -12,13 +13,17 @@ import java.util.*;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
+import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 
 /**
@@ -27,6 +32,7 @@ import javafx.util.StringConverter;
  */
 public class MetricsScreenController {
 
+    @FXML public Button graphSettingsBtn;
     // UI components
     @FXML private LineChart<String, Number> lineChart;
     @FXML private CategoryAxis xAxis;
@@ -63,7 +69,7 @@ public class MetricsScreenController {
     @FXML
     public void initialize() {
         // Initialize date pickers
-        setupDatePickers();
+        // setupDatePickers();
 
         // Load campaign data
         campaignData = CampaignDataStore.getInstance().getCampaignData();
@@ -74,7 +80,7 @@ public class MetricsScreenController {
         }
 
         // Set initial date range to all available data
-        initializeDateRange();
+        // initializeDateRange();
 
         // Load the campaign data into the UI
         loadCampaignData();
@@ -84,6 +90,28 @@ public class MetricsScreenController {
 
         // Update the graph with the initial data
         updateGraph();
+    }
+
+    @FXML
+    private void handleGraphSettings() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/GraphSettings.fxml"));
+            Parent root = loader.load();
+
+            // Create a stage
+            Stage popupStage = new Stage();
+            popupStage.initStyle(StageStyle.UTILITY);
+
+            popupStage.setScene(new Scene(root));
+            popupStage.setResizable(false);
+
+            GraphSettingsController controller = loader.getController();
+            controller.setStage(popupStage);
+
+            popupStage.showAndWait();  // Wait until user closes
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
