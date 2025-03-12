@@ -100,8 +100,7 @@ public class MetricsScreenController {
 
             // Create a stage
             Stage popupStage = new Stage();
-            popupStage.initStyle(StageStyle.UTILITY);
-
+            popupStage.setTitle("Graph Settings");
             popupStage.setScene(new Scene(root));
             popupStage.setResizable(false);
 
