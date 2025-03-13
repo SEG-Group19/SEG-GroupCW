@@ -120,14 +120,6 @@ public class GraphSettingsController {
 
     @FXML
     private void handleSave() {
-        // Access selected items
-        System.out.println("Selected Dates: " + startDatePicker.getValue() + " to " + endDatePicker.getValue());
-        System.out.println("Selected Time Interval: " + lastTimeInterval);
-        System.out.println("Selected Ages: " + ageCheckCombo.getCheckModel().getCheckedItems());
-        System.out.println("Selected Gender/s " + genderCheckCombo.getCheckModel().getCheckedItems());
-        System.out.println("Selected Contexts: " + contextCheckCombo.getCheckModel().getCheckedItems());
-        System.out.println("Selected Incomes: " + incomeCheckCombo.getCheckModel().getCheckedItems());
-
         // Apply dates
         handleApplyDateRange();
 

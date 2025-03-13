@@ -40,7 +40,7 @@
     <Label text="Time Interval" styleClass="popup-title" />
     <HBox spacing="10" alignment="CENTER">
         <Button text="1 hour"  onAction="#handleTimeInterval"/>
-        <Button text="4 hours" onAction="#handleTimeInterval"/>
+        <!-- <Button text="4 hours" onAction="#handleTimeInterval"/> -->
         <Button text="1 day"   onAction="#handleTimeInterval"/>
         <Button text="1 week"  onAction="#handleTimeInterval"/>
     </HBox>

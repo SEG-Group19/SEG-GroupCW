@@ -706,7 +706,6 @@ public class MetricsScreenController {
 
         switch (timeInterval) {
             case "1 hour":
-            case "4 hours":
                 currentGranularity = TimeGranularity.HOURLY;
                 break;
             case "1 day":
