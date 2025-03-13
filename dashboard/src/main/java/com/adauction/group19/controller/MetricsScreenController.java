@@ -37,8 +37,6 @@ public class MetricsScreenController {
     @FXML private LineChart<String, Number> lineChart;
     @FXML private CategoryAxis xAxis;
     @FXML private NumberAxis yAxis;
-    @FXML private DatePicker startDatePicker;
-    @FXML private DatePicker endDatePicker;
     @FXML private ToggleGroup timeGranularity;
     @FXML private RadioButton rbHourly, rbDaily, rbWeekly;
     @FXML private Button btnLastDay, btnLastWeek, btnLastMonth, btnAllData;
@@ -80,7 +78,7 @@ public class MetricsScreenController {
         }
 
         // Set initial date range to all available data
-        // initializeDateRange();
+        initializeDateRange();
 
         // Load the campaign data into the UI
         loadCampaignData();
@@ -105,6 +103,8 @@ public class MetricsScreenController {
             popupStage.setResizable(false);
 
             GraphSettingsController controller = loader.getController();
+            controller.setMetricsScreenController(this);
+            controller.setDates(startDate, endDate);
             controller.setStage(popupStage);
 
             popupStage.showAndWait();  // Wait until user closes
@@ -113,43 +113,26 @@ public class MetricsScreenController {
         }
     }
 
-    /**
-     * Sets up the date pickers with proper formatting and listeners.
-     */
-    private void setupDatePickers() {
-        // Set date formatters
-        StringConverter<LocalDate> dateConverter = new StringConverter<>() {
-            private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    @FXML
+    private void handleBounceRegistration() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/BounceRegistration.fxml"));
+            Parent root = loader.load();
 
-            @Override
-            public String toString(LocalDate date) {
-                return (date != null) ? dateFormatter.format(date) : "";
-            }
+            // Create a stage
+            Stage popupStage = new Stage();
+            popupStage.setTitle("Define bounce registration");
+            popupStage.setScene(new Scene(root));
+            popupStage.setResizable(false);
 
-            @Override
-            public LocalDate fromString(String string) {
-                return (string != null && !string.isEmpty())
-                    ? LocalDate.parse(string, dateFormatter) : null;
-            }
-        };
+            BounceRegistrationController controller = loader.getController();
+            controller.setMetricsScreenController(this);
+            controller.setStage(popupStage);
 
-        startDatePicker.setConverter(dateConverter);
-        endDatePicker.setConverter(dateConverter);
-
-        // Ensure end date can't be before start date
-        startDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && endDatePicker.getValue() != null &&
-                newValue.isAfter(endDatePicker.getValue())) {
-                endDatePicker.setValue(newValue);
-            }
-        });
-
-        endDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && startDatePicker.getValue() != null &&
-                newValue.isBefore(startDatePicker.getValue())) {
-                startDatePicker.setValue(newValue);
-            }
-        });
+            popupStage.showAndWait();  // Wait until user closes
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -172,10 +155,21 @@ public class MetricsScreenController {
             .map(LocalDateTime::toLocalDate)
             .max(LocalDate::compareTo)
             .orElse(LocalDate.now());
+    }
 
-        // Set date pickers
-        startDatePicker.setValue(startDate);
-        endDatePicker.setValue(endDate);
+    protected void setDates(LocalDate startDate, LocalDate endDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+
+        updateGraph();
+    }
+
+    protected LocalDate getStartDate() {
+        return startDate;
+    }
+
+    protected LocalDate getEndDate() {
+        return endDate;
     }
 
     /**
@@ -301,7 +295,7 @@ public class MetricsScreenController {
     /**
      * Updates the graph based on the selected date range and granularity.
      */
-    private void updateGraph() {
+    protected void updateGraph() {
         if (campaignData == null) {
             return;
         }
@@ -669,28 +663,6 @@ public class MetricsScreenController {
     }
 
     /**
-     * Handles date range application.
-     * @param actionEvent The action event.
-     */
-    @FXML
-    public void handleApplyDateRange(ActionEvent actionEvent) {
-        LocalDate start = startDatePicker.getValue();
-        LocalDate end = endDatePicker.getValue();
-
-        if (start != null && end != null) {
-            startDate = start;
-            endDate = end;
-            updateGraph();
-        } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Invalid Date Range");
-            alert.setHeaderText("Please select both start and end dates");
-            alert.setContentText("Both date fields must be filled to apply a custom date range.");
-            alert.showAndWait();
-        }
-    }
-
-    /**
      * Handles quick date range selection.
      * @param actionEvent The action event.
      */
@@ -740,10 +712,6 @@ public class MetricsScreenController {
             currentGranularity = TimeGranularity.DAILY;
             rbDaily.setSelected(true);
         }
-
-        // Update date pickers to reflect the selected range
-        startDatePicker.setValue(startDate);
-        endDatePicker.setValue(endDate);
 
         // Update the graph
         updateGraph();

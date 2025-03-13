@@ -9,7 +9,7 @@ public class BounceCriteria {
   private int minPagesViewed;
 
   /** The minimum time spent (in seconds) on the site to not be considered a bounce */
-  private long minTimeOnSiteSeconds;
+  private int minTimeOnSiteSeconds;
 
   /** Whether to consider the pages viewed criterion when determining bounces */
   private boolean considerPagesViewed;
@@ -34,7 +34,7 @@ public class BounceCriteria {
    * @param considerPagesViewed Whether to consider the pages viewed criterion
    * @param considerTimeOnSite Whether to consider the time on site criterion
    */
-  public BounceCriteria(int minPagesViewed, long minTimeOnSiteSeconds,
+  public BounceCriteria(int minPagesViewed, int minTimeOnSiteSeconds,
       boolean considerPagesViewed, boolean considerTimeOnSite) {
     this.minPagesViewed = minPagesViewed;
     this.minTimeOnSiteSeconds = minTimeOnSiteSeconds;
@@ -51,11 +51,11 @@ public class BounceCriteria {
     this.minPagesViewed = minPagesViewed;
   }
 
-  public long getMinTimeOnSiteSeconds() {
+  public int getMinTimeOnSiteSeconds() {
     return minTimeOnSiteSeconds;
   }
 
-  public void setMinTimeOnSiteSeconds(long minTimeOnSiteSeconds) {
+  public void setMinTimeOnSiteSeconds(int minTimeOnSiteSeconds) {
     this.minTimeOnSiteSeconds = minTimeOnSiteSeconds;
   }
 

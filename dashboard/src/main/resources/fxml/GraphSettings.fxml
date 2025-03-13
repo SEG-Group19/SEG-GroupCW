@@ -77,10 +77,12 @@
         <CheckComboBox fx:id="incomeCheckCombo"   />
     </HBox>
 
+    <!--
     <HBox spacing="10" alignment="CENTER">
         <Label text="Bounce registration (seconds)" style="-fx-font-size: 14; -fx-text-fill: #333;" />
         <Spinner fx:id="bounceSpinner" min="1" max="9999" initialValue="3"/>
     </HBox>
+    -->
 
     <HBox spacing="15" alignment="CENTER">
         <Button fx:id="cancelButton" text="Cancel" onAction="#handleCancel" styleClass="btn, btn-cancel"/>

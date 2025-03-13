@@ -106,9 +106,14 @@
                 </yAxis>
             </LineChart>
 
-            <Button styleClass="primary-button" fx:id="graphSettingsBtn" onAction="#handleGraphSettings">
-                Graph Settings
-            </Button>
+            <HBox alignment="CENTER" spacing="10">
+                <Button styleClass="primary-button" fx:id="graphSettingsBtn" onAction="#handleGraphSettings">
+                    Graph Settings
+                </Button>
+                <Button styleClass="primary-button" fx:id="bounceRegistrationBtn" onAction="#handleBounceRegistration">
+                    Define bounce registration
+                </Button>
+            </HBox>
 
             <!--
             <VBox>
