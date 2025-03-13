@@ -716,4 +716,36 @@ public class MetricsScreenController {
         // Update the graph
         updateGraph();
     }
+
+    /**
+     * Sets the time interval for the graph and updates it.
+     * @param timeInterval The time interval to set (e.g. "1 hour", "4 hours", "1 day", "1 week").
+     */
+    public void setTimeInterval(String timeInterval) {
+        if (timeInterval == null || timeInterval.isEmpty()) {
+            return; // Don't change anything if timeInterval is empty
+        }
+
+        switch (timeInterval) {
+            case "1 hour":
+            case "4 hours":
+                currentGranularity = TimeGranularity.HOURLY;
+                rbHourly.setSelected(true);
+                break;
+            case "1 day":
+                currentGranularity = TimeGranularity.DAILY;
+                rbDaily.setSelected(true);
+                break;
+            case "1 week":
+                currentGranularity = TimeGranularity.WEEKLY;
+                rbWeekly.setSelected(true);
+                break;
+            default:
+                System.err.println("Unknown time interval: " + timeInterval);
+                return;
+        }
+
+        // Update the graph with the new time interval
+        updateGraph();
+    }
 }

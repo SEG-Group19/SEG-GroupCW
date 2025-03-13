@@ -131,8 +131,10 @@ public class GraphSettingsController {
         // Apply dates
         handleApplyDateRange();
 
-        // Apply time granularity option, String lastTimeInterval;
-        // Options are: "1 hour", "4 hours", "1 day", "1 week" or "" (dont change anything)
+        // Apply time granularity option
+        if (metricsScreenController != null && !lastTimeInterval.isEmpty()) {
+            metricsScreenController.setTimeInterval(lastTimeInterval);
+        }
 
         // Potentially store these values or pass to main scene
         if (stage != null) {
