@@ -38,7 +38,6 @@ public class MetricsScreenController {
     @FXML private CategoryAxis xAxis;
     @FXML private NumberAxis yAxis;
     @FXML private ToggleGroup timeGranularity;
-    @FXML private RadioButton rbHourly, rbDaily, rbWeekly;
     @FXML private Button btnLastDay, btnLastWeek, btnLastMonth, btnAllData;
 
     // Metrics checkboxes
@@ -646,23 +645,6 @@ public class MetricsScreenController {
     }
 
     /**
-     * Handles changes in time granularity.
-     * @param actionEvent The action event.
-     */
-    @FXML
-    public void handleGranularityChange(ActionEvent actionEvent) {
-        if (rbHourly.isSelected()) {
-            currentGranularity = TimeGranularity.HOURLY;
-        } else if (rbWeekly.isSelected()) {
-            currentGranularity = TimeGranularity.WEEKLY;
-        } else {
-            currentGranularity = TimeGranularity.DAILY;
-        }
-
-        updateGraph();
-    }
-
-    /**
      * Handles quick date range selection.
      * @param actionEvent The action event.
      */
@@ -692,25 +674,21 @@ public class MetricsScreenController {
             startDate = lastDate;
             endDate = lastDate;
             currentGranularity = TimeGranularity.HOURLY;
-            rbHourly.setSelected(true);
         } else if (sourceButton == btnLastWeek) {
             // Last week - up to 7 days back from the last date
             startDate = lastDate.minusDays(6);
             endDate = lastDate;
             currentGranularity = TimeGranularity.DAILY;
-            rbDaily.setSelected(true);
         } else if (sourceButton == btnLastMonth) {
             // Last month - up to 30 days back from the last date
             startDate = lastDate.minusDays(29);
             endDate = lastDate;
             currentGranularity = TimeGranularity.DAILY;
-            rbDaily.setSelected(true);
         } else if (sourceButton == btnAllData) {
             // All data - use entire date range
             startDate = firstDate;
             endDate = lastDate;
             currentGranularity = TimeGranularity.DAILY;
-            rbDaily.setSelected(true);
         }
 
         // Update the graph
@@ -730,15 +708,12 @@ public class MetricsScreenController {
             case "1 hour":
             case "4 hours":
                 currentGranularity = TimeGranularity.HOURLY;
-                rbHourly.setSelected(true);
                 break;
             case "1 day":
                 currentGranularity = TimeGranularity.DAILY;
-                rbDaily.setSelected(true);
                 break;
             case "1 week":
                 currentGranularity = TimeGranularity.WEEKLY;
-                rbWeekly.setSelected(true);
                 break;
             default:
                 System.err.println("Unknown time interval: " + timeInterval);
