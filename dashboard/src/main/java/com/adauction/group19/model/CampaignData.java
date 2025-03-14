@@ -29,8 +29,8 @@ public class CampaignData {
      * @param impressionCost cost of the impression
      */
     public void addImpression(LocalDateTime dateTime, String id, Gender gender, AgeRange ageRange, Income income, Context context, double impressionCost) {
-        // Now, index 0: dateTime, index 1: id, index 2: impressionCost.
-        impressions.add(new Object[]{dateTime, id, impressionCost});
+        // Now, index 0: dateTime, index 1: impressionCost, index 2: id,
+        impressions.add(new Object[]{dateTime, impressionCost, id});
         userMap.put(id, new Object[]{gender, ageRange, income, context});
     }
 
@@ -93,8 +93,8 @@ public class CampaignData {
      * @param dateTime date and time of the click
      * @param clickCost cost of the click
      */
-    public void addClick(LocalDateTime dateTime, double clickCost) {
-        clicks.add(new Object[]{dateTime, clickCost});
+    public void addClick(LocalDateTime dateTime, double clickCost, String id) {
+        clicks.add(new Object[]{dateTime, clickCost, id});
     }
 
     /**
@@ -104,27 +104,64 @@ public class CampaignData {
      * @param pagesViewed number of pages viewed
      * @param conversion whether the user converted
      */
-    public void addServerLogEntry(LocalDateTime entryDateTime, LocalDateTime exitDateTime, int pagesViewed, boolean conversion) {
-        serverLogs.add(new Object[]{entryDateTime, exitDateTime, pagesViewed, conversion});
+    public void addServerLogEntry(LocalDateTime entryDateTime, LocalDateTime exitDateTime, int pagesViewed, boolean conversion, String id) {
+        serverLogs.add(new Object[]{entryDateTime, exitDateTime, pagesViewed, conversion, id});
+    }
+
+    // Filter is a list of sets of objects
+    // Each set is a filter for a specific attribute
+    // e.g. filter = [{ MALE, FEMALE }, { AGE_25_34, AGE_35_44 }, { LOW, MEDIUM }, { BLOG, NEWS }]
+    private boolean filterMatches(List<Set<Enum<?>>> filter, Object[] data) {
+        for (int i = 0; i < filter.size(); i++) {
+            if (!filter.get(i).contains(data[i]) && !filter.get(i).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
      * Returns all the impression data for the campaign.
+     * @param filter the filter to apply to the impressions
      * @return The impressions data for the campaign.
      */
-    public List<Object[]> getImpressions() { return impressions; }
+    public List<Object[]> getImpressions(List<Set<Enum<?>>> filter) {
+        List<Object[]> filteredImpressions = new ArrayList<>();
+        for (Object[] impression : impressions) {
+            if (filterMatches(filter, userMap.get(impression[2]))) {
+                filteredImpressions.add(impression);
+            }
+        }
+        return filteredImpressions;
+    }
 
     /**
      * Returns all the click data for the campaign.
      * @return The click data for the campaign.
      */
-    public List<Object[]> getClicks() { return clicks; }
+    public List<Object[]> getClicks(List<Set<Enum<?>>> filter) {
+        List<Object[]> filteredClicks = new ArrayList<>();
+        for (Object[] click : clicks) {
+            if (filterMatches(filter, userMap.get(click[2]))) {
+                filteredClicks.add(click);
+            }
+        }
+        return filteredClicks;
+    }
 
     /**
      * Returns all the server logs for the campaign.
      * @return The server logs for the campaign.
      */
-    public List<Object[]> getServerLogs() { return serverLogs; }
+    public List<Object[]> getServerLogs(List<Set<Enum<?>>> filter) {
+        List<Object[]> filteredServerLogs = new ArrayList<>();
+        for (Object[] serverLog : serverLogs) {
+            if (filterMatches(filter, userMap.get(serverLog[4]))) {
+                filteredServerLogs.add(serverLog);
+            }
+        }
+        return filteredServerLogs;
+    }
 
     // Extra methods for calculating important metrics
 
@@ -132,26 +169,26 @@ public class CampaignData {
      * Returns the total number of impressions.
      * @return the total number of impressions.
      */
-    public int getTotalImpressions() {
-        return impressions.size();
+    public int getTotalImpressions(List<Set<Enum<?>>> filter) {
+        return getImpressions(filter).size();
     }
 
     /**
      * Returns the total number of clicks.
      * @return the total number of clicks.
      */
-    public int getTotalClicks() {
-        return clicks.size();
+    public int getTotalClicks(List<Set<Enum<?>>> filter) {
+        return getClicks(filter).size();
     }
 
     /**
      * Returns the total number of conversions.
      * @return the total number of conversions.
      */
-    public int getTotalConversions() {
+    public int getTotalConversions(List<Set<Enum<?>>> filter) {
         int totalConversions = 0;
         for (Object[] serverLog : serverLogs) {
-            if ((boolean) serverLog[3]) {
+            if ((boolean) serverLog[3] && filterMatches(filter, userMap.get(serverLog[4]))) {
                 totalConversions++;
             }
         }
@@ -161,7 +198,7 @@ public class CampaignData {
      * Returns the total number of unique users (based on unique IP or session tracking).
      * @return the total number of unique users.
      */
-    public int getTotalUniques() {
+    public int getTotalUniques(List<Set<Enum<?>>> filter) {
         return userMap.size();
     }
 
@@ -170,10 +207,10 @@ public class CampaignData {
      * Returns the total number of bounces based on the current bounce criteria.
      * @return the total number of bounces
      */
-    public int getTotalBounces() {
+    public int getTotalBounces(List<Set<Enum<?>>> filter) {
         int totalBounces = 0;
         for (Object[] serverLog : serverLogs) {
-            if (isBounce(serverLog)) {
+            if (isBounce(serverLog) && filterMatches(filter, userMap.get(serverLog[4]))) {
                 totalBounces++;
             }
         }
@@ -186,13 +223,17 @@ public class CampaignData {
      * Returns the total cost of impressions and clicks combined.
      * @return the total cost of the campaign.
      */
-    public double getTotalCost() {
+    public double getTotalCost(List<Set<Enum<?>>> filter) {
         double totalCost = 0;
         for (Object[] impression : impressions) {
-            totalCost += (double) impression[2];
+            if (filterMatches(filter, userMap.get(impression[2]))) {
+                totalCost += (double) impression[1];
+            }
         }
         for (Object[] click : clicks) {
-            totalCost += (double) click[1];
+            if (filterMatches(filter, userMap.get(click[2]))) {
+                totalCost += (double) click[1];
+            }
         }
         return totalCost;
     }
@@ -201,45 +242,45 @@ public class CampaignData {
      * Returns the Click-Through Rate (CTR) = (Total Clicks / Total Impressions) * 100.
      * @return the CTR percentage.
      */
-    public double getCTR() {
-        if (getTotalImpressions() == 0) return 0;
-        return ((double) getTotalClicks() / getTotalImpressions()) * 100;
+    public double getCTR(List<Set<Enum<?>>> filter) {
+        if (getTotalImpressions(filter) == 0) return 0;
+        return ((double) getTotalClicks(filter) / getTotalImpressions(filter)) * 100;
     }
 
     /**
      * Returns the Cost Per Acquisition (CPA) = Total Cost / Total Conversions.
      * @return the CPA value.
      */
-    public double getCPA() {
-        if (getTotalConversions() == 0) return 0;
-        return getTotalCost() / getTotalConversions();
+    public double getCPA(List<Set<Enum<?>>> filter) {
+        if (getTotalConversions(filter) == 0) return 0;
+        return getTotalCost(filter) / getTotalConversions(filter);
     }
 
     /**
      * Returns the Cost Per Click (CPC) = Total Cost / Total Clicks.
      * @return the CPC value.
      */
-    public double getCPC() {
-        if (getTotalClicks() == 0) return 0;
-        return getTotalCost() / getTotalClicks();
+    public double getCPC(List<Set<Enum<?>>> filter) {
+        if (getTotalClicks(filter) == 0) return 0;
+        return getTotalCost(filter) / getTotalClicks(filter);
     }
 
     /**
      * Returns the Cost Per Thousand Impressions (CPM) = (Total Cost / Total Impressions) * 1000.
      * @return the CPM value.
      */
-    public double getCPM() {
-        if (getTotalImpressions() == 0) return 0;
-        return (getTotalCost() / getTotalImpressions()) * 1000;
+    public double getCPM(List<Set<Enum<?>>> filter) {
+        if (getTotalImpressions(filter) == 0) return 0;
+        return (getTotalCost(filter) / getTotalImpressions(filter)) * 1000;
     }
 
     /**
      * Returns the Bounce Rate = (Total Bounces / Total Clicks) * 100.
      * @return the bounce rate percentage.
      */
-    public double getBounceRate() {
-        if (getTotalClicks() == 0) return 0;
-        return ((double) getTotalBounces() / getTotalClicks()) * 100;
+    public double getBounceRate(List<Set<Enum<?>>> filter) {
+        if (getTotalClicks(filter) == 0) return 0;
+        return ((double) getTotalBounces(filter) / getTotalClicks(filter)) * 100;
     }
 
     /**
@@ -250,10 +291,6 @@ public class CampaignData {
         return new SimpleDateFormat("yyyy-MM-dd");
     }
 
-    /**
-     * Returns the Click-Through Rate (CTR) = (Total Clicks / Total Impressions) * 100.
-     * @return the CTR percentage.
-     */
     public List<LocalDateTime> getImpressionDates() {
         List<LocalDateTime> impressionDates = new ArrayList<>();
         for (Object[] impression : impressions) {
@@ -267,11 +304,10 @@ public class CampaignData {
      * @param date the date to get the impressions for.
      * @return the number of impressions for the given date.
      */
-    public int getImpressionsForDate(LocalDateTime date) {
-        long count = impressions.stream()
+    public int getImpressionsForDate(LocalDateTime date, List<Set<Enum<?>>> filter) {
+        return (int) getImpressions(filter).stream()
             .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
             .count();
-        return (int) count;
     }
 
     /**
@@ -279,8 +315,8 @@ public class CampaignData {
      * @param date the date to get the clicks for.
      * @return the number of clicks for the given date.
      */
-    public int getClicksForDate(LocalDateTime date) {
-        return (int) clicks.stream()
+    public int getClicksForDate(LocalDateTime date, List<Set<Enum<?>>> filter) {
+        return (int) getClicks(filter).stream()
             .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
             .count();
     }
@@ -290,9 +326,9 @@ public class CampaignData {
      * @param date the date to get the uniques for.
      * @return the number of unique users for the given date.
      */
-    public int getUniquesForDate(LocalDateTime date) {
+    public int getUniquesForDate(LocalDateTime date, List<Set<Enum<?>>> filter) {
         Set<Object> uniqueIds = new HashSet<>();
-        for (Object[] impression : impressions) {
+        for (Object[] impression : getImpressions(filter)) {
             LocalDate impressionDate = ((LocalDateTime) impression[0]).toLocalDate();
             if (impressionDate.equals(date.toLocalDate())) {
                 uniqueIds.add(impression[1]);
@@ -306,8 +342,8 @@ public class CampaignData {
      * @param date the date to get the bounces for
      * @return the number of bounces for the given date
      */
-    public int getBouncesForDate(LocalDateTime date) {
-        return (int) serverLogs.stream()
+    public int getBouncesForDate(LocalDateTime date, List<Set<Enum<?>>> filter) {
+        return (int) getServerLogs(filter).stream()
             .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
             .filter(this::isBounce)
             .count();
@@ -318,8 +354,8 @@ public class CampaignData {
      * @param date the date to get the conversions for.
      * @return the number of conversions for the given date.
      */
-    public int getConversionsForDate(LocalDateTime date) {
-        return (int) serverLogs.stream()
+    public int getConversionsForDate(LocalDateTime date, List<Set<Enum<?>>> filter) {
+        return (int) getServerLogs(filter).stream()
             .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()) && (boolean) entry[3])
             .count();
     }
@@ -329,20 +365,20 @@ public class CampaignData {
      * @param date the date to get the total cost for.
      * @return the total cost for the given date.
      */
-    public double getTotalCostForDate(LocalDateTime date) {
-        double total = impressions.stream()
+    public double getTotalCostForDate(LocalDateTime date, List<Set<Enum<?>>> filter) {
+        double total = getImpressions(filter).stream()
             .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
             .mapToDouble(entry -> {
-                if (entry[2] instanceof Double) { // Correct index for Impression Cost
-                    return (double) entry[2];
+                if (entry[1] instanceof Double) { // Correct index for Impression Cost
+                    return (double) entry[1];
                 } else {
-                    System.err.println("Unexpected type in impressions cost: " + entry[2].getClass().getName());
+                    System.err.println("Unexpected type in impressions cost: " + entry[1].getClass().getName());
                     return 0.0; // Ignore invalid values
                 }
             })
             .sum();
 
-        total += clicks.stream()
+        total += getClicks(filter).stream()
             .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
             .mapToDouble(entry -> {
                 if (entry[1] instanceof Double) { // Click Cost should be at index 1
@@ -362,10 +398,10 @@ public class CampaignData {
      * @param date the date to get the CTR for.
      * @return the CTR percentage for the given date.
      */
-    public double getCTRForDate(LocalDateTime date) {
-        int impressions = getImpressionsForDate(date);
+    public double getCTRForDate(LocalDateTime date, List<Set<Enum<?>>> filter) {
+        int impressions = getImpressionsForDate(date, filter);
         if (impressions == 0) return 0;
-        return ((double) getClicksForDate(date) / impressions) * 100;
+        return ((double) getClicksForDate(date, filter) / impressions) * 100;
     }
 
     /**
@@ -373,10 +409,10 @@ public class CampaignData {
      * @param date the date to get the CPA for.
      * @return the CPA value for the given date.
      */
-    public double getCPAForDate(LocalDateTime date) {
-        int conversions = getConversionsForDate(date);
+    public double getCPAForDate(LocalDateTime date, List<Set<Enum<?>>> filter) {
+        int conversions = getConversionsForDate(date, filter);
         if (conversions == 0) return 0;
-        return getTotalCostForDate(date) / conversions;
+        return getTotalCostForDate(date, filter) / conversions;
     }
 
     /**
@@ -384,10 +420,10 @@ public class CampaignData {
      * @param date the date to get the CPC for.
      * @return the CPC value for the given date.
      */
-    public double getCPCForDate(LocalDateTime date) {
-        int clicks = getClicksForDate(date);
+    public double getCPCForDate(LocalDateTime date, List<Set<Enum<?>>> filter) {
+        int clicks = getClicksForDate(date, filter);
         if (clicks == 0) return 0;
-        return getTotalCostForDate(date) / clicks;
+        return getTotalCostForDate(date, filter) / clicks;
     }
 
     /**
@@ -395,10 +431,10 @@ public class CampaignData {
      * @param date the date to get the CPM for.
      * @return the CPM value for the given date.
      */
-    public double getCPMForDate(LocalDateTime date) {
-        int impressions = getImpressionsForDate(date);
+    public double getCPMForDate(LocalDateTime date, List<Set<Enum<?>>> filter) {
+        int impressions = getImpressionsForDate(date, filter);
         if (impressions == 0) return 0;
-        return (getTotalCostForDate(date) / impressions) * 1000;
+        return (getTotalCostForDate(date, filter) / impressions) * 1000;
     }
 
     /**
@@ -406,9 +442,9 @@ public class CampaignData {
      * @param date the date to get the bounce rate for.
      * @return the bounce rate percentage for the given date.
      */
-    public double getBounceRateForDate(LocalDateTime date) {
-        int clicks = getClicksForDate(date);
-        int bounces = getBouncesForDate(date);
+    public double getBounceRateForDate(LocalDateTime date, List<Set<Enum<?>>> filter) {
+        int clicks = getClicksForDate(date, filter);
+        int bounces = getBouncesForDate(date, filter);
 
         if (clicks == 0) return 0; // Prevent division by zero
 
@@ -432,8 +468,8 @@ public class CampaignData {
      * @param dateTime the date to get the hourly impressions for.
      * @return the number of hourly impressions for the given date.
      */
-    public int getHourlyImpressions(LocalDateTime dateTime) {
-        return (int) impressions.stream()
+    public int getHourlyImpressions(LocalDateTime dateTime, List<Set<Enum<?>>> filter) {
+        return (int) getImpressions(filter).stream()
             .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
                 && ((LocalDateTime) entry[0]).toLocalDate().equals(dateTime.toLocalDate()))
             .count();
@@ -444,8 +480,8 @@ public class CampaignData {
      * @param dateTime the date to get the hourly clicks for.
      * @return the number of hourly clicks for the given date.
      */
-    public int getHourlyClicks(LocalDateTime dateTime) {
-        return (int) clicks.stream()
+    public int getHourlyClicks(LocalDateTime dateTime, List<Set<Enum<?>>> filter) {
+        return (int) getClicks(filter).stream()
             .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
                 && ((LocalDateTime) entry[0]).toLocalDate().equals(dateTime.toLocalDate()))
             .count();
@@ -456,8 +492,8 @@ public class CampaignData {
      * @param dateTime the date to get the hourly conversions for.
      * @return the number of hourly conversions for the given date.
      */
-    public int getHourlyConversions(LocalDateTime dateTime) {
-        return (int) serverLogs.stream()
+    public int getHourlyConversions(LocalDateTime dateTime, List<Set<Enum<?>>> filter) {
+        return (int) getServerLogs(filter).stream()
             .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
                 && ((LocalDateTime) entry[0]).toLocalDate().equals(dateTime.toLocalDate()))
             .filter(entry -> (boolean) entry[3])
@@ -469,21 +505,21 @@ public class CampaignData {
      * @param dateTime the date to get the hourly total cost for.
      * @return the hourly total cost for the given date.
      */
-    public double getHourlyTotalCost(LocalDateTime dateTime) {
-        double total = impressions.stream()
+    public double getHourlyTotalCost(LocalDateTime dateTime, List<Set<Enum<?>>> filter) {
+        double total = getImpressions(filter).stream()
             .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
                 && ((LocalDateTime) entry[0]).toLocalDate().equals(dateTime.toLocalDate()))
             .mapToDouble(entry -> {
-                if (entry[2] instanceof Double) { // Ensure correct index
-                    return (double) entry[2];
+                if (entry[1] instanceof Double) { // Ensure correct index
+                    return (double) entry[1];
                 } else {
-                    System.err.println("Unexpected type in hourly impressions cost: " + entry[2].getClass().getName());
+                    System.err.println("Unexpected type in hourly impressions cost: " + entry[1].getClass().getName());
                     return 0.0; // Ignore invalid values
                 }
             })
             .sum();
 
-        total += clicks.stream()
+        total += getClicks(filter).stream()
             .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
                 && ((LocalDateTime) entry[0]).toLocalDate().equals(dateTime.toLocalDate()))
             .mapToDouble(entry -> {
@@ -505,10 +541,10 @@ public class CampaignData {
      * @param dateTime the date and time to get the hourly CTR for.
      * @return the hourly CTR percentage for the given date and time.
      */
-    public double getHourlyCTR(LocalDateTime dateTime) {
-        int impressions = getHourlyImpressions(dateTime);
+    public double getHourlyCTR(LocalDateTime dateTime, List<Set<Enum<?>>> filter) {
+        int impressions = getHourlyImpressions(dateTime, filter);
         if (impressions == 0) return 0;
-        return ((double) getHourlyClicks(dateTime) / impressions) * 100;
+        return ((double) getHourlyClicks(dateTime, filter) / impressions) * 100;
     }
 
     /**
@@ -516,10 +552,10 @@ public class CampaignData {
      * @param dateTime the date and time to get the hourly CPA for.
      * @return the hourly CPA value for the given date and time.
      */
-    public double getHourlyCPA(LocalDateTime dateTime) {
-        int conversions = getHourlyConversions(dateTime);
+    public double getHourlyCPA(LocalDateTime dateTime, List<Set<Enum<?>>> filter) {
+        int conversions = getHourlyConversions(dateTime, filter);
         if (conversions == 0) return 0;
-        return getHourlyTotalCost(dateTime) / conversions;
+        return getHourlyTotalCost(dateTime, filter) / conversions;
     }
 
     /**
@@ -527,10 +563,10 @@ public class CampaignData {
      * @param dateTime the date and time to get the hourly CPC for.
      * @return the hourly CPC value for the given date and time.
      */
-    public double getHourlyCPC(LocalDateTime dateTime) {
-        int clicks = getHourlyClicks(dateTime);
+    public double getHourlyCPC(LocalDateTime dateTime, List<Set<Enum<?>>> filter) {
+        int clicks = getHourlyClicks(dateTime, filter);
         if (clicks == 0) return 0;
-        return getHourlyTotalCost(dateTime) / clicks;
+        return getHourlyTotalCost(dateTime, filter) / clicks;
     }
 
     /**
@@ -538,10 +574,10 @@ public class CampaignData {
      * @param dateTime the date and time to get the hourly CPM for.
      * @return the hourly CPM value for the given date and time.
      */
-    public double getHourlyCPM(LocalDateTime dateTime) {
-        int impressions = getHourlyImpressions(dateTime);
+    public double getHourlyCPM(LocalDateTime dateTime, List<Set<Enum<?>>> filter) {
+        int impressions = getHourlyImpressions(dateTime, filter);
         if (impressions == 0) return 0;
-        return (getHourlyTotalCost(dateTime) / impressions) * 1000;
+        return (getHourlyTotalCost(dateTime, filter) / impressions) * 1000;
     }
 
     /**
@@ -549,9 +585,9 @@ public class CampaignData {
      * @param dateTime the date and time to get the hourly bounce rate for
      * @return the hourly bounce rate percentage for the given date and time
      */
-    public double getHourlyBounceRate(LocalDateTime dateTime) {
-        int clicks = getHourlyClicks(dateTime);
-        int bounces = (int) serverLogs.stream()
+    public double getHourlyBounceRate(LocalDateTime dateTime, List<Set<Enum<?>>> filter) {
+        int clicks = getHourlyClicks(dateTime, filter);
+        int bounces = (int) getServerLogs(filter).stream()
             .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
                 && ((LocalDateTime) entry[0]).toLocalDate().equals(dateTime.toLocalDate()))
             .filter(this::isBounce)

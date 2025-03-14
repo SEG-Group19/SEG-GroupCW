@@ -137,7 +137,7 @@ public class FileParserService {
                 // Parse click cost
                 double clickCost = Double.parseDouble(data[2]);
 
-                campaignData.addClick(dateTime, clickCost);
+                campaignData.addClick(dateTime, clickCost, data[1]);
             }
         } catch (IOException e) {
             System.err.println("Error reading click log: " + e.getMessage());
@@ -174,7 +174,7 @@ public class FileParserService {
                 // Parse conversion
                 boolean conversion = data[4].equals("Yes");
 
-                campaignData.addServerLogEntry(entryDateTime, exitDateTime, pagesViewed, conversion);
+                campaignData.addServerLogEntry(entryDateTime, exitDateTime, pagesViewed, conversion, data[1]);
             }
         } catch (IOException e) {
             System.err.println("Error reading server log: " + e.getMessage());

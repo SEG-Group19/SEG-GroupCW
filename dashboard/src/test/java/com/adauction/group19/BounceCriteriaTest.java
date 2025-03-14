@@ -33,7 +33,7 @@ public class BounceCriteriaTest {
     // Add a server log entry with 1 page viewed and 3 seconds duration
     LocalDateTime entryTime = baseDateTime;
     LocalDateTime exitTime = baseDateTime.plusSeconds(3);
-    campaignData.addServerLogEntry(entryTime, exitTime, 1, false);
+    campaignData.addServerLogEntry(entryTime, exitTime, 1, false, "1");
 
     // Default criteria (< 2 pages OR < 4 seconds) should count this as a bounce
     assertEquals(1, campaignData.getTotalBounces());
@@ -64,10 +64,10 @@ public class BounceCriteriaTest {
     LocalDateTime day2 = baseDateTime.plusDays(1);
 
     // Day 1: 1 page, 3 seconds (bounce by default criteria)
-    campaignData.addServerLogEntry(day1, day1.plusSeconds(3), 1, false);
+    campaignData.addServerLogEntry(day1, day1.plusSeconds(3), 1, false, "1");
 
     // Day 2: 2 pages, 3 seconds (not a bounce by default page criteria)
-    campaignData.addServerLogEntry(day2, day2.plusSeconds(5), 2, false);
+    campaignData.addServerLogEntry(day2, day2.plusSeconds(5), 2, false, "1");
 
     // Default criteria should find 1 bounce
     assertEquals(1, campaignData.getTotalBounces());
@@ -87,7 +87,7 @@ public class BounceCriteriaTest {
   @Test
   public void testUpdatingCriteria() {
     // Add a borderline server log entry: 1 page, 5 seconds
-    campaignData.addServerLogEntry(baseDateTime, baseDateTime.plusSeconds(5), 1, false);
+    campaignData.addServerLogEntry(baseDateTime, baseDateTime.plusSeconds(5), 1, false, "1");
 
     // Default criteria: bounce by pages (1 < 2), but not by time (5 >= 4)
     assertEquals(1, campaignData.getTotalBounces());
@@ -110,7 +110,7 @@ public class BounceCriteriaTest {
   @Test
   public void testEdgeCases() {
     // Add entry with null exit time (user still on site)
-    campaignData.addServerLogEntry(baseDateTime, null, 1, false);
+    campaignData.addServerLogEntry(baseDateTime, null, 1, false, "1");
 
     // Default criteria with time consideration - should not crash
     assertEquals(1, campaignData.getTotalBounces()); // Should only consider the page count

@@ -80,14 +80,14 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
 
       // Add clicks (about half of impressions)
       for (int j = 0; j < (5 + i/2); j++) {
-        data.addClick(morningTime, 0.3);
+        data.addClick(morningTime, 0.3, "1");
       }
 
       // Add conversions (fewer than clicks)
       for (int j = 0; j < (2 + i/3); j++) {
         // Check which method exists in your CampaignData class
         // Could be addConversion or addConversions - use the correct one
-        data.addClick(morningTime, 0.3); // Treat clicks as conversions for testing purposes
+        data.addClick(morningTime, 0.3, "1"); // Treat clicks as conversions for testing purposes
       }
 
       // Add some server logs (including bounces)
@@ -95,7 +95,7 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
         boolean isBounce = j % 3 == 0; // Every third entry is a bounce
         int pagesViewed = isBounce ? 1 : 3 + (j % 3);
         LocalDateTime endTime = morningTime.plusMinutes(isBounce ? 1 : 10);
-        data.addServerLogEntry(morningTime, endTime, pagesViewed, j % 5 == 0);
+        data.addServerLogEntry(morningTime, endTime, pagesViewed, j % 5 == 0, "1");
       }
 
       // Afternoon data (15:00 PM)
@@ -112,13 +112,13 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
 
       // More clicks (about 40% of impressions)
       for (int j = 0; j < (6 + i/2); j++) {
-        data.addClick(afternoonTime, 0.4);
+        data.addClick(afternoonTime, 0.4, "1");
       }
 
       // More conversions
       for (int j = 0; j < (3 + i/3); j++) {
         // Use the same method as above for consistency
-        data.addClick(afternoonTime, 0.4); // Treat clicks as conversions for testing purposes
+        data.addClick(afternoonTime, 0.4, "1"); // Treat clicks as conversions for testing purposes
       }
 
       // More server logs
@@ -126,7 +126,7 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
         boolean isBounce = j % 4 == 0; // Every fourth entry is a bounce
         int pagesViewed = isBounce ? 1 : 2 + (j % 4);
         LocalDateTime endTime = afternoonTime.plusMinutes(isBounce ? 2 : 15);
-        data.addServerLogEntry(afternoonTime, endTime, pagesViewed, j % 6 == 0);
+        data.addServerLogEntry(afternoonTime, endTime, pagesViewed, j % 6 == 0, "1");
       }
     }
 
