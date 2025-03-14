@@ -7,12 +7,14 @@ import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import com.adauction.group19.model.CampaignData;
+import com.adauction.group19.model.ExportData;
 import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.view.MainMenuScreen;
 
@@ -621,6 +623,38 @@ public class ExportScreenController {
      */
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    /**
+     * Gets the export data.
+     * @return The export data.
+     */
+    public ExportData getExportData() {
+        List<XYChart.Series<String, Number>> series = lineChart.getData();
+
+        List<String> header = series.stream()
+            .map(XYChart.Series::getName)
+            .toList();
+
+        List<String> allDates = series.stream()
+            .flatMap(s -> s.getData().stream().map(XYChart.Data::getXValue))
+            .toList();
+        HashMap<String, List<Number>> dateToValue = new HashMap<>();
+        for (String date : allDates) {
+            dateToValue.put(date, new ArrayList<>());
+        }
+
+        for (XYChart.Series<String, Number> s : series) {
+            for (XYChart.Data<String, Number> d : s.getData()) {
+                dateToValue.get(d.getXValue()).add(d.getYValue());
+            }
+        }
+
+        List<List<Number>> rows = allDates.stream()
+            .map(date -> dateToValue.get(date))
+            .toList();
+
+        return new ExportData(header, allDates, rows);
     }
 
     /**
