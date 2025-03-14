@@ -4,10 +4,7 @@ import java.time.Duration;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class represents the data for a campaign.
@@ -19,6 +16,7 @@ public class CampaignData {
     private List<Object[]> impressions = new ArrayList<>();
     private List<Object[]> clicks = new ArrayList<>();
     private List<Object[]> serverLogs = new ArrayList<>();
+    private HashMap<String, Object[]> userMap = new HashMap<>();
     private BounceCriteria bounceCriteria = new BounceCriteria(); // Initialize with default criteria
 
     /**
@@ -31,9 +29,9 @@ public class CampaignData {
      * @param impressionCost cost of the impression
      */
     public void addImpression(LocalDateTime dateTime, String id, Gender gender, AgeRange ageRange, Income income, Context context, double impressionCost) {
-        // Now, index 0: dateTime, index 1: id, index 2: gender, index 3: ageRange,
-        // index 4: income, index 5: context, index 6: impressionCost.
-        impressions.add(new Object[]{dateTime, id, gender, ageRange, income, context, impressionCost});
+        // Now, index 0: dateTime, index 1: id, index 2: impressionCost.
+        impressions.add(new Object[]{dateTime, id, impressionCost});
+        userMap.put(id, new Object[]{gender, ageRange, income, context});
     }
 
     public void setBounceCriteria(BounceCriteria bounceCriteria) {
@@ -164,11 +162,7 @@ public class CampaignData {
      * @return the total number of unique users.
      */
     public int getTotalUniques() {
-        Set<Object> uniqueIds = new HashSet<>();
-        for (Object[] impression : impressions) {
-            uniqueIds.add(impression[1]); // assuming index 1 is the user ID
-        }
-        return uniqueIds.size();
+        return userMap.size();
     }
 
 
@@ -195,7 +189,7 @@ public class CampaignData {
     public double getTotalCost() {
         double totalCost = 0;
         for (Object[] impression : impressions) {
-            totalCost += (double) impression[6];
+            totalCost += (double) impression[2];
         }
         for (Object[] click : clicks) {
             totalCost += (double) click[1];
@@ -339,10 +333,10 @@ public class CampaignData {
         double total = impressions.stream()
             .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
             .mapToDouble(entry -> {
-                if (entry[6] instanceof Double) { // Correct index for Impression Cost
-                    return (double) entry[6];
+                if (entry[2] instanceof Double) { // Correct index for Impression Cost
+                    return (double) entry[2];
                 } else {
-                    System.err.println("Unexpected type in impressions cost: " + entry[6].getClass().getName());
+                    System.err.println("Unexpected type in impressions cost: " + entry[2].getClass().getName());
                     return 0.0; // Ignore invalid values
                 }
             })
@@ -480,10 +474,10 @@ public class CampaignData {
             .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
                 && ((LocalDateTime) entry[0]).toLocalDate().equals(dateTime.toLocalDate()))
             .mapToDouble(entry -> {
-                if (entry[6] instanceof Double) { // Ensure correct index
-                    return (double) entry[6];
+                if (entry[2] instanceof Double) { // Ensure correct index
+                    return (double) entry[2];
                 } else {
-                    System.err.println("Unexpected type in hourly impressions cost: " + entry[6].getClass().getName());
+                    System.err.println("Unexpected type in hourly impressions cost: " + entry[2].getClass().getName());
                     return 0.0; // Ignore invalid values
                 }
             })
