@@ -1,5 +1,9 @@
 package com.adauction.group19.controller;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,6 +16,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import com.adauction.group19.model.CampaignData;
 import com.adauction.group19.model.ExportData;
@@ -33,6 +40,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
@@ -631,15 +639,23 @@ public class ExportScreenController {
      */
     public ExportData getExportData() {
         List<XYChart.Series<String, Number>> series = lineChart.getData();
+        if (series.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("No data to export");
+            alert.setContentText("Please select a date range and add some data to the graph.");
+            alert.showAndWait();
+            return null;
+        }
 
         List<String> header = series.stream()
             .map(XYChart.Series::getName)
             .toList();
 
-        List<String> allDates = series.stream()
+        Set<String> allDates = series.stream()
             .flatMap(s -> s.getData().stream().map(XYChart.Data::getXValue))
-            .toList();
-        HashMap<String, List<Number>> dateToValue = new HashMap<>();
+            .collect(Collectors.toCollection(TreeSet::new));
+        TreeMap<String, List<Number>> dateToValue = new TreeMap<>();
         for (String date : allDates) {
             dateToValue.put(date, new ArrayList<>());
         }
@@ -650,11 +666,60 @@ public class ExportScreenController {
             }
         }
 
-        List<List<Number>> rows = allDates.stream()
-            .map(date -> dateToValue.get(date))
-            .toList();
+        return new ExportData(header, dateToValue);
+    }
 
-        return new ExportData(header, allDates, rows);
+    /**
+     * Chooses a file to export the data to.    
+     * @param format The format to export the data to.
+     * @param data The data to export.
+     */
+    public void exportFile(String format, String data) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export as " + format);
+        fileChooser.setInitialFileName("output");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(format + " file", "*." + format));
+        File file = fileChooser.showSaveDialog(stage);
+        if (file != null) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                writer.write(data);
+            } catch (IOException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Error exporting file");
+                alert.setContentText("Error exporting file: " + e.getMessage());
+                alert.showAndWait();
+            }
+        }
+    }
+
+    /**
+     * Handles the export to CSV button.
+     * @param actionEvent The action event.
+     */
+    @FXML
+    public void handleExportCSV(ActionEvent actionEvent) {
+        ExportData exportData = getExportData();
+        if (exportData == null) {
+            return;
+        }
+        String csv = exportData.toCSV();
+        exportFile("csv", csv);
+    }
+
+
+    /**
+     * Handles the export to JSON button.
+     * @param actionEvent The action event.
+     */
+    @FXML
+    public void handleExportJSON(ActionEvent actionEvent) {
+        ExportData exportData = getExportData();
+        if (exportData == null) {
+            return;
+        }
+        String json = exportData.toJSON();
+        exportFile("json", json);
     }
 
     /**

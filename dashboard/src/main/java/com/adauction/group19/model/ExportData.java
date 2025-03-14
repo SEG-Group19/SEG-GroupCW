@@ -1,6 +1,7 @@
 package com.adauction.group19.model;
 
 import java.util.List;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -10,21 +11,29 @@ import java.util.stream.IntStream;
  * @param header The header of the data. (e.g. "Impressions", "Clicks",
  *               "Conversions", "Cost", "CTR", "CPC", "CPA", "CPM", "Bounce
  *               Rate") "Date" is not included in the header.
- * @param dates  The dates of the data.
- * @param rows   The data of the data.
+ * @param dateToValue A map of dates to the values of the data.
  */
-public record ExportData(List<String> header, List<String> dates, List<List<Number>> rows) {
+public record ExportData(List<String> header, TreeMap<String, List<Number>> dateToValue) {
 	public String toCSV() {
-		if (dates.size() != rows.size()) {
-			throw new IllegalArgumentException("Dates and rows must have the same size");
-		}
         String headerLine = "Date," + String.join(",", header);
-        String dataLines = IntStream.range(0, dates.size())
-               .mapToObj(i -> dates.get(i) + "," + rows.get(i).stream()
-                       .map(Object::toString)
-                       .collect(Collectors.joining(",")))
-               .collect(Collectors.joining("\n"));
+		String dataLines = dateToValue.entrySet().stream()
+			.map(entry -> entry.getKey() + "," + entry.getValue().stream()
+				.map(Object::toString)
+				.collect(Collectors.joining(",")))
+			.collect(Collectors.joining("\n"));
 
         return headerLine + "\n" + dataLines;
+	}
+
+	public String toJSON() {
+        return "[" + dateToValue.entrySet().stream()
+               .map(entry -> {
+                    String date = entry.getKey();
+                    String dataJson = IntStream.range(0, header.size())
+                           .mapToObj(j -> "\"" + header.get(j) + "\": " + entry.getValue().get(j))
+                           .collect(Collectors.joining(","));
+                    return "{\"date\": \"" + date + "\", \"data\": {" + dataJson + "}}";
+                })
+               .collect(Collectors.joining(",")) + "]";
 	}
 }
