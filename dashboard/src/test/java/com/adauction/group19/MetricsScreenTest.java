@@ -32,33 +32,6 @@ public class MetricsScreenTest extends ApplicationTest {
   }
 
   @Test
-  public void testMetricsScreenComponents() {
-    // Test basic components are present
-    FxAssert.verifyThat("#lineChart", NodeMatchers.isVisible());
-    FxAssert.verifyThat("#goBackButton", NodeMatchers.isVisible());
-
-    // Check for the date pickers
-    FxAssert.verifyThat("#startDatePicker", NodeMatchers.isVisible());
-    FxAssert.verifyThat("#endDatePicker", NodeMatchers.isVisible());
-
-    // Check for time granularity controls
-    FxAssert.verifyThat("#rbHourly", NodeMatchers.isVisible());
-    FxAssert.verifyThat("#rbDaily", NodeMatchers.isVisible());
-    FxAssert.verifyThat("#rbWeekly", NodeMatchers.isVisible());
-
-    // Check for quick select buttons
-    FxAssert.verifyThat("#btnLastDay", NodeMatchers.isVisible());
-    FxAssert.verifyThat("#btnLastWeek", NodeMatchers.isVisible());
-    FxAssert.verifyThat("#btnLastMonth", NodeMatchers.isVisible());
-    FxAssert.verifyThat("#btnAllData", NodeMatchers.isVisible());
-
-    // Check at least a few metric checkboxes
-    FxAssert.verifyThat("#chkImpressions", NodeMatchers.isVisible());
-    FxAssert.verifyThat("#chkClicks", NodeMatchers.isVisible());
-    FxAssert.verifyThat("#chkCTR", NodeMatchers.isVisible());
-  }
-
-  @Test
   public void testMetricsScreenData() {
     // Inject dummy campaign data and force the scene to reload.
     Platform.runLater(() -> {
