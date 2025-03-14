@@ -24,6 +24,12 @@
                         <Label id="btnViewMetricsLabel" text="📈 View metrics"/>
                     </graphic>
                 </Button>
+
+                <Button styleClass="primary-button" id="btnExport" onAction="#handleExportButton">
+                    <graphic>
+                        <Label id="btnExportLabel" text="📤 Export"/>
+                    </graphic>
+                </Button>
             </VBox>
         </VBox>
 

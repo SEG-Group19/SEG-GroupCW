@@ -1,14 +1,14 @@
 package com.adauction.group19.controller;
 
 import com.adauction.group19.utils.ThemeManager;
+import com.adauction.group19.view.ExportScreen;
 import com.adauction.group19.view.InputDataScreen;
 import com.adauction.group19.view.ViewMetricsScreen;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class MainMenuController {
@@ -51,6 +51,20 @@ public class MainMenuController {
     public void handleViewMetricsButton(ActionEvent actionEvent) {
         if (stage != null) {
             Scene inputDataScene = ViewMetricsScreen.getScene(stage);
+            stage.setScene(inputDataScene);
+        } else {
+            System.out.println("Stage is not set.");
+        }
+    }
+
+    /**
+     * Handles the View Metrics button. Switches scene to the View Metrics screen.
+     * @param actionEvent The action event.
+     */
+    @FXML
+    public void handleExportButton(ActionEvent actionEvent) {
+        if (stage != null) {
+            Scene inputDataScene = ExportScreen.getScene(stage);
             stage.setScene(inputDataScene);
         } else {
             System.out.println("Stage is not set.");

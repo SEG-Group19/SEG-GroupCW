@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.CategoryAxis?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+  xmlns:fx="http://javafx.com/fxml"
+  fx:controller="com.adauction.group19.controller.ExportScreenController"
+  style="-fx-padding: 20px 20px;">
+
+    <top>
+        <VBox spacing="10">
+            <HBox>
+                <Button fx:id="goBackButton" text="⬅ Back" onAction="#handleBackButton" styleClass="primary-button"/>
+            </HBox>
+
+            <!-- Date Selection Controls - Above the graph -->
+            <HBox alignment="CENTER_LEFT" spacing="10" styleClass="date-controls">
+                <Label text="Date Range:"/>
+                <DatePicker fx:id="startDatePicker" promptText="Start Date"/>
+                <Label text="to"/>
+                <DatePicker fx:id="endDatePicker" promptText="End Date"/>
+                <Button fx:id="applyDateRangeButton" text="Apply" onAction="#handleApplyDateRange"
+                  styleClass="primary-button" style="-fx-padding: 4 12; -fx-font-size: 11px;"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <left>
+        <VBox alignment="CENTER_LEFT" style="-fx-padding: 20px;">
+            <VBox spacing="10" styleClass="main-container, metric-select" style="-fx-spacing: 10px;">
+
+                <Label text="Select Metrics:"/>
+
+                <HBox spacing="5">
+                    <CheckBox fx:id="chkImpressions" text="Number of Impressions"/>
+                    <Label fx:id="lblImpressions" text="(0)"/>
+                </HBox>
+
+                <HBox spacing="5">
+                    <CheckBox fx:id="chkClicks" text="Number of Clicks"/>
+                    <Label fx:id="lblClicks" text="(0)"/>
+                </HBox>
+
+                <HBox spacing="5">
+                    <CheckBox fx:id="chkUniques" text="Number of Uniques"/>
+                    <Label fx:id="lblUniques" text="(0)"/>
+                </HBox>
+
+                <HBox spacing="5">
+                    <CheckBox fx:id="chkBounces" text="Number of Bounces"/>
+                    <Label fx:id="lblBounces" text="(0)"/>
+                </HBox>
+
+                <HBox spacing="5">
+                    <CheckBox fx:id="chkConversions" text="Number of Conversions"/>
+                    <Label fx:id="lblConversions" text="(0)"/>
+                </HBox>
+
+                <HBox spacing="5">
+                    <CheckBox fx:id="chkTotalCost" text="Total Cost"/>
+                    <Label fx:id="lblTotalCost" text="(0)"/>
+                </HBox>
+
+                <HBox spacing="5">
+                    <CheckBox fx:id="chkCTR" text="CTR"/>
+                    <Label fx:id="lblCTR" text="(0)"/>
+                </HBox>
+
+                <HBox spacing="5">
+                    <CheckBox fx:id="chkCPA" text="CPA"/>
+                    <Label fx:id="lblCPA" text="(0)"/>
+                </HBox>
+
+                <HBox spacing="5">
+                    <CheckBox fx:id="chkCPC" text="CPC"/>
+                    <Label fx:id="lblCPC" text="(0)"/>
+                </HBox>
+
+                <HBox spacing="5">
+                    <CheckBox fx:id="chkCPM" text="CPM"/>
+                    <Label fx:id="lblCPM" text="(0)"/>
+                </HBox>
+
+                <HBox spacing="5">
+                    <CheckBox fx:id="chkBounceRate" text="Bounce Rate"/>
+                    <Label fx:id="lblBounceRate" text="(0)"/>
+                </HBox>
+
+            </VBox>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox alignment="CENTER">
+            <LineChart fx:id="lineChart">
+                <xAxis>
+                    <CategoryAxis fx:id="xAxis" label="Time"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis fx:id="yAxis" label="Value"/>
+                </yAxis>
+            </LineChart>
+
+            <VBox>
+            <!-- Time Granularity Controls - Below the graph -->
+                <HBox alignment="CENTER" spacing="10" style="-fx-padding: 10 0 5 0;" >
+                    <Label text="Time Granularity:"/>
+
+                    <fx:define>
+                        <ToggleGroup fx:id="timeGranularity"/>
+                    </fx:define>
+
+                    <RadioButton fx:id="rbHourly" text="Hourly" toggleGroup="$timeGranularity" selected="true" onAction="#handleGranularityChange"/>
+                    <RadioButton fx:id="rbDaily" text="Daily" toggleGroup="$timeGranularity" onAction="#handleGranularityChange"/>
+                    <RadioButton fx:id="rbWeekly" text="Weekly" toggleGroup="$timeGranularity" onAction="#handleGranularityChange"/>
+                </HBox>
+
+                <!-- Quick Select Buttons - Below granularity controls -->
+                <HBox alignment="CENTER" spacing="10" style="-fx-padding: 5 0 10 0;">
+                    <Label text="Quick Select:"/>
+                    <Button fx:id="btnLastDay" text="Last 24h" onAction="#handleQuickDateRange"
+                      styleClass="secondary-button" style="-fx-padding: 3 8; -fx-font-size: 11px;"/>
+                    <Button fx:id="btnLastWeek" text="Last Week" onAction="#handleQuickDateRange"
+                      styleClass="secondary-button" style="-fx-padding: 3 8; -fx-font-size: 11px;"/>
+                    <Button fx:id="btnLastMonth" text="Last Month" onAction="#handleQuickDateRange"
+                      styleClass="secondary-button" style="-fx-padding: 3 8; -fx-font-size: 11px;"/>
+                    <Button fx:id="btnAllData" text="All Data" onAction="#handleQuickDateRange"
+                      styleClass="secondary-button" style="-fx-padding: 3 8; -fx-font-size: 11px;"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>
