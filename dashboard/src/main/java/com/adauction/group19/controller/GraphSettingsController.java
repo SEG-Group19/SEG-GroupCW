@@ -1,6 +1,6 @@
 package com.adauction.group19.controller;
 
-import com.adauction.group19.model.CampaignData;
+import com.adauction.group19.model.*;
 import com.adauction.group19.service.CampaignDataStore;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,7 +12,10 @@ import javafx.stage.Stage;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class GraphSettingsController {
 
@@ -29,6 +32,7 @@ public class GraphSettingsController {
 
     private String lastTimeInterval = "";
 
+    private HashMap<String, Enum<?>> filterMap = new HashMap<>();
 
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -38,8 +42,23 @@ public class GraphSettingsController {
     public void initialize() {
         ageCheckCombo.getItems().addAll("Under 25", "25-34", "35-44", "45-54", "Over 54");
         genderCheckCombo.getItems().addAll("Male", "Female");
-        contextCheckCombo.getItems().addAll("News", "Shopping", "Social Media", "Blog", "Hobbies", "Travel");
+        contextCheckCombo.getItems().addAll("News", "Shopping", "Social Media", "Blog");
         incomeCheckCombo.getItems().addAll("Low", "Medium", "High");
+
+        filterMap.put("Under 25", AgeRange.AGE_25_MINUS);
+        filterMap.put("25-34", AgeRange.AGE_25_34);
+        filterMap.put("35-44", AgeRange.AGE_35_44);
+        filterMap.put("45-54", AgeRange.AGE_45_54);
+        filterMap.put("Over 54", AgeRange.AGE_55_PLUS);
+        filterMap.put("Male", Gender.MALE);
+        filterMap.put("Female", Gender.FEMALE);
+        filterMap.put("News", Context.NEWS);
+        filterMap.put("Shopping", Context.SHOPPING);
+        filterMap.put("Social Media", Context.SOCIAL_MEDIA);
+        filterMap.put("Blog", Context.BLOG);
+        filterMap.put("Low", Income.LOW);
+        filterMap.put("Medium", Income.MEDIUM);
+        filterMap.put("High", Income.HIGH);
 
         campaignData = CampaignDataStore.getInstance().getCampaignData();
 
@@ -127,6 +146,27 @@ public class GraphSettingsController {
         if (metricsScreenController != null && !lastTimeInterval.isEmpty()) {
             metricsScreenController.setTimeInterval(lastTimeInterval);
         }
+
+        // Apply filters
+        List<Set<Enum<?>>> filters = metricsScreenController.getFilters();
+        for (int i = 0; i < filters.size(); i++) filters.get(i).clear();
+
+        for (String filter : genderCheckCombo.getCheckModel().getCheckedItems()) {
+            filters.get(0).add(filterMap.get(filter));
+        }
+        for (String filter : ageCheckCombo.getCheckModel().getCheckedItems()) {
+            filters.get(1).add(filterMap.get(filter));
+        }
+        for (String filter : incomeCheckCombo.getCheckModel().getCheckedItems()) {
+            filters.get(2).add(filterMap.get(filter));
+        }
+        for (String filter : contextCheckCombo.getCheckModel().getCheckedItems()) {
+            filters.get(3).add(filterMap.get(filter));
+        }
+
+        metricsScreenController.setFilters(filters);
+
+        metricsScreenController.updateGraph();
 
         // Potentially store these values or pass to main scene
         if (stage != null) {
