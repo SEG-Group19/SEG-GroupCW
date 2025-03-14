@@ -57,6 +57,7 @@ public class MetricsScreenTest extends ApplicationTest {
     sleep(500);
 
     // Now verify that the metrics are updated correctly.
+
     FxAssert.verifyThat("#lblImpressions", LabeledMatchers.hasText("(2)"));
     FxAssert.verifyThat("#lblClicks", LabeledMatchers.hasText("(1)"));
   }

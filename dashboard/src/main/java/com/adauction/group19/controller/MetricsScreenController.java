@@ -56,7 +56,7 @@ public class MetricsScreenController {
     private LocalDate endDate;
     private TimeGranularity currentGranularity = TimeGranularity.HOURLY;
 
-    List<Set<Enum<?>>> filters = new ArrayList<>();
+    private List<Set<Enum<?>>> filters = new ArrayList<>();
 
     // Time granularity enum
     private enum TimeGranularity {

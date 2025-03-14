@@ -112,6 +112,10 @@ public class CampaignData {
     // Each set is a filter for a specific attribute
     // e.g. filter = [{ MALE, FEMALE }, { AGE_25_34, AGE_35_44 }, { LOW, MEDIUM }, { BLOG, NEWS }]
     private boolean filterMatches(List<Set<Enum<?>>> filter, Object[] data) {
+        // Assume if data is null then it does match the filter
+        if (data == null) {
+            return true;
+        }
         for (int i = 0; i < filter.size(); i++) {
             if (!filter.get(i).contains(data[i]) && !filter.get(i).isEmpty()) {
                 return false;

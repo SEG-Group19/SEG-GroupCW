@@ -8,6 +8,10 @@ import com.adauction.group19.view.ViewMetricsScreen;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 import javafx.application.Platform;
@@ -20,6 +24,7 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testfx.api.FxAssert;
@@ -35,6 +40,14 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
   private Stage stage;
   private MetricsScreenController controller;
   private CampaignData testData;
+  private List<Set<Enum<?>>> filters = new ArrayList<>();
+
+  @BeforeEach
+  public void setup() {
+    for (int i = 0; i < 4; i++) {
+      filters.add(new HashSet<>());
+    }
+  }
 
   @Override
   public void start(Stage stage) {
@@ -136,16 +149,17 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
   @Test
   public void testInitialLabelsMatchTotalValues() {
     // Check that the initial label values match the calculated totals from the campaign data
-    FxAssert.verifyThat("#lblImpressions", LabeledMatchers.hasText("(" + testData.getTotalImpressions() + ")"));
-    FxAssert.verifyThat("#lblClicks", LabeledMatchers.hasText("(" + testData.getTotalClicks() + ")"));
-    FxAssert.verifyThat("#lblUniques", LabeledMatchers.hasText("(" + testData.getTotalUniques() + ")"));
-    FxAssert.verifyThat("#lblConversions", LabeledMatchers.hasText("(" + testData.getTotalConversions() + ")"));
+
+    FxAssert.verifyThat("#lblImpressions", LabeledMatchers.hasText("(" + testData.getTotalImpressions(filters) + ")"));
+    FxAssert.verifyThat("#lblClicks", LabeledMatchers.hasText("(" + testData.getTotalClicks(filters) + ")"));
+    FxAssert.verifyThat("#lblUniques", LabeledMatchers.hasText("(" + testData.getTotalUniques(filters) + ")"));
+    FxAssert.verifyThat("#lblConversions", LabeledMatchers.hasText("(" + testData.getTotalConversions(filters) + ")"));
 
     // Check the formatted values for rate and cost metrics
-    String expectedCTR = "(" + String.format("%.2f", testData.getCTR()) + "%)";
+    String expectedCTR = "(" + String.format("%.2f", testData.getCTR(filters)) + "%)";
     FxAssert.verifyThat("#lblCTR", LabeledMatchers.hasText(expectedCTR));
 
-    String expectedCPC = "($" + String.format("%.2f", testData.getCPC()) + ")";
+    String expectedCPC = "($" + String.format("%.2f", testData.getCPC(filters)) + ")";
     FxAssert.verifyThat("#lblCPC", LabeledMatchers.hasText(expectedCPC));
   }
 
