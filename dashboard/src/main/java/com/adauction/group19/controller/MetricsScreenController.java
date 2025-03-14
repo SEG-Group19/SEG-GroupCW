@@ -1,6 +1,7 @@
 package com.adauction.group19.controller;
 
 import com.adauction.group19.model.CampaignData;
+import com.adauction.group19.model.Gender;
 import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.view.MainMenuScreen;
 
@@ -55,6 +56,8 @@ public class MetricsScreenController {
     private LocalDate endDate;
     private TimeGranularity currentGranularity = TimeGranularity.HOURLY;
 
+    private List<Set<Enum<?>>> filters = new ArrayList<>();
+
     // Time granularity enum
     private enum TimeGranularity {
         HOURLY, DAILY, WEEKLY
@@ -87,6 +90,21 @@ public class MetricsScreenController {
 
         // Update the graph with the initial data
         updateGraph();
+
+        // setup filters
+        for (int i = 0; i < 4; i++) {
+            filters.add(new HashSet<>());
+        }
+        filters.get(0).add(Gender.MALE);
+    }
+
+    protected void setFilters(List<Set<Enum<?>>> filters) {
+        this.filters = filters;
+        updateGraph();
+    }
+
+    protected List<Set<Enum<?>>> getFilters() {
+        return filters;
     }
 
     @FXML
@@ -181,19 +199,19 @@ public class MetricsScreenController {
         }
 
         // Set summary labels for totals
-        lblImpressions.setText("(" + campaignData.getTotalImpressions() + ")");
-        lblClicks.setText("(" + campaignData.getTotalClicks() + ")");
-        lblUniques.setText("(" + campaignData.getTotalUniques() + ")");
-        lblBounces.setText("(" + campaignData.getTotalBounces() + ")");
-        lblConversions.setText("(" + campaignData.getTotalConversions() + ")");
+        lblImpressions.setText("(" + campaignData.getTotalImpressions(filters) + ")");
+        lblClicks.setText("(" + campaignData.getTotalClicks(filters) + ")");
+        lblUniques.setText("(" + campaignData.getTotalUniques(filters) + ")");
+        lblBounces.setText("(" + campaignData.getTotalBounces(filters) + ")");
+        lblConversions.setText("(" + campaignData.getTotalConversions(filters) + ")");
 
         // Format to 2 decimal places for financial metrics
-        lblTotalCost.setText("($" + formatDouble(campaignData.getTotalCost()) + ")");
-        lblCTR.setText("(" + formatDouble(campaignData.getCTR()) + "%)");
-        lblCPA.setText("($" + formatDouble(campaignData.getCPA()) + ")");
-        lblCPC.setText("($" + formatDouble(campaignData.getCPC()) + ")");
-        lblCPM.setText("($" + formatDouble(campaignData.getCPM()) + ")");
-        lblBounceRate.setText("(" + formatDouble(campaignData.getBounceRate()) + "%)");
+        lblTotalCost.setText("($" + formatDouble(campaignData.getTotalCost(filters)) + ")");
+        lblCTR.setText("(" + formatDouble(campaignData.getCTR(filters)) + "%)");
+        lblCPA.setText("($" + formatDouble(campaignData.getCPA(filters)) + ")");
+        lblCPC.setText("($" + formatDouble(campaignData.getCPC(filters)) + ")");
+        lblCPM.setText("($" + formatDouble(campaignData.getCPM(filters)) + ")");
+        lblBounceRate.setText("(" + formatDouble(campaignData.getBounceRate(filters)) + "%)");
     }
 
     /**
@@ -254,37 +272,37 @@ public class MetricsScreenController {
 
         switch (seriesName) {
             case "Impressions":
-                label.setText("(" + campaignData.getTotalImpressions() + ")");
+                label.setText("(" + campaignData.getTotalImpressions(filters) + ")");
                 break;
             case "Clicks":
-                label.setText("(" + campaignData.getTotalClicks() + ")");
+                label.setText("(" + campaignData.getTotalClicks(filters) + ")");
                 break;
             case "Uniques":
-                label.setText("(" + campaignData.getTotalUniques() + ")");
+                label.setText("(" + campaignData.getTotalUniques(filters) + ")");
                 break;
             case "Bounces":
-                label.setText("(" + campaignData.getTotalBounces() + ")");
+                label.setText("(" + campaignData.getTotalBounces(filters) + ")");
                 break;
             case "Conversions":
-                label.setText("(" + campaignData.getTotalConversions() + ")");
+                label.setText("(" + campaignData.getTotalConversions(filters) + ")");
                 break;
             case "Total Cost":
-                label.setText("($" + formatDouble(campaignData.getTotalCost()) + ")");
+                label.setText("($" + formatDouble(campaignData.getTotalCost(filters)) + ")");
                 break;
             case "CTR":
-                label.setText("(" + formatDouble(campaignData.getCTR()) + "%)");
+                label.setText("(" + formatDouble(campaignData.getCTR(filters)) + "%)");
                 break;
             case "CPA":
-                label.setText("($" + formatDouble(campaignData.getCPA()) + ")");
+                label.setText("($" + formatDouble(campaignData.getCPA(filters)) + ")");
                 break;
             case "CPC":
-                label.setText("($" + formatDouble(campaignData.getCPC()) + ")");
+                label.setText("($" + formatDouble(campaignData.getCPC(filters)) + ")");
                 break;
             case "CPM":
-                label.setText("($" + formatDouble(campaignData.getCPM()) + ")");
+                label.setText("($" + formatDouble(campaignData.getCPM(filters)) + ")");
                 break;
             case "Bounce Rate":
-                label.setText("(" + formatDouble(campaignData.getBounceRate()) + "%)");
+                label.setText("(" + formatDouble(campaignData.getBounceRate(filters)) + "%)");
                 break;
             default:
                 label.setText("(0)");
@@ -367,8 +385,8 @@ public class MetricsScreenController {
                 for (String xLabel : xLabels) {
                     LocalDateTime dateTime = parseXAxisLabel(xLabel);
                     double value = seriesName.equals("Uniques")
-                        ? campaignData.getUniquesForDate(dateTime)
-                        : campaignData.getBouncesForDate(dateTime);
+                        ? campaignData.getUniquesForDate(dateTime, filters)
+                        : campaignData.getBouncesForDate(dateTime, filters);
                     series.getData().add(new XYChart.Data<>(xLabel, value));
                     periodTotal += value;
                 }
@@ -380,11 +398,11 @@ public class MetricsScreenController {
 
                     for (String xLabel : xLabels) {
                         LocalDateTime dateTime = parseXAxisLabel(xLabel);
-                        int uniquesValue = campaignData.getUniquesForDate(dateTime);
+                        int uniquesValue = campaignData.getUniquesForDate(dateTime, filters);
                         series.getData().add(new XYChart.Data<>(xLabel, uniquesValue));
 
                         // Collect unique IDs for the period total
-                        for (Object[] impression : campaignData.getImpressions()) {
+                        for (Object[] impression : campaignData.getImpressions(filters)) {
                             LocalDateTime impressionTime = (LocalDateTime) impression[0];
 
                             if (isInTimeRange(impressionTime, dateTime)) {
@@ -397,7 +415,7 @@ public class MetricsScreenController {
                     // For bounces, sum values
                     for (String xLabel : xLabels) {
                         LocalDateTime dateTime = parseXAxisLabel(xLabel);
-                        int bounceValue = campaignData.getBouncesForDate(dateTime);
+                        int bounceValue = campaignData.getBouncesForDate(dateTime, filters);
                         series.getData().add(new XYChart.Data<>(xLabel, bounceValue));
                         periodTotal += bounceValue;
                     }
@@ -492,44 +510,44 @@ public class MetricsScreenController {
         switch (seriesName) {
             case "Impressions":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyImpressions(dateTime)
-                    : campaignData.getImpressionsForDate(dateTime);
+                    ? campaignData.getHourlyImpressions(dateTime, filters)
+                    : campaignData.getImpressionsForDate(dateTime, filters);
             case "Clicks":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyClicks(dateTime)
-                    : campaignData.getClicksForDate(dateTime);
+                    ? campaignData.getHourlyClicks(dateTime, filters)
+                    : campaignData.getClicksForDate(dateTime, filters);
             case "Conversions":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyConversions(dateTime)
-                    : campaignData.getConversionsForDate(dateTime);
+                    ? campaignData.getHourlyConversions(dateTime, filters)
+                    : campaignData.getConversionsForDate(dateTime, filters);
             case "Total Cost":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyTotalCost(dateTime)
-                    : campaignData.getTotalCostForDate(dateTime);
+                    ? campaignData.getHourlyTotalCost(dateTime, filters)
+                    : campaignData.getTotalCostForDate(dateTime, filters);
             case "CTR":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyCTR(dateTime)
-                    : campaignData.getCTRForDate(dateTime);
+                    ? campaignData.getHourlyCTR(dateTime, filters)
+                    : campaignData.getCTRForDate(dateTime, filters);
             case "CPA":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyCPA(dateTime)
-                    : campaignData.getCPAForDate(dateTime);
+                    ? campaignData.getHourlyCPA(dateTime, filters)
+                    : campaignData.getCPAForDate(dateTime, filters);
             case "CPC":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyCPC(dateTime)
-                    : campaignData.getCPCForDate(dateTime);
+                    ? campaignData.getHourlyCPC(dateTime, filters)
+                    : campaignData.getCPCForDate(dateTime, filters);
             case "CPM":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyCPM(dateTime)
-                    : campaignData.getCPMForDate(dateTime);
+                    ? campaignData.getHourlyCPM(dateTime, filters)
+                    : campaignData.getCPMForDate(dateTime, filters);
             case "Bounce Rate":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyBounceRate(dateTime)
-                    : campaignData.getBounceRateForDate(dateTime);
+                    ? campaignData.getHourlyBounceRate(dateTime, filters)
+                    : campaignData.getBounceRateForDate(dateTime, filters);
             case "Uniques":
-                return campaignData.getUniquesForDate(dateTime);
+                return campaignData.getUniquesForDate(dateTime, filters);
             case "Bounces":
-                return campaignData.getBouncesForDate(dateTime);
+                return campaignData.getBouncesForDate(dateTime, filters);
             default:
                 return 0.0;
         }

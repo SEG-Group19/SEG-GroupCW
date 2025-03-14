@@ -41,9 +41,9 @@ public class MetricsScreenTest extends ApplicationTest {
       data.addImpression(now, "user1", Gender.MALE, AgeRange.AGE_25_34, Income.HIGH, Context.BLOG, 0.5);
       data.addImpression(now, "user2", Gender.FEMALE, AgeRange.AGE_35_44, Income.MEDIUM, Context.NEWS, 0.7);
       // One click (so total clicks = 1)
-      data.addClick(now, 0.3);
+      data.addClick(now, 0.3, "1");
       // One server log entry that qualifies as a bounce (pagesViewed == 1, duration 3 sec)
-      data.addServerLogEntry(now, now.plusSeconds(3), 1, true);
+      data.addServerLogEntry(now, now.plusSeconds(3), 1, true, "1");
       // Update the store
       CampaignDataStore.getInstance().setCampaignData(data);
 
@@ -57,6 +57,7 @@ public class MetricsScreenTest extends ApplicationTest {
     sleep(500);
 
     // Now verify that the metrics are updated correctly.
+
     FxAssert.verifyThat("#lblImpressions", LabeledMatchers.hasText("(2)"));
     FxAssert.verifyThat("#lblClicks", LabeledMatchers.hasText("(1)"));
   }
