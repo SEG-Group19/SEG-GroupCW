@@ -150,24 +150,6 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
   }
 
   @Test
-  public void testTimeScaleButtonsUpdateXAxis() {
-    // First click on Last 24h button (replacing btn1Day)
-    clickOn("#btnLastDay");
-    sleep(200);
-
-    // Verify the x-axis label updates to reflect hourly view
-    LineChart<String, Number> chart = lookup("#lineChart").queryAs(LineChart.class);
-    assertEquals("Hour", chart.getXAxis().getLabel());
-
-    // Then click Last Month button (replacing btn2Weeks)
-    clickOn("#btnLastMonth");
-    sleep(200);
-
-    // Verify the x-axis label updates to reflect date view
-    assertEquals("Date", chart.getXAxis().getLabel());
-  }
-
-  @Test
   public void testCheckboxTogglesMetricVisibility() {
     // Start with clear chart
     LineChart<String, Number> chart = lookup("#lineChart").queryAs(LineChart.class);
@@ -237,37 +219,6 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
     String impressionsText = lookup("#lblImpressions").queryAs(Label.class).getText();
     assertTrue(impressionsText.matches("\\(\\d+\\)"), "Impressions should be an integer");
   }
-
-  @Test
-  public void testChartDataMatchesSelectedTimeScale() {
-    // First select impressions
-    clickOn("#chkImpressions");
-    sleep(300);
-
-    // Get the initial data points count for all data (using btnAllData instead of default)
-    clickOn("#btnAllData");
-    sleep(300);
-    LineChart<String, Number> chart = lookup("#lineChart").queryAs(LineChart.class);
-    int allDataPoints = chart.getData().get(0).getData().size();
-
-    // Switch to 1 week view
-    clickOn("#btnLastWeek");
-    sleep(300);
-
-    // Verify fewer data points
-    int oneWeekDataPoints = chart.getData().get(0).getData().size();
-    assertTrue(oneWeekDataPoints < allDataPoints,
-        "One week should have fewer data points than all data");
-
-    // Switch to 1 day view (hourly)
-    clickOn("#btnLastDay");
-    sleep(300);
-
-    // Verify number of data points matches 24 hours
-    int oneDayDataPoints = chart.getData().get(0).getData().size();
-    assertEquals(24, oneDayDataPoints, "One day view should have 24 hourly data points");
-  }
-
 
   @Test
   public void testAllCheckboxesWork() {

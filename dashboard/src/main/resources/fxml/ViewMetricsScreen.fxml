@@ -17,7 +17,7 @@
                 <Button fx:id="goBackButton" text="⬅ Back" onAction="#handleBackButton" styleClass="primary-button"/>
             </HBox>
 
-            <!-- Date Selection Controls - Above the graph -->
+            <!-- Date Selection Controls - Above the graph
             <HBox alignment="CENTER_LEFT" spacing="10" styleClass="date-controls">
                 <Label text="Date Range:"/>
                 <DatePicker fx:id="startDatePicker" promptText="Start Date"/>
@@ -26,6 +26,7 @@
                 <Button fx:id="applyDateRangeButton" text="Apply" onAction="#handleApplyDateRange"
                   styleClass="primary-button" style="-fx-padding: 4 12; -fx-font-size: 11px;"/>
             </HBox>
+            -->
         </VBox>
     </top>
 
@@ -105,8 +106,18 @@
                 </yAxis>
             </LineChart>
 
+            <HBox alignment="CENTER" spacing="10">
+                <Button styleClass="primary-button" fx:id="graphSettingsBtn" onAction="#handleGraphSettings">
+                    Graph Settings
+                </Button>
+                <Button styleClass="primary-button" fx:id="bounceRegistrationBtn" onAction="#handleBounceRegistration">
+                    Define bounce registration
+                </Button>
+            </HBox>
+
+            <!--
             <VBox>
-            <!-- Time Granularity Controls - Below the graph -->
+
                 <HBox alignment="CENTER" spacing="10" style="-fx-padding: 10 0 5 0;" >
                     <Label text="Time Granularity:"/>
 
@@ -119,7 +130,7 @@
                     <RadioButton fx:id="rbWeekly" text="Weekly" toggleGroup="$timeGranularity" onAction="#handleGranularityChange"/>
                 </HBox>
 
-                <!-- Quick Select Buttons - Below granularity controls -->
+
                 <HBox alignment="CENTER" spacing="10" style="-fx-padding: 5 0 10 0;">
                     <Label text="Quick Select:"/>
                     <Button fx:id="btnLastDay" text="Last 24h" onAction="#handleQuickDateRange"
@@ -132,6 +143,7 @@
                       styleClass="secondary-button" style="-fx-padding: 3 8; -fx-font-size: 11px;"/>
                 </HBox>
             </VBox>
+                        -->
         </VBox>
     </center>
 

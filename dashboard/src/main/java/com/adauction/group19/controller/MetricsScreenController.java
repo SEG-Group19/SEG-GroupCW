@@ -4,6 +4,7 @@ import com.adauction.group19.model.CampaignData;
 import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.view.MainMenuScreen;
 
+import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
@@ -12,13 +13,17 @@ import java.util.*;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
+import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 
 /**
@@ -27,14 +32,12 @@ import javafx.util.StringConverter;
  */
 public class MetricsScreenController {
 
+    @FXML public Button graphSettingsBtn;
     // UI components
     @FXML private LineChart<String, Number> lineChart;
     @FXML private CategoryAxis xAxis;
     @FXML private NumberAxis yAxis;
-    @FXML private DatePicker startDatePicker;
-    @FXML private DatePicker endDatePicker;
     @FXML private ToggleGroup timeGranularity;
-    @FXML private RadioButton rbHourly, rbDaily, rbWeekly;
     @FXML private Button btnLastDay, btnLastWeek, btnLastMonth, btnAllData;
 
     // Metrics checkboxes
@@ -63,7 +66,7 @@ public class MetricsScreenController {
     @FXML
     public void initialize() {
         // Initialize date pickers
-        setupDatePickers();
+        // setupDatePickers();
 
         // Load campaign data
         campaignData = CampaignDataStore.getInstance().getCampaignData();
@@ -86,43 +89,49 @@ public class MetricsScreenController {
         updateGraph();
     }
 
-    /**
-     * Sets up the date pickers with proper formatting and listeners.
-     */
-    private void setupDatePickers() {
-        // Set date formatters
-        StringConverter<LocalDate> dateConverter = new StringConverter<>() {
-            private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    @FXML
+    private void handleGraphSettings() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/GraphSettings.fxml"));
+            Parent root = loader.load();
 
-            @Override
-            public String toString(LocalDate date) {
-                return (date != null) ? dateFormatter.format(date) : "";
-            }
+            // Create a stage
+            Stage popupStage = new Stage();
+            popupStage.setTitle("Graph Settings");
+            popupStage.setScene(new Scene(root));
+            popupStage.setResizable(false);
 
-            @Override
-            public LocalDate fromString(String string) {
-                return (string != null && !string.isEmpty())
-                    ? LocalDate.parse(string, dateFormatter) : null;
-            }
-        };
+            GraphSettingsController controller = loader.getController();
+            controller.setMetricsScreenController(this);
+            controller.setDates(startDate, endDate);
+            controller.setStage(popupStage);
 
-        startDatePicker.setConverter(dateConverter);
-        endDatePicker.setConverter(dateConverter);
+            popupStage.showAndWait();  // Wait until user closes
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-        // Ensure end date can't be before start date
-        startDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && endDatePicker.getValue() != null &&
-                newValue.isAfter(endDatePicker.getValue())) {
-                endDatePicker.setValue(newValue);
-            }
-        });
+    @FXML
+    private void handleBounceRegistration() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/BounceRegistration.fxml"));
+            Parent root = loader.load();
 
-        endDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && startDatePicker.getValue() != null &&
-                newValue.isBefore(startDatePicker.getValue())) {
-                startDatePicker.setValue(newValue);
-            }
-        });
+            // Create a stage
+            Stage popupStage = new Stage();
+            popupStage.setTitle("Define bounce registration");
+            popupStage.setScene(new Scene(root));
+            popupStage.setResizable(false);
+
+            BounceRegistrationController controller = loader.getController();
+            controller.setMetricsScreenController(this);
+            controller.setStage(popupStage);
+
+            popupStage.showAndWait();  // Wait until user closes
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -145,10 +154,21 @@ public class MetricsScreenController {
             .map(LocalDateTime::toLocalDate)
             .max(LocalDate::compareTo)
             .orElse(LocalDate.now());
+    }
 
-        // Set date pickers
-        startDatePicker.setValue(startDate);
-        endDatePicker.setValue(endDate);
+    protected void setDates(LocalDate startDate, LocalDate endDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+
+        updateGraph();
+    }
+
+    protected LocalDate getStartDate() {
+        return startDate;
+    }
+
+    protected LocalDate getEndDate() {
+        return endDate;
     }
 
     /**
@@ -274,7 +294,7 @@ public class MetricsScreenController {
     /**
      * Updates the graph based on the selected date range and granularity.
      */
-    private void updateGraph() {
+    protected void updateGraph() {
         if (campaignData == null) {
             return;
         }
@@ -625,45 +645,6 @@ public class MetricsScreenController {
     }
 
     /**
-     * Handles changes in time granularity.
-     * @param actionEvent The action event.
-     */
-    @FXML
-    public void handleGranularityChange(ActionEvent actionEvent) {
-        if (rbHourly.isSelected()) {
-            currentGranularity = TimeGranularity.HOURLY;
-        } else if (rbWeekly.isSelected()) {
-            currentGranularity = TimeGranularity.WEEKLY;
-        } else {
-            currentGranularity = TimeGranularity.DAILY;
-        }
-
-        updateGraph();
-    }
-
-    /**
-     * Handles date range application.
-     * @param actionEvent The action event.
-     */
-    @FXML
-    public void handleApplyDateRange(ActionEvent actionEvent) {
-        LocalDate start = startDatePicker.getValue();
-        LocalDate end = endDatePicker.getValue();
-
-        if (start != null && end != null) {
-            startDate = start;
-            endDate = end;
-            updateGraph();
-        } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Invalid Date Range");
-            alert.setHeaderText("Please select both start and end dates");
-            alert.setContentText("Both date fields must be filled to apply a custom date range.");
-            alert.showAndWait();
-        }
-    }
-
-    /**
      * Handles quick date range selection.
      * @param actionEvent The action event.
      */
@@ -693,32 +674,52 @@ public class MetricsScreenController {
             startDate = lastDate;
             endDate = lastDate;
             currentGranularity = TimeGranularity.HOURLY;
-            rbHourly.setSelected(true);
         } else if (sourceButton == btnLastWeek) {
             // Last week - up to 7 days back from the last date
             startDate = lastDate.minusDays(6);
             endDate = lastDate;
             currentGranularity = TimeGranularity.DAILY;
-            rbDaily.setSelected(true);
         } else if (sourceButton == btnLastMonth) {
             // Last month - up to 30 days back from the last date
             startDate = lastDate.minusDays(29);
             endDate = lastDate;
             currentGranularity = TimeGranularity.DAILY;
-            rbDaily.setSelected(true);
         } else if (sourceButton == btnAllData) {
             // All data - use entire date range
             startDate = firstDate;
             endDate = lastDate;
             currentGranularity = TimeGranularity.DAILY;
-            rbDaily.setSelected(true);
         }
 
-        // Update date pickers to reflect the selected range
-        startDatePicker.setValue(startDate);
-        endDatePicker.setValue(endDate);
-
         // Update the graph
+        updateGraph();
+    }
+
+    /**
+     * Sets the time interval for the graph and updates it.
+     * @param timeInterval The time interval to set (e.g. "1 hour", "4 hours", "1 day", "1 week").
+     */
+    public void setTimeInterval(String timeInterval) {
+        if (timeInterval == null || timeInterval.isEmpty()) {
+            return; // Don't change anything if timeInterval is empty
+        }
+
+        switch (timeInterval) {
+            case "1 hour":
+                currentGranularity = TimeGranularity.HOURLY;
+                break;
+            case "1 day":
+                currentGranularity = TimeGranularity.DAILY;
+                break;
+            case "1 week":
+                currentGranularity = TimeGranularity.WEEKLY;
+                break;
+            default:
+                System.err.println("Unknown time interval: " + timeInterval);
+                return;
+        }
+
+        // Update the graph with the new time interval
         updateGraph();
     }
 }

@@ -19,6 +19,7 @@ public class CampaignData {
     private List<Object[]> impressions = new ArrayList<>();
     private List<Object[]> clicks = new ArrayList<>();
     private List<Object[]> serverLogs = new ArrayList<>();
+    private BounceCriteria bounceCriteria = new BounceCriteria(); // Initialize with default criteria
 
     /**
      * Adds an impression to the campaign data.
@@ -33,6 +34,59 @@ public class CampaignData {
         // Now, index 0: dateTime, index 1: id, index 2: gender, index 3: ageRange,
         // index 4: income, index 5: context, index 6: impressionCost.
         impressions.add(new Object[]{dateTime, id, gender, ageRange, income, context, impressionCost});
+    }
+
+    public void setBounceCriteria(BounceCriteria bounceCriteria) {
+        this.bounceCriteria = bounceCriteria;
+    }
+
+    /**
+     * Returns the bounce criteria for the campaign data.
+     * @return the bounce criteria
+     */
+    public BounceCriteria getBounceCriteria() {
+        return bounceCriteria;
+    }
+
+    /**
+     * Determines if a server log entry represents a bounce based on the current bounce criteria.
+     * @param serverLog The server log entry to check
+     * @return true if the entry is considered a bounce, false otherwise
+     */
+    private boolean isBounce(Object[] serverLog) {
+        LocalDateTime entryDateTime = (LocalDateTime) serverLog[0];
+        LocalDateTime exitDateTime = (LocalDateTime) serverLog[1];
+        int pagesViewed = (int) serverLog[2];
+        long timeOnPageSeconds = 0;
+
+        // Calculate time on page if both timestamps are present
+        if (entryDateTime != null && exitDateTime != null) {
+            timeOnPageSeconds = Duration.between(entryDateTime, exitDateTime).getSeconds();
+        }
+
+        // Check if it's a bounce based on pages viewed
+        boolean bounceByPages = bounceCriteria.isConsiderPagesViewed() &&
+            pagesViewed < bounceCriteria.getMinPagesViewed();
+
+        // Check if it's a bounce based on time on site
+        boolean bounceByTime = bounceCriteria.isConsiderTimeOnSite() &&
+            entryDateTime != null && exitDateTime != null &&
+            timeOnPageSeconds < bounceCriteria.getMinTimeOnSiteSeconds();
+
+        // If considering both criteria, consider it a bounce if either is true
+        if (bounceCriteria.isConsiderPagesViewed() && bounceCriteria.isConsiderTimeOnSite()) {
+            return bounceByPages || bounceByTime;
+        }
+        // Otherwise, only consider the criteria that are enabled
+        else if (bounceCriteria.isConsiderPagesViewed()) {
+            return bounceByPages;
+        }
+        else if (bounceCriteria.isConsiderTimeOnSite()) {
+            return bounceByTime;
+        }
+
+        // If no criteria are enabled, default to no bounces
+        return false;
     }
 
 
@@ -119,30 +173,19 @@ public class CampaignData {
 
 
     /**
-     * Returns the total number of bounces.
-     * @return the total number of bounces.
+     * Returns the total number of bounces based on the current bounce criteria.
+     * @return the total number of bounces
      */
     public int getTotalBounces() {
         int totalBounces = 0;
         for (Object[] serverLog : serverLogs) {
-            LocalDateTime entryDateTime = (LocalDateTime) serverLog[0];
-            LocalDateTime exitDateTime = (LocalDateTime) serverLog[1];
-            int pagesViewed = (int) serverLog[2];
-            long timeOnPageSeconds = 0;
-
-            // Only compute time on page if both timestamps are non-null
-            if (entryDateTime != null && exitDateTime != null) {
-                timeOnPageSeconds = Duration.between(entryDateTime, exitDateTime).getSeconds();
-            }
-
-            // Count as a bounce if the user viewed only one page
-            // OR if both timestamps are present and the time on page is less than 4 seconds.
-            if (pagesViewed == 1 || (entryDateTime != null && exitDateTime != null && timeOnPageSeconds < 4)) {
+            if (isBounce(serverLog)) {
                 totalBounces++;
             }
         }
         return totalBounces;
     }
+
 
 
     /**
@@ -265,24 +308,14 @@ public class CampaignData {
     }
 
     /**
-     * Returns the number of bounces for the given date.
-     * @param date the date to get the bounces for.
-     * @return the number of bounces for the given date.
+     * Returns the number of bounces for the given date based on the current bounce criteria.
+     * @param date the date to get the bounces for
+     * @return the number of bounces for the given date
      */
     public int getBouncesForDate(LocalDateTime date) {
         return (int) serverLogs.stream()
             .filter(entry -> ((LocalDateTime) entry[0]).toLocalDate().equals(date.toLocalDate()))
-            .filter(entry -> {
-                LocalDateTime entryDT = (LocalDateTime) entry[0];
-                LocalDateTime exitDT = (LocalDateTime) entry[1];
-                int pagesViewed = (int) entry[2];
-                long timeOnPageSeconds = 0;
-                if (entryDT != null && exitDT != null) {
-                    timeOnPageSeconds = Duration.between(entryDT, exitDT).getSeconds();
-                }
-                // Bounce if only one page or time on page is less than 4 seconds.
-                return pagesViewed == 1 || (entryDT != null && exitDT != null && timeOnPageSeconds < 4);
-            })
+            .filter(this::isBounce)
             .count();
     }
 
@@ -518,16 +551,16 @@ public class CampaignData {
     }
 
     /**
-     * Returns the Bounce Rate = (Total Bounces / Total Clicks) * 100.
-     * @param dateTime the date and time to get the hourly bounce rate for.
-     * @return the hourly bounce rate percentage for the given date and time.
+     * Returns the Bounce Rate = (Total Bounces / Total Clicks) * 100 for the given hour.
+     * @param dateTime the date and time to get the hourly bounce rate for
+     * @return the hourly bounce rate percentage for the given date and time
      */
     public double getHourlyBounceRate(LocalDateTime dateTime) {
         int clicks = getHourlyClicks(dateTime);
         int bounces = (int) serverLogs.stream()
             .filter(entry -> ((LocalDateTime) entry[0]).getHour() == dateTime.getHour()
                 && ((LocalDateTime) entry[0]).toLocalDate().equals(dateTime.toLocalDate()))
-            .filter(entry -> (int) entry[2] == 1)
+            .filter(this::isBounce)
             .count();
         if (clicks == 0) return 0;
         double bounceRate = ((double) bounces / clicks) * 100;
