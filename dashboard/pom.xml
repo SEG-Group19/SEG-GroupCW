@@ -69,6 +69,13 @@
       <version>12</version>
     </dependency>
 
+    <!-- PDFBox for exporting to PDF -->
+    <dependency>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
+      <version>2.0.27</version>
+    </dependency>
+
     <!-- TestFX for writing JavaFX GUI tests -->
     <dependency>
       <groupId>org.testfx</groupId>

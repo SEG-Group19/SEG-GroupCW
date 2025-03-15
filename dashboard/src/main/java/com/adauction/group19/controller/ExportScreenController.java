@@ -1,6 +1,8 @@
 package com.adauction.group19.controller;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,7 +13,6 @@ import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -20,12 +21,22 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import javax.imageio.ImageIO;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+
 import com.adauction.group19.model.CampaignData;
 import com.adauction.group19.model.ExportData;
 import com.adauction.group19.service.CampaignDataStore;
+import com.adauction.group19.utils.ThemeManager;
 import com.adauction.group19.view.MainMenuScreen;
 
 import javafx.collections.FXCollections;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -40,6 +51,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -672,9 +684,9 @@ public class ExportScreenController {
     /**
      * Chooses a file to export the data to.    
      * @param format The format to export the data to.
-     * @param data The data to export.
+     * @param data The text data to export.
      */
-    public void exportFile(String format, String data) {
+    public void exportTextFile(String format, String data) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Export as " + format);
         fileChooser.setInitialFileName("output");
@@ -694,6 +706,86 @@ public class ExportScreenController {
     }
 
     /**
+     * Get the Image of the LineChart.
+     * @return The Image of the LineChart.
+     */
+    private BufferedImage getLineChartImage() {
+        boolean wasDarkMode = ThemeManager.isDarkMode();
+        if (wasDarkMode) {
+            ThemeManager.toggleTheme(lineChart.getScene());
+        }
+        WritableImage image = lineChart.snapshot(null, null);
+        if (wasDarkMode) {
+            ThemeManager.toggleTheme(lineChart.getScene());
+        }
+        return SwingFXUtils.fromFXImage(image, null);
+    }
+
+    /**
+     * Handles the export to image button.
+     * @param actionEvent The action event.
+     */
+    @FXML
+    public void handleExportImage(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export as Image");
+        fileChooser.setInitialFileName("output");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image file", "*.png"));
+        File file = fileChooser.showSaveDialog(stage);
+        if (file == null) {
+            return;
+        }
+        try {
+            BufferedImage image = getLineChartImage();
+            ImageIO.write(image, "png", file);
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Error exporting file");
+            alert.setContentText("Error exporting file: " + e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    /**
+     * Handles the export to PDF button.
+     * @param actionEvent The action event.
+     */
+    @FXML
+    public void handleExportPDF(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export as PDF");
+        fileChooser.setInitialFileName("output");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF file", "*.pdf"));
+        File file = fileChooser.showSaveDialog(stage);
+        if (file == null) {
+            return;
+        }
+        try (PDDocument document = new PDDocument()) {
+            BufferedImage bufferedImage = getLineChartImage();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "png", baos);
+            byte[] imageBytes = baos.toByteArray();
+            double imageWidth = bufferedImage.getWidth();
+            double imageHeight = bufferedImage.getHeight();
+            PDPage page = new PDPage(new PDRectangle((float)imageWidth, (float)imageHeight));
+            document.addPage(page);
+            PDImageXObject pdImage = PDImageXObject.createFromByteArray(document, imageBytes, "image");
+            
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+                contentStream.drawImage(pdImage, 0, 0);
+            }
+            document.save(file);
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Error exporting file");
+            alert.setContentText("Error exporting file: " + e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    /**
      * Handles the export to CSV button.
      * @param actionEvent The action event.
      */
@@ -704,7 +796,7 @@ public class ExportScreenController {
             return;
         }
         String csv = exportData.toCSV();
-        exportFile("csv", csv);
+        exportTextFile("csv", csv);
     }
 
 
@@ -719,7 +811,7 @@ public class ExportScreenController {
             return;
         }
         String json = exportData.toJSON();
-        exportFile("json", json);
+        exportTextFile("json", json);
     }
 
     /**
