@@ -2,6 +2,7 @@ package com.adauction.group19.controller;
 
 import com.adauction.group19.model.CampaignData;
 import com.adauction.group19.model.ExportData;
+import com.adauction.group19.model.Gender;
 import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.utils.ThemeManager;
 import com.adauction.group19.view.MainMenuScreen;
@@ -30,15 +31,20 @@ import javafx.collections.FXCollections;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
+
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
+import javafx.stage.StageStyle;
 import javafx.util.StringConverter;
 
 /**
@@ -47,14 +53,12 @@ import javafx.util.StringConverter;
  */
 public class MetricsScreenController {
 
+    @FXML public Button graphSettingsBtn;
     // UI components
     @FXML private LineChart<String, Number> lineChart;
     @FXML private CategoryAxis xAxis;
     @FXML private NumberAxis yAxis;
-    @FXML private DatePicker startDatePicker;
-    @FXML private DatePicker endDatePicker;
     @FXML private ToggleGroup timeGranularity;
-    @FXML private RadioButton rbHourly, rbDaily, rbWeekly;
     @FXML private Button btnLastDay, btnLastWeek, btnLastMonth, btnAllData;
 
     // Metrics checkboxes
@@ -72,6 +76,8 @@ public class MetricsScreenController {
     private LocalDate endDate;
     private TimeGranularity currentGranularity = TimeGranularity.HOURLY;
 
+    private List<Set<Enum<?>>> filters = new ArrayList<>();
+
     // Time granularity enum
     private enum TimeGranularity {
         HOURLY, DAILY, WEEKLY
@@ -83,7 +89,7 @@ public class MetricsScreenController {
     @FXML
     public void initialize() {
         // Initialize date pickers
-        setupDatePickers();
+        // setupDatePickers();
 
         // Load campaign data
         campaignData = CampaignDataStore.getInstance().getCampaignData();
@@ -104,45 +110,66 @@ public class MetricsScreenController {
 
         // Update the graph with the initial data
         updateGraph();
+
+        // setup filters
+        for (int i = 0; i < 4; i++) {
+            filters.add(new HashSet<>());
+        }
+        filters.get(0).add(Gender.MALE);
     }
 
-    /**
-     * Sets up the date pickers with proper formatting and listeners.
-     */
-    private void setupDatePickers() {
-        // Set date formatters
-        StringConverter<LocalDate> dateConverter = new StringConverter<>() {
-            private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    protected void setFilters(List<Set<Enum<?>>> filters) {
+        this.filters = filters;
+        updateGraph();
+    }
 
-            @Override
-            public String toString(LocalDate date) {
-                return (date != null) ? dateFormatter.format(date) : "";
-            }
+    protected List<Set<Enum<?>>> getFilters() {
+        return filters;
+    }
 
-            @Override
-            public LocalDate fromString(String string) {
-                return (string != null && !string.isEmpty())
-                    ? LocalDate.parse(string, dateFormatter) : null;
-            }
-        };
+    @FXML
+    private void handleGraphSettings() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/GraphSettings.fxml"));
+            Parent root = loader.load();
 
-        startDatePicker.setConverter(dateConverter);
-        endDatePicker.setConverter(dateConverter);
+            // Create a stage
+            Stage popupStage = new Stage();
+            popupStage.setTitle("Graph Settings");
+            popupStage.setScene(new Scene(root));
+            popupStage.setResizable(false);
 
-        // Ensure end date can't be before start date
-        startDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && endDatePicker.getValue() != null &&
-                newValue.isAfter(endDatePicker.getValue())) {
-                endDatePicker.setValue(newValue);
-            }
-        });
+            GraphSettingsController controller = loader.getController();
+            controller.setMetricsScreenController(this);
+            controller.setDates(startDate, endDate);
+            controller.setStage(popupStage);
 
-        endDatePicker.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && startDatePicker.getValue() != null &&
-                newValue.isBefore(startDatePicker.getValue())) {
-                startDatePicker.setValue(newValue);
-            }
-        });
+            popupStage.showAndWait();  // Wait until user closes
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleBounceRegistration() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/BounceRegistration.fxml"));
+            Parent root = loader.load();
+
+            // Create a stage
+            Stage popupStage = new Stage();
+            popupStage.setTitle("Define bounce registration");
+            popupStage.setScene(new Scene(root));
+            popupStage.setResizable(false);
+
+            BounceRegistrationController controller = loader.getController();
+            controller.setMetricsScreenController(this);
+            controller.setStage(popupStage);
+
+            popupStage.showAndWait();  // Wait until user closes
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -165,10 +192,21 @@ public class MetricsScreenController {
             .map(LocalDateTime::toLocalDate)
             .max(LocalDate::compareTo)
             .orElse(LocalDate.now());
+    }
 
-        // Set date pickers
-        startDatePicker.setValue(startDate);
-        endDatePicker.setValue(endDate);
+    protected void setDates(LocalDate startDate, LocalDate endDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+
+        updateGraph();
+    }
+
+    protected LocalDate getStartDate() {
+        return startDate;
+    }
+
+    protected LocalDate getEndDate() {
+        return endDate;
     }
 
     /**
@@ -181,19 +219,19 @@ public class MetricsScreenController {
         }
 
         // Set summary labels for totals
-        lblImpressions.setText("(" + campaignData.getTotalImpressions() + ")");
-        lblClicks.setText("(" + campaignData.getTotalClicks() + ")");
-        lblUniques.setText("(" + campaignData.getTotalUniques() + ")");
-        lblBounces.setText("(" + campaignData.getTotalBounces() + ")");
-        lblConversions.setText("(" + campaignData.getTotalConversions() + ")");
+        lblImpressions.setText("(" + campaignData.getTotalImpressions(filters) + ")");
+        lblClicks.setText("(" + campaignData.getTotalClicks(filters) + ")");
+        lblUniques.setText("(" + campaignData.getTotalUniques(filters) + ")");
+        lblBounces.setText("(" + campaignData.getTotalBounces(filters) + ")");
+        lblConversions.setText("(" + campaignData.getTotalConversions(filters) + ")");
 
         // Format to 2 decimal places for financial metrics
-        lblTotalCost.setText("($" + formatDouble(campaignData.getTotalCost()) + ")");
-        lblCTR.setText("(" + formatDouble(campaignData.getCTR()) + "%)");
-        lblCPA.setText("($" + formatDouble(campaignData.getCPA()) + ")");
-        lblCPC.setText("($" + formatDouble(campaignData.getCPC()) + ")");
-        lblCPM.setText("($" + formatDouble(campaignData.getCPM()) + ")");
-        lblBounceRate.setText("(" + formatDouble(campaignData.getBounceRate()) + "%)");
+        lblTotalCost.setText("($" + formatDouble(campaignData.getTotalCost(filters)) + ")");
+        lblCTR.setText("(" + formatDouble(campaignData.getCTR(filters)) + "%)");
+        lblCPA.setText("($" + formatDouble(campaignData.getCPA(filters)) + ")");
+        lblCPC.setText("($" + formatDouble(campaignData.getCPC(filters)) + ")");
+        lblCPM.setText("($" + formatDouble(campaignData.getCPM(filters)) + ")");
+        lblBounceRate.setText("(" + formatDouble(campaignData.getBounceRate(filters)) + "%)");
     }
 
     /**
@@ -254,37 +292,37 @@ public class MetricsScreenController {
 
         switch (seriesName) {
             case "Impressions":
-                label.setText("(" + campaignData.getTotalImpressions() + ")");
+                label.setText("(" + campaignData.getTotalImpressions(filters) + ")");
                 break;
             case "Clicks":
-                label.setText("(" + campaignData.getTotalClicks() + ")");
+                label.setText("(" + campaignData.getTotalClicks(filters) + ")");
                 break;
             case "Uniques":
-                label.setText("(" + campaignData.getTotalUniques() + ")");
+                label.setText("(" + campaignData.getTotalUniques(filters) + ")");
                 break;
             case "Bounces":
-                label.setText("(" + campaignData.getTotalBounces() + ")");
+                label.setText("(" + campaignData.getTotalBounces(filters) + ")");
                 break;
             case "Conversions":
-                label.setText("(" + campaignData.getTotalConversions() + ")");
+                label.setText("(" + campaignData.getTotalConversions(filters) + ")");
                 break;
             case "Total Cost":
-                label.setText("($" + formatDouble(campaignData.getTotalCost()) + ")");
+                label.setText("($" + formatDouble(campaignData.getTotalCost(filters)) + ")");
                 break;
             case "CTR":
-                label.setText("(" + formatDouble(campaignData.getCTR()) + "%)");
+                label.setText("(" + formatDouble(campaignData.getCTR(filters)) + "%)");
                 break;
             case "CPA":
-                label.setText("($" + formatDouble(campaignData.getCPA()) + ")");
+                label.setText("($" + formatDouble(campaignData.getCPA(filters)) + ")");
                 break;
             case "CPC":
-                label.setText("($" + formatDouble(campaignData.getCPC()) + ")");
+                label.setText("($" + formatDouble(campaignData.getCPC(filters)) + ")");
                 break;
             case "CPM":
-                label.setText("($" + formatDouble(campaignData.getCPM()) + ")");
+                label.setText("($" + formatDouble(campaignData.getCPM(filters)) + ")");
                 break;
             case "Bounce Rate":
-                label.setText("(" + formatDouble(campaignData.getBounceRate()) + "%)");
+                label.setText("(" + formatDouble(campaignData.getBounceRate(filters)) + "%)");
                 break;
             default:
                 label.setText("(0)");
@@ -294,7 +332,7 @@ public class MetricsScreenController {
     /**
      * Updates the graph based on the selected date range and granularity.
      */
-    private void updateGraph() {
+    protected void updateGraph() {
         if (campaignData == null) {
             return;
         }
@@ -367,8 +405,8 @@ public class MetricsScreenController {
                 for (String xLabel : xLabels) {
                     LocalDateTime dateTime = parseXAxisLabel(xLabel);
                     double value = seriesName.equals("Uniques")
-                        ? campaignData.getUniquesForDate(dateTime)
-                        : campaignData.getBouncesForDate(dateTime);
+                        ? campaignData.getUniquesForDate(dateTime, filters)
+                        : campaignData.getBouncesForDate(dateTime, filters);
                     series.getData().add(new XYChart.Data<>(xLabel, value));
                     periodTotal += value;
                 }
@@ -380,11 +418,11 @@ public class MetricsScreenController {
 
                     for (String xLabel : xLabels) {
                         LocalDateTime dateTime = parseXAxisLabel(xLabel);
-                        int uniquesValue = campaignData.getUniquesForDate(dateTime);
+                        int uniquesValue = campaignData.getUniquesForDate(dateTime, filters);
                         series.getData().add(new XYChart.Data<>(xLabel, uniquesValue));
 
                         // Collect unique IDs for the period total
-                        for (Object[] impression : campaignData.getImpressions()) {
+                        for (Object[] impression : campaignData.getImpressions(filters)) {
                             LocalDateTime impressionTime = (LocalDateTime) impression[0];
 
                             if (isInTimeRange(impressionTime, dateTime)) {
@@ -397,7 +435,7 @@ public class MetricsScreenController {
                     // For bounces, sum values
                     for (String xLabel : xLabels) {
                         LocalDateTime dateTime = parseXAxisLabel(xLabel);
-                        int bounceValue = campaignData.getBouncesForDate(dateTime);
+                        int bounceValue = campaignData.getBouncesForDate(dateTime, filters);
                         series.getData().add(new XYChart.Data<>(xLabel, bounceValue));
                         periodTotal += bounceValue;
                     }
@@ -492,44 +530,44 @@ public class MetricsScreenController {
         switch (seriesName) {
             case "Impressions":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyImpressions(dateTime)
-                    : campaignData.getImpressionsForDate(dateTime);
+                    ? campaignData.getHourlyImpressions(dateTime, filters)
+                    : campaignData.getImpressionsForDate(dateTime, filters);
             case "Clicks":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyClicks(dateTime)
-                    : campaignData.getClicksForDate(dateTime);
+                    ? campaignData.getHourlyClicks(dateTime, filters)
+                    : campaignData.getClicksForDate(dateTime, filters);
             case "Conversions":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyConversions(dateTime)
-                    : campaignData.getConversionsForDate(dateTime);
+                    ? campaignData.getHourlyConversions(dateTime, filters)
+                    : campaignData.getConversionsForDate(dateTime, filters);
             case "Total Cost":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyTotalCost(dateTime)
-                    : campaignData.getTotalCostForDate(dateTime);
+                    ? campaignData.getHourlyTotalCost(dateTime, filters)
+                    : campaignData.getTotalCostForDate(dateTime, filters);
             case "CTR":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyCTR(dateTime)
-                    : campaignData.getCTRForDate(dateTime);
+                    ? campaignData.getHourlyCTR(dateTime, filters)
+                    : campaignData.getCTRForDate(dateTime, filters);
             case "CPA":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyCPA(dateTime)
-                    : campaignData.getCPAForDate(dateTime);
+                    ? campaignData.getHourlyCPA(dateTime, filters)
+                    : campaignData.getCPAForDate(dateTime, filters);
             case "CPC":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyCPC(dateTime)
-                    : campaignData.getCPCForDate(dateTime);
+                    ? campaignData.getHourlyCPC(dateTime, filters)
+                    : campaignData.getCPCForDate(dateTime, filters);
             case "CPM":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyCPM(dateTime)
-                    : campaignData.getCPMForDate(dateTime);
+                    ? campaignData.getHourlyCPM(dateTime, filters)
+                    : campaignData.getCPMForDate(dateTime, filters);
             case "Bounce Rate":
                 return currentGranularity == TimeGranularity.HOURLY
-                    ? campaignData.getHourlyBounceRate(dateTime)
-                    : campaignData.getBounceRateForDate(dateTime);
+                    ? campaignData.getHourlyBounceRate(dateTime, filters)
+                    : campaignData.getBounceRateForDate(dateTime, filters);
             case "Uniques":
-                return campaignData.getUniquesForDate(dateTime);
+                return campaignData.getUniquesForDate(dateTime, filters);
             case "Bounces":
-                return campaignData.getBouncesForDate(dateTime);
+                return campaignData.getBouncesForDate(dateTime, filters);
             default:
                 return 0.0;
         }
@@ -814,45 +852,6 @@ public class MetricsScreenController {
     }
 
     /**
-     * Handles changes in time granularity.
-     * @param actionEvent The action event.
-     */
-    @FXML
-    public void handleGranularityChange(ActionEvent actionEvent) {
-        if (rbHourly.isSelected()) {
-            currentGranularity = TimeGranularity.HOURLY;
-        } else if (rbWeekly.isSelected()) {
-            currentGranularity = TimeGranularity.WEEKLY;
-        } else {
-            currentGranularity = TimeGranularity.DAILY;
-        }
-
-        updateGraph();
-    }
-
-    /**
-     * Handles date range application.
-     * @param actionEvent The action event.
-     */
-    @FXML
-    public void handleApplyDateRange(ActionEvent actionEvent) {
-        LocalDate start = startDatePicker.getValue();
-        LocalDate end = endDatePicker.getValue();
-
-        if (start != null && end != null) {
-            startDate = start;
-            endDate = end;
-            updateGraph();
-        } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Invalid Date Range");
-            alert.setHeaderText("Please select both start and end dates");
-            alert.setContentText("Both date fields must be filled to apply a custom date range.");
-            alert.showAndWait();
-        }
-    }
-
-    /**
      * Handles quick date range selection.
      * @param actionEvent The action event.
      */
@@ -882,32 +881,52 @@ public class MetricsScreenController {
             startDate = lastDate;
             endDate = lastDate;
             currentGranularity = TimeGranularity.HOURLY;
-            rbHourly.setSelected(true);
         } else if (sourceButton == btnLastWeek) {
             // Last week - up to 7 days back from the last date
             startDate = lastDate.minusDays(6);
             endDate = lastDate;
             currentGranularity = TimeGranularity.DAILY;
-            rbDaily.setSelected(true);
         } else if (sourceButton == btnLastMonth) {
             // Last month - up to 30 days back from the last date
             startDate = lastDate.minusDays(29);
             endDate = lastDate;
             currentGranularity = TimeGranularity.DAILY;
-            rbDaily.setSelected(true);
         } else if (sourceButton == btnAllData) {
             // All data - use entire date range
             startDate = firstDate;
             endDate = lastDate;
             currentGranularity = TimeGranularity.DAILY;
-            rbDaily.setSelected(true);
         }
 
-        // Update date pickers to reflect the selected range
-        startDatePicker.setValue(startDate);
-        endDatePicker.setValue(endDate);
-
         // Update the graph
+        updateGraph();
+    }
+
+    /**
+     * Sets the time interval for the graph and updates it.
+     * @param timeInterval The time interval to set (e.g. "1 hour", "4 hours", "1 day", "1 week").
+     */
+    public void setTimeInterval(String timeInterval) {
+        if (timeInterval == null || timeInterval.isEmpty()) {
+            return; // Don't change anything if timeInterval is empty
+        }
+
+        switch (timeInterval) {
+            case "1 hour":
+                currentGranularity = TimeGranularity.HOURLY;
+                break;
+            case "1 day":
+                currentGranularity = TimeGranularity.DAILY;
+                break;
+            case "1 week":
+                currentGranularity = TimeGranularity.WEEKLY;
+                break;
+            default:
+                System.err.println("Unknown time interval: " + timeInterval);
+                return;
+        }
+
+        // Update the graph with the new time interval
         updateGraph();
     }
 }

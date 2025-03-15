@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import org.controlsfx.control.CheckComboBox?>
+<?import javafx.scene.layout.HBox?>
+
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.DatePicker?>
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.adauction.group19.controller.GraphSettingsController"
+      stylesheets="/css/popup.css"
+      spacing="10"
+      alignment="CENTER"
+      style="-fx-background-color: #ccc; -fx-padding: 20; -fx-background-radius: 15;">
+
+    <!-- Titles -->
+    <Label text="Dates" styleClass="popup-title" />
+    <VBox spacing="10">
+        <HBox>
+            <Label>
+                Start Date
+            </Label>
+            <Region HBox.hgrow="ALWAYS"/>
+            <DatePicker fx:id="startDatePicker" promptText="Start Date"/>
+        </HBox>
+        <HBox>
+            <Label>
+                Start Date
+            </Label>
+            <Region HBox.hgrow="ALWAYS"/>
+            <DatePicker fx:id="endDatePicker" promptText="Start Date"/>
+        </HBox>
+    </VBox>
+
+    <Label text="Time Interval" styleClass="popup-title" />
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="1 hour"  onAction="#handleTimeInterval"/>
+        <!-- <Button text="4 hours" onAction="#handleTimeInterval"/> -->
+        <Button text="1 day"   onAction="#handleTimeInterval"/>
+        <Button text="1 week"  onAction="#handleTimeInterval"/>
+    </HBox>
+
+    <Label text="Filtering" styleClass="popup-title"/>
+
+    <!-- Multiple selection using ControlsFX CheckComboBox -->
+    <HBox>
+        <Label>
+            Age
+        </Label>
+        <Region HBox.hgrow="ALWAYS"/>
+        <CheckComboBox fx:id="ageCheckCombo"      />
+    </HBox>
+    <HBox>
+        <Label>
+            Gender
+        </Label>
+        <Region HBox.hgrow="ALWAYS"/>
+        <CheckComboBox fx:id="genderCheckCombo"   />
+    </HBox>
+    <HBox>
+        <Label>
+            Context
+        </Label>
+        <Region HBox.hgrow="ALWAYS"/>
+        <CheckComboBox fx:id="contextCheckCombo"  />
+    </HBox>
+    <HBox>
+        <Label>
+            Income
+        </Label>
+        <Region HBox.hgrow="ALWAYS"/>
+        <CheckComboBox fx:id="incomeCheckCombo"   />
+    </HBox>
+
+    <!--
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Bounce registration (seconds)" style="-fx-font-size: 14; -fx-text-fill: #333;" />
+        <Spinner fx:id="bounceSpinner" min="1" max="9999" initialValue="3"/>
+    </HBox>
+    -->
+
+    <HBox spacing="15" alignment="CENTER">
+        <Button fx:id="cancelButton" text="Cancel" onAction="#handleCancel" styleClass="btn, btn-cancel"/>
+        <Button fx:id="saveButton" text="Save" onAction="#handleSave" styleClass="btn, btn-save"/>
+    </HBox>
+</VBox>

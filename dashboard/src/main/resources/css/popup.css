@@ -1,0 +1,48 @@
+/* popup.css */
+.root {
+    -fx-font-family: "Roboto Regular";
+}
+
+Label {
+    -fx-font-size: 14px;
+}
+
+/* Overall title styling */
+.popup-title {
+    -fx-text-fill: #222;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.btn {
+    -fx-font-size: 18px;
+    -fx-background-radius: 10px;
+    -fx-padding: 5px 10px;
+    -fx-cursor: hand;
+    -fx-text-fill: white;
+}
+
+.btn-save {
+    -fx-background-color: rgba(104, 43, 215, 1);
+}
+
+.btn-cancel {
+    -fx-background-color: red;
+}
+
+
+.btn-save:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.1), 15, 0.5, 0, 0);
+}
+
+.btn-save:pressed {
+    -fx-background-color: linear-gradient(to bottom, #661ec3, #4a138c);
+}
+
+.btn-cancel:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.1), 15, 0.5, 0, 0);
+}
+
+.btn-cancel:pressed {
+    -fx-background-color: linear-gradient(to bottom, #ff0012, #ba0010);
+}

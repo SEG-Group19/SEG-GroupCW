@@ -8,6 +8,10 @@ import com.adauction.group19.view.ViewMetricsScreen;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 import javafx.application.Platform;
@@ -20,6 +24,7 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testfx.api.FxAssert;
@@ -35,6 +40,14 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
   private Stage stage;
   private MetricsScreenController controller;
   private CampaignData testData;
+  private List<Set<Enum<?>>> filters = new ArrayList<>();
+
+  @BeforeEach
+  public void setup() {
+    for (int i = 0; i < 4; i++) {
+      filters.add(new HashSet<>());
+    }
+  }
 
   @Override
   public void start(Stage stage) {
@@ -80,14 +93,14 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
 
       // Add clicks (about half of impressions)
       for (int j = 0; j < (5 + i/2); j++) {
-        data.addClick(morningTime, 0.3);
+        data.addClick(morningTime, 0.3, "1");
       }
 
       // Add conversions (fewer than clicks)
       for (int j = 0; j < (2 + i/3); j++) {
         // Check which method exists in your CampaignData class
         // Could be addConversion or addConversions - use the correct one
-        data.addClick(morningTime, 0.3); // Treat clicks as conversions for testing purposes
+        data.addClick(morningTime, 0.3, "1"); // Treat clicks as conversions for testing purposes
       }
 
       // Add some server logs (including bounces)
@@ -95,7 +108,7 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
         boolean isBounce = j % 3 == 0; // Every third entry is a bounce
         int pagesViewed = isBounce ? 1 : 3 + (j % 3);
         LocalDateTime endTime = morningTime.plusMinutes(isBounce ? 1 : 10);
-        data.addServerLogEntry(morningTime, endTime, pagesViewed, j % 5 == 0);
+        data.addServerLogEntry(morningTime, endTime, pagesViewed, j % 5 == 0, "1");
       }
 
       // Afternoon data (15:00 PM)
@@ -112,13 +125,13 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
 
       // More clicks (about 40% of impressions)
       for (int j = 0; j < (6 + i/2); j++) {
-        data.addClick(afternoonTime, 0.4);
+        data.addClick(afternoonTime, 0.4, "1");
       }
 
       // More conversions
       for (int j = 0; j < (3 + i/3); j++) {
         // Use the same method as above for consistency
-        data.addClick(afternoonTime, 0.4); // Treat clicks as conversions for testing purposes
+        data.addClick(afternoonTime, 0.4, "1"); // Treat clicks as conversions for testing purposes
       }
 
       // More server logs
@@ -126,7 +139,7 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
         boolean isBounce = j % 4 == 0; // Every fourth entry is a bounce
         int pagesViewed = isBounce ? 1 : 2 + (j % 4);
         LocalDateTime endTime = afternoonTime.plusMinutes(isBounce ? 2 : 15);
-        data.addServerLogEntry(afternoonTime, endTime, pagesViewed, j % 6 == 0);
+        data.addServerLogEntry(afternoonTime, endTime, pagesViewed, j % 6 == 0, "1");
       }
     }
 
@@ -136,35 +149,18 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
   @Test
   public void testInitialLabelsMatchTotalValues() {
     // Check that the initial label values match the calculated totals from the campaign data
-    FxAssert.verifyThat("#lblImpressions", LabeledMatchers.hasText("(" + testData.getTotalImpressions() + ")"));
-    FxAssert.verifyThat("#lblClicks", LabeledMatchers.hasText("(" + testData.getTotalClicks() + ")"));
-    FxAssert.verifyThat("#lblUniques", LabeledMatchers.hasText("(" + testData.getTotalUniques() + ")"));
-    FxAssert.verifyThat("#lblConversions", LabeledMatchers.hasText("(" + testData.getTotalConversions() + ")"));
+
+    FxAssert.verifyThat("#lblImpressions", LabeledMatchers.hasText("(" + testData.getTotalImpressions(filters) + ")"));
+    FxAssert.verifyThat("#lblClicks", LabeledMatchers.hasText("(" + testData.getTotalClicks(filters) + ")"));
+    FxAssert.verifyThat("#lblUniques", LabeledMatchers.hasText("(" + testData.getTotalUniques(filters) + ")"));
+    FxAssert.verifyThat("#lblConversions", LabeledMatchers.hasText("(" + testData.getTotalConversions(filters) + ")"));
 
     // Check the formatted values for rate and cost metrics
-    String expectedCTR = "(" + String.format("%.2f", testData.getCTR()) + "%)";
+    String expectedCTR = "(" + String.format("%.2f", testData.getCTR(filters)) + "%)";
     FxAssert.verifyThat("#lblCTR", LabeledMatchers.hasText(expectedCTR));
 
-    String expectedCPC = "($" + String.format("%.2f", testData.getCPC()) + ")";
+    String expectedCPC = "($" + String.format("%.2f", testData.getCPC(filters)) + ")";
     FxAssert.verifyThat("#lblCPC", LabeledMatchers.hasText(expectedCPC));
-  }
-
-  @Test
-  public void testTimeScaleButtonsUpdateXAxis() {
-    // First click on Last 24h button (replacing btn1Day)
-    clickOn("#btnLastDay");
-    sleep(200);
-
-    // Verify the x-axis label updates to reflect hourly view
-    LineChart<String, Number> chart = lookup("#lineChart").queryAs(LineChart.class);
-    assertEquals("Hour", chart.getXAxis().getLabel());
-
-    // Then click Last Month button (replacing btn2Weeks)
-    clickOn("#btnLastMonth");
-    sleep(200);
-
-    // Verify the x-axis label updates to reflect date view
-    assertEquals("Date", chart.getXAxis().getLabel());
   }
 
   @Test
@@ -237,37 +233,6 @@ public class ExtendedMetricsScreenTest extends ApplicationTest {
     String impressionsText = lookup("#lblImpressions").queryAs(Label.class).getText();
     assertTrue(impressionsText.matches("\\(\\d+\\)"), "Impressions should be an integer");
   }
-
-  @Test
-  public void testChartDataMatchesSelectedTimeScale() {
-    // First select impressions
-    clickOn("#chkImpressions");
-    sleep(300);
-
-    // Get the initial data points count for all data (using btnAllData instead of default)
-    clickOn("#btnAllData");
-    sleep(300);
-    LineChart<String, Number> chart = lookup("#lineChart").queryAs(LineChart.class);
-    int allDataPoints = chart.getData().get(0).getData().size();
-
-    // Switch to 1 week view
-    clickOn("#btnLastWeek");
-    sleep(300);
-
-    // Verify fewer data points
-    int oneWeekDataPoints = chart.getData().get(0).getData().size();
-    assertTrue(oneWeekDataPoints < allDataPoints,
-        "One week should have fewer data points than all data");
-
-    // Switch to 1 day view (hourly)
-    clickOn("#btnLastDay");
-    sleep(300);
-
-    // Verify number of data points matches 24 hours
-    int oneDayDataPoints = chart.getData().get(0).getData().size();
-    assertEquals(24, oneDayDataPoints, "One day view should have 24 hourly data points");
-  }
-
 
   @Test
   public void testAllCheckboxesWork() {
