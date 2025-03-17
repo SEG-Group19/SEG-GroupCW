@@ -108,6 +108,9 @@ public class MetricsScreenController {
         // Setup metric toggle listeners
         setupCheckboxListeners();
 
+        // Default time interval 1 day
+        setTimeInterval("1 day");
+
         // Update the graph with the initial data
         updateGraph();
 
@@ -115,7 +118,6 @@ public class MetricsScreenController {
         for (int i = 0; i < 4; i++) {
             filters.add(new HashSet<>());
         }
-        filters.get(0).add(Gender.MALE);
     }
 
     protected void setFilters(List<Set<Enum<?>>> filters) {
