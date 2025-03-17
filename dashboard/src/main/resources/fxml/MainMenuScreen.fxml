@@ -24,6 +24,12 @@
                         <Label id="btnViewMetricsLabel" text="📈 View metrics"/>
                     </graphic>
                 </Button>
+
+                <Button styleClass="primary-button" id="btnClickCost" onAction="#handleClickCostButton">
+                    <graphic>
+                        <Label id="btnClickCostLabel" text="📊 View click cost"/>
+                    </graphic>
+                </Button>
             </VBox>
         </VBox>
 

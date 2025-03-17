@@ -92,6 +92,8 @@ public class InputDataController {
         clickFile = chooseFile();
         if (clickFile != null) {
             clickFilePath.setText(clickFile.getAbsolutePath());
+            // Store the click log path in CampaignDataStore
+            CampaignDataStore.getInstance().setClickLogPath(clickFile.getAbsolutePath());
         }
     }
 

@@ -18,6 +18,11 @@ public class CampaignDataStore {
     private CampaignData campaignData;
 
     /**
+     * The path to the click log file.
+     */
+    private String clickLogPath;
+
+    /**
      * Private constructor to prevent direct instantiation.
      */
     private CampaignDataStore() {
@@ -50,4 +55,19 @@ public class CampaignDataStore {
         return campaignData;
     }
 
+    /**
+     * Sets the path to the click log file.
+     * @param path the path to set
+     */
+    public void setClickLogPath(String path) {
+        this.clickLogPath = path;
+    }
+
+    /**
+     * Returns the path to the click log file.
+     * @return the click log file path
+     */
+    public String getClickLogPath() {
+        return clickLogPath;
+    }
 }
