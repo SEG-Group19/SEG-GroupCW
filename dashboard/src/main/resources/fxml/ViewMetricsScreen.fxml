@@ -13,8 +13,12 @@
 
     <top>
         <VBox spacing="10">
-            <HBox>
+            <HBox spacing="20">
                 <Button fx:id="goBackButton" text="⬅ Back" onAction="#handleBackButton" styleClass="primary-button"/>
+                <Button fx:id="exportCSVButton" text="Export to CSV" onAction="#handleExportCSV" styleClass="primary-button"/>
+                <Button fx:id="exportJSONButton" text="Export to JSON" onAction="#handleExportJSON" styleClass="primary-button"/>
+                <Button fx:id="exportImageButton" text="Export to Image" onAction="#handleExportImage" styleClass="primary-button"/>
+                <Button fx:id="exportPDFButton" text="Export to PDF" onAction="#handleExportPDF" styleClass="primary-button"/>
             </HBox>
 
             <!-- Date Selection Controls - Above the graph

@@ -1,17 +1,34 @@
 package com.adauction.group19.controller;
 
 import com.adauction.group19.model.CampaignData;
+import com.adauction.group19.model.ExportData;
 import com.adauction.group19.model.Gender;
 import com.adauction.group19.service.CampaignDataStore;
+import com.adauction.group19.utils.ThemeManager;
 import com.adauction.group19.view.MainMenuScreen;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import javafx.collections.FXCollections;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,6 +37,9 @@ import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.image.WritableImage;
+import javafx.stage.FileChooser;
+
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.chart.CategoryAxis;
@@ -646,6 +666,175 @@ public class MetricsScreenController {
      */
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    /**
+     * Gets the export data.
+     * @return The export data.
+     */
+    public ExportData getExportData() {
+        List<XYChart.Series<String, Number>> series = lineChart.getData();
+        if (series.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("No data to export");
+            alert.setContentText("Please select a date range and add some data to the graph.");
+            alert.showAndWait();
+            return null;
+        }
+
+        List<String> header = series.stream()
+            .map(XYChart.Series::getName)
+            .toList();
+
+        Set<String> allDates = series.stream()
+            .flatMap(s -> s.getData().stream().map(XYChart.Data::getXValue))
+            .collect(Collectors.toCollection(TreeSet::new));
+        TreeMap<String, List<Number>> dateToValue = new TreeMap<>();
+        for (String date : allDates) {
+            dateToValue.put(date, new ArrayList<>());
+        }
+
+        for (XYChart.Series<String, Number> s : series) {
+            for (XYChart.Data<String, Number> d : s.getData()) {
+                dateToValue.get(d.getXValue()).add(d.getYValue());
+            }
+        }
+
+        return new ExportData(header, dateToValue);
+    }
+
+    /**
+     * Chooses a file to export the data to.    
+     * @param format The format to export the data to.
+     * @param data The text data to export.
+     */
+    public void exportTextFile(String format, String data) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export as " + format);
+        fileChooser.setInitialFileName("output");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(format + " file", "*." + format));
+        File file = fileChooser.showSaveDialog(stage);
+        if (file != null) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                writer.write(data);
+            } catch (IOException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Error exporting file");
+                alert.setContentText("Error exporting file: " + e.getMessage());
+                alert.showAndWait();
+            }
+        }
+    }
+
+    /**
+     * Get the Image of the LineChart.
+     * @return The Image of the LineChart.
+     */
+    private BufferedImage getLineChartImage() {
+        boolean wasDarkMode = ThemeManager.isDarkMode();
+        if (wasDarkMode) {
+            ThemeManager.toggleTheme(lineChart.getScene());
+        }
+        WritableImage image = lineChart.snapshot(null, null);
+        if (wasDarkMode) {
+            ThemeManager.toggleTheme(lineChart.getScene());
+        }
+        return SwingFXUtils.fromFXImage(image, null);
+    }
+
+    /**
+     * Handles the export to image button.
+     * @param actionEvent The action event.
+     */
+    @FXML
+    public void handleExportImage(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export as Image");
+        fileChooser.setInitialFileName("output");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image file", "*.png"));
+        File file = fileChooser.showSaveDialog(stage);
+        if (file == null) {
+            return;
+        }
+        try {
+            BufferedImage image = getLineChartImage();
+            ImageIO.write(image, "png", file);
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Error exporting file");
+            alert.setContentText("Error exporting file: " + e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    /**
+     * Handles the export to PDF button.
+     * @param actionEvent The action event.
+     */
+    @FXML
+    public void handleExportPDF(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export as PDF");
+        fileChooser.setInitialFileName("output");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF file", "*.pdf"));
+        File file = fileChooser.showSaveDialog(stage);
+        if (file == null) {
+            return;
+        }
+        try (PDDocument document = new PDDocument()) {
+            BufferedImage bufferedImage = getLineChartImage();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "png", baos);
+            byte[] imageBytes = baos.toByteArray();
+            double imageWidth = bufferedImage.getWidth();
+            double imageHeight = bufferedImage.getHeight();
+            PDPage page = new PDPage(new PDRectangle((float)imageWidth, (float)imageHeight));
+            document.addPage(page);
+            PDImageXObject pdImage = PDImageXObject.createFromByteArray(document, imageBytes, "image");
+            
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+                contentStream.drawImage(pdImage, 0, 0);
+            }
+            document.save(file);
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Error exporting file");
+            alert.setContentText("Error exporting file: " + e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
+    /**
+     * Handles the export to CSV button.
+     * @param actionEvent The action event.
+     */
+    @FXML
+    public void handleExportCSV(ActionEvent actionEvent) {
+        ExportData exportData = getExportData();
+        if (exportData == null) {
+            return;
+        }
+        String csv = exportData.toCSV();
+        exportTextFile("csv", csv);
+    }
+
+
+    /**
+     * Handles the export to JSON button.
+     * @param actionEvent The action event.
+     */
+    @FXML
+    public void handleExportJSON(ActionEvent actionEvent) {
+        ExportData exportData = getExportData();
+        if (exportData == null) {
+            return;
+        }
+        String json = exportData.toJSON();
+        exportTextFile("json", json);
     }
 
     /**
