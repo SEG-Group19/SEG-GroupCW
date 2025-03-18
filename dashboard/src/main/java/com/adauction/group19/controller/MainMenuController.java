@@ -4,7 +4,7 @@ import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.utils.ThemeManager;
 import com.adauction.group19.view.InputDataScreen;
 import com.adauction.group19.view.ViewMetricsScreen;
-
+import com.adauction.group19.view.ClickCostHistogramScreen;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -62,6 +62,31 @@ public class MainMenuController {
         if (stage != null) {
             Scene inputDataScene = ViewMetricsScreen.getScene(stage);
             stage.setScene(inputDataScene);
+        } else {
+            System.out.println("Stage is not set.");
+        }
+    }
+
+    /**
+     * Handles the Click Cost button. Switches scene to the Click Cost Histogram screen.
+     * @param actionEvent The action event.
+     */
+    @FXML
+    public void handleClickCostButton(ActionEvent actionEvent) {
+        if (CampaignDataStore.getInstance().getCampaignData() == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Campaign Data Not Found");
+            alert.setHeaderText("Campaign Data Not Found");
+            alert.setContentText("Please input data before viewing click cost distribution.");
+            alert.showAndWait();
+            return;
+        }
+
+        if (stage != null) {
+            // Get the file path from the campaign data store
+            String filePath = CampaignDataStore.getInstance().getClickLogPath();
+            Scene clickCostScene = ClickCostHistogramScreen.getScene(stage, filePath);
+            stage.setScene(clickCostScene);
         } else {
             System.out.println("Stage is not set.");
         }

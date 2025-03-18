@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.adauction.group19.controller.ClickCostHistogramController"
+           stylesheets="/css/main.css"
+           style="-fx-padding: 20px 20px;">
+
+    <top>
+        <VBox spacing="10">
+            <HBox>
+                <Button fx:id="goBackButton" text="⬅ Back" onAction="#handleBackButton" styleClass="primary-button"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <left>
+        <VBox alignment="CENTER_LEFT" style="-fx-padding: 20px;">
+            <VBox spacing="10" styleClass="main-container, metric-select" style="-fx-spacing: 10px;">
+                <Label text="Histogram Settings:"/>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Number of Bins:"/>
+                    <Spinner fx:id="binsSpinner" editable="true" prefWidth="100">
+                        <valueFactory>
+                            <SpinnerValueFactory.IntegerSpinnerValueFactory min="5" max="50" initialValue="10" amountToStepBy="5"/>
+                        </valueFactory>
+                    </Spinner>
+                    <Button fx:id="updateButton" text="Update" onAction="#handleUpdate" styleClass="primary-button"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox fx:id="chartContainer" VBox.vgrow="ALWAYS" alignment="CENTER"/>
+    </center>
+
+</BorderPane> 
