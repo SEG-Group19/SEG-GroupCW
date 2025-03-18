@@ -7,11 +7,9 @@ import com.adauction.group19.view.ViewMetricsScreen;
 import com.adauction.group19.view.ClickCostHistogramScreen;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class MainMenuController {
