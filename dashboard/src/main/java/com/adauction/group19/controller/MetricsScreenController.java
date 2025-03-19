@@ -203,11 +203,11 @@ public class MetricsScreenController {
         updateGraph();
     }
 
-    protected LocalDate getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    protected LocalDate getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
