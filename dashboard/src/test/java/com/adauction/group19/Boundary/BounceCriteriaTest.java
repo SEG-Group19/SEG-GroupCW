@@ -1,4 +1,4 @@
-package com.adauction.group19;
+package com.adauction.group19.Boundary;
 
 import com.adauction.group19.model.BounceCriteria;
 import com.adauction.group19.model.CampaignData;
