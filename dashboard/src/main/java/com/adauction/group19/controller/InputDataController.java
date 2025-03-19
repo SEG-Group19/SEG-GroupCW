@@ -7,6 +7,7 @@ import com.adauction.group19.view.MainMenuScreen;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -116,13 +117,28 @@ public class InputDataController {
         // All 3 files must be present for upload
         if (impressionFile != null && clickFile != null && serverFile != null) {
             FileParserService fileParserService = new FileParserService();
-            CampaignData campaignData = fileParserService.parseCampaignData(impressionFile, clickFile, serverFile);
+            CampaignData campaignData;
+            try {
+                campaignData = fileParserService.parseCampaignData(impressionFile, clickFile, serverFile);
+            } catch (Exception e) {
+                // throw error message to user
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Error Parsing Campaign Data");
+                alert.setHeaderText("Error Parsing Campaign Data");
+                alert.setContentText("Error parsing campaign data: " + e.getMessage());
+                alert.showAndWait();
+                return;
+            }
 
             CampaignDataStore.getInstance().setCampaignData(campaignData);
 
             System.out.println("Files uploaded successfully!");
         } else {
-            System.out.println("Please select all three files before uploading.");
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Please Select All Files");
+            alert.setHeaderText("Please Select All Files");
+            alert.setContentText("Please select all files before uploading.");
+            alert.showAndWait();
         }
     }
 
