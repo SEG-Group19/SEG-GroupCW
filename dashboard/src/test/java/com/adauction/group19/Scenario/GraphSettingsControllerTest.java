@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 public class GraphSettingsControllerTest extends ApplicationTest {
 
   private Stage stage;

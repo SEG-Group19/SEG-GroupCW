@@ -28,6 +28,7 @@ import org.testfx.framework.junit5.ApplicationTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 public class MetricsScreenConstistencyTest extends ApplicationTest {
 
   private Stage stage;

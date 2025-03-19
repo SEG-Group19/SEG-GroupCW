@@ -35,6 +35,7 @@ import org.testfx.matcher.control.LabeledMatchers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 public class ExtendedMetricsScreenTest extends ApplicationTest {
 
   private Stage stage;

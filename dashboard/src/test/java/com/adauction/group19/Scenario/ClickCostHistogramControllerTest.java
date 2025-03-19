@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 public class ClickCostHistogramControllerTest extends ApplicationTest {
 
   private Stage stage;
