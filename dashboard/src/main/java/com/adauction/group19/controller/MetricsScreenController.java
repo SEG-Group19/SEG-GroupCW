@@ -120,7 +120,7 @@ public class MetricsScreenController {
         }
     }
 
-    protected void setFilters(List<Set<Enum<?>>> filters) {
+    public void setFilters(List<Set<Enum<?>>> filters) {
         this.filters = filters;
         updateGraph();
     }
@@ -196,7 +196,7 @@ public class MetricsScreenController {
             .orElse(LocalDate.now());
     }
 
-    protected void setDates(LocalDate startDate, LocalDate endDate) {
+    public void setDates(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
 
@@ -334,7 +334,7 @@ public class MetricsScreenController {
     /**
      * Updates the graph based on the selected date range and granularity.
      */
-    protected void updateGraph() {
+    public void updateGraph() {
         if (campaignData == null) {
             return;
         }
