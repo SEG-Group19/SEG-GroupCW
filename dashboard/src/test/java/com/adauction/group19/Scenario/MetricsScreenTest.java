@@ -1,4 +1,4 @@
-package com.adauction.group19;
+package com.adauction.group19.Scenario;
 
 import com.adauction.group19.model.AgeRange;
 import com.adauction.group19.model.CampaignData;
