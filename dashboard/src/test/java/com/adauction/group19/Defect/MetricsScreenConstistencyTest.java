@@ -1,4 +1,4 @@
-package com.adauction.group19.Regression;
+package com.adauction.group19.Defect;
 
 import com.adauction.group19.controller.MetricsScreenController;
 import com.adauction.group19.model.*;
@@ -28,7 +28,8 @@ import org.testfx.framework.junit5.ApplicationTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MetricsScreenRegressionTest extends ApplicationTest {
+
+public class MetricsScreenConstistencyTest extends ApplicationTest {
 
   private Stage stage;
   private MetricsScreenController controller;
