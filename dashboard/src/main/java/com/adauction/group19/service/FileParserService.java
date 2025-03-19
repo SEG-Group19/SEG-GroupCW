@@ -22,12 +22,20 @@ public class FileParserService {
      * @param serverFile The file containing server log data.
      * @return The parsed campaign data.
      */
-    public CampaignData parseCampaignData(File impressionFile, File clickFile, File serverFile) {
+    public CampaignData parseCampaignData(File impressionFile, File clickFile, File serverFile) throws Exception {
         CampaignData campaignData = new CampaignData();
 
-        parseImpressions(impressionFile, campaignData);
-        parseClicks(clickFile, campaignData);
-        parseServerLogs(serverFile, campaignData);
+        // try: catch
+        try {
+            // Parse the impression data
+            parseImpressions(impressionFile, campaignData);
+            // Parse the click data
+            parseClicks(clickFile, campaignData);
+            // Parse the server log data
+            parseServerLogs(serverFile, campaignData);
+        } catch (Exception e) {
+            throw new Exception("Error parsing campaign data: " + e.getMessage());
+        }
 
         System.out.println("Parsing complete.");
         return campaignData;
@@ -70,11 +78,8 @@ public class FileParserService {
                     case "45-54":
                         ageRange = AgeRange.AGE_45_54;
                         break;
-                    case ">54":
-                        ageRange = AgeRange.AGE_55_PLUS;
-                        break;
                     default:
-                        ageRange = AgeRange.UNKNOWN;
+                        ageRange = AgeRange.AGE_55_PLUS;
                         break;
                 }
 
@@ -188,7 +193,7 @@ public class FileParserService {
      * @param dateTime The date and time string to parse.
      * @return The parsed date and time.
      */
-    private LocalDateTime parseDateTime(String dateTime) {
+    public static LocalDateTime parseDateTime(String dateTime) {
         if (dateTime.equals("n/a")) {
             return null;
         }
