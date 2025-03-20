@@ -125,7 +125,7 @@ public class MetricsScreenController {
         updateGraph();
     }
 
-    protected List<Set<Enum<?>>> getFilters() {
+    public List<Set<Enum<?>>> getFilters() {
         return filters;
     }
 

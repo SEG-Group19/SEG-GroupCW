@@ -61,16 +61,16 @@ public class FileParserUnitTest extends ApplicationTest {
         }
 
         assertNotNull(campaignData, "Campaign data is null");
-        assertEquals(campaignData.getTotalImpressions(filters), 486104);
-        assertEquals(campaignData.getTotalClicks(filters), 23923);
-        assertEquals(campaignData.getTotalUniques(filters), 439832);
-        assertEquals(campaignData.getTotalBounces(filters), 8665);
-        assertEquals(campaignData.getTotalConversions(filters), 2026);
-        assertEquals(roundToTwoDecimalPlaces(campaignData.getCTR(filters)), 4.92);
-        assertEquals(roundToTwoDecimalPlaces(campaignData.getCPA(filters)), 58.29);
-        assertEquals(roundToTwoDecimalPlaces(campaignData.getCPM(filters)), 242.95);
-        assertEquals(roundToTwoDecimalPlaces(campaignData.getCPC(filters)), 4.94);
-        assertEquals(roundToTwoDecimalPlaces(campaignData.getBounceRate(filters)), 36.22);
+        assertEquals(486104, campaignData.getTotalImpressions(filters));
+        assertEquals(23923, campaignData.getTotalClicks(filters));
+        assertEquals(439832, campaignData.getTotalUniques(filters));
+        assertEquals(8665, campaignData.getTotalBounces(filters));
+        assertEquals(2026, campaignData.getTotalConversions(filters));
+        assertEquals(4.92, roundToTwoDecimalPlaces(campaignData.getCTR(filters)));
+        assertEquals(58.29, roundToTwoDecimalPlaces(campaignData.getCPA(filters)));
+        assertEquals(242.95, roundToTwoDecimalPlaces(campaignData.getCPM(filters)));
+        assertEquals(4.94, roundToTwoDecimalPlaces(campaignData.getCPC(filters)));
+        assertEquals(36.22, roundToTwoDecimalPlaces(campaignData.getBounceRate(filters)));
     }
 
     private File getTestFile(String filename) {

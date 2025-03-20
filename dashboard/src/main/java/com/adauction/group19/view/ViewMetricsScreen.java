@@ -33,6 +33,8 @@ public class ViewMetricsScreen {
                         Scene scene = new Scene(root, 1200, 720);
                         ThemeManager.applyTheme(scene);
 
+                        scene.setUserData(controller);
+
                         return scene;
                 } catch (IOException e) {
                         e.printStackTrace();
