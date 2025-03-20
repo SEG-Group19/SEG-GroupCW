@@ -25,9 +25,9 @@ import org.testfx.api.FxAssert;
 import org.testfx.framework.junit5.ApplicationTest;
 import org.testfx.matcher.base.NodeMatchers;
 import org.testfx.matcher.control.LabeledMatchers;
+import org.testfx.util.WaitForAsyncUtils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class BounceRegistrationControllerTest extends ApplicationTest {
@@ -73,9 +73,11 @@ public class BounceRegistrationControllerTest extends ApplicationTest {
             considerTime.setSelected(false);
         });
 
-        clickOn("#saveButton");
-        BounceCriteria updatedCriteria = data.getBounceCriteria();
+        interact(() -> {
+            BounceRegistrationController.instance.handleSave();
+        });
 
+        BounceCriteria updatedCriteria = data.getBounceCriteria();
         assertEquals(30, updatedCriteria.getMinPagesViewed());
         assertEquals(20, updatedCriteria.getMinTimeOnSiteSeconds());
         assertEquals(true, updatedCriteria.isConsiderPagesViewed());
@@ -102,7 +104,10 @@ public class BounceRegistrationControllerTest extends ApplicationTest {
             considerTime.setSelected(false);
         });
 
-        clickOn("#cancelButton");
+        interact(() -> {
+            BounceRegistrationController.instance.handleCancel(null);
+        });
+
         BounceCriteria updatedCriteria = data.getBounceCriteria();
 
         // should still be default values

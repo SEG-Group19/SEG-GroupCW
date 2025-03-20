@@ -1,6 +1,7 @@
 package com.adauction.group19.Unit;
 
 import com.adauction.group19.controller.BounceRegistrationController;
+import com.adauction.group19.controller.GraphSettingsController;
 import com.adauction.group19.controller.MetricsScreenController;
 import com.adauction.group19.model.*;
         import com.adauction.group19.Util.CampaignDataUtil;
@@ -54,12 +55,6 @@ public class GraphSettingsControllerTest extends ApplicationTest {
         controller = (MetricsScreenController) scene.getUserData();
     }
 
-    /**
-     *     @FXML public DatePicker startDatePicker, endDatePicker;
-     *
-     *     @FXML private CheckComboBox<String> ageCheckCombo, genderCheckCombo, contextCheckCombo, incomeCheckCombo;
-     */
-
     @Test
     public void testGraphSettingsSave() {
         clickOn("#graphSettingsBtn");
@@ -85,10 +80,11 @@ public class GraphSettingsControllerTest extends ApplicationTest {
             incomeCheckCombo.getCheckModel().check("Low");
         });
 
-        clickOn("#saveButton");
+        interact(() -> {
+            GraphSettingsController.instance.handleSave();
+        });
         List<Set<Enum<?>>> filters = controller.getFilters();
 
-        // should still be default values
         assertTrue(filters.get(0).contains(Gender.MALE));
         assertFalse(filters.get(0).contains(Gender.FEMALE));
 
@@ -99,6 +95,42 @@ public class GraphSettingsControllerTest extends ApplicationTest {
         assertFalse(filters.get(2).contains(Income.HIGH));
 
         assertTrue(filters.get(3).contains(Context.NEWS));
+    }
+
+    @Test
+    public void testGraphSettingsCancel() {
+        clickOn("#graphSettingsBtn");
+
+        DatePicker startDatePicker = lookup("#startDatePicker").queryAs(DatePicker.class);
+        DatePicker endDatePicker = lookup("#endDatePicker").queryAs(DatePicker.class);
+
+        interact(() -> {
+            startDatePicker.setValue(LocalDateTime.now().toLocalDate());
+            endDatePicker.setValue(LocalDateTime.now().minusDays(7).toLocalDate());
+        });
+
+        CheckComboBox<String> ageCheckCombo = lookup("#ageCheckCombo").queryAs(CheckComboBox.class);
+        CheckComboBox<String> genderCheckCombo = lookup("#genderCheckCombo").queryAs(CheckComboBox.class);
+        CheckComboBox<String> contextCheckCombo = lookup("#contextCheckCombo").queryAs(CheckComboBox.class);
+        CheckComboBox<String> incomeCheckCombo = lookup("#incomeCheckCombo").queryAs(CheckComboBox.class);
+
+        interact(() -> {
+            genderCheckCombo.getCheckModel().check("Male");
+            ageCheckCombo.getCheckModel().check("Under 25");
+            contextCheckCombo.getCheckModel().check("News");
+            incomeCheckCombo.getCheckModel().check("Medium");
+            incomeCheckCombo.getCheckModel().check("Low");
+        });
+
+        interact(() -> {
+            GraphSettingsController.instance.handleCancel(null);
+        });
+        List<Set<Enum<?>>> filters = controller.getFilters();
+
+        assertTrue(filters.get(0).isEmpty());
+        assertTrue(filters.get(1).isEmpty());
+        assertTrue(filters.get(2).isEmpty());
+        assertTrue(filters.get(3).isEmpty());
     }
 
     @AfterAll

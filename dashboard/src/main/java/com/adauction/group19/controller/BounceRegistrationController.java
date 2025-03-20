@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 
 public class BounceRegistrationController {
 
+    public static BounceRegistrationController instance;
     @FXML public Spinner<Integer> minPagesViewed, minTime;
     @FXML private CheckBox considerPagesViewed, considerTime;
 
@@ -27,6 +28,8 @@ public class BounceRegistrationController {
 
     @FXML
     public void initialize() {
+        instance = this;
+
         campaignData = CampaignDataStore.getInstance().getCampaignData();
         bounceCriteria = campaignData.getBounceCriteria();
 
@@ -37,7 +40,7 @@ public class BounceRegistrationController {
     }
 
     @FXML
-    private void handleSave() {
+    public void handleSave() {
         bounceCriteria.setMinPagesViewed((int) minPagesViewed.getValue());
         bounceCriteria.setMinTimeOnSiteSeconds((int) minTime.getValue());
         bounceCriteria.setConsiderPagesViewed(considerPagesViewed.isSelected());

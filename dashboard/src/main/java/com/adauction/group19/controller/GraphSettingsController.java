@@ -19,6 +19,7 @@ import java.util.Set;
 
 public class GraphSettingsController {
 
+    public static GraphSettingsController instance;
     public Button cancelButton;
 
     @FXML public DatePicker startDatePicker, endDatePicker;
@@ -40,6 +41,8 @@ public class GraphSettingsController {
 
     @FXML
     public void initialize() {
+        instance = this;
+
         ageCheckCombo.getItems().addAll("Under 25", "25-34", "35-44", "45-54", "Over 54");
         genderCheckCombo.getItems().addAll("Male", "Female");
         contextCheckCombo.getItems().addAll("News", "Shopping", "Social Media", "Blog");
@@ -138,7 +141,7 @@ public class GraphSettingsController {
     }
 
     @FXML
-    private void handleSave() {
+    public void handleSave() {
         // Apply dates
         handleApplyDateRange();
 
