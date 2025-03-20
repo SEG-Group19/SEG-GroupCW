@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 
 public class BounceRegistrationController {
 
-    @FXML private Spinner<Integer> minPagesViewed, minTime;
+    @FXML public Spinner<Integer> minPagesViewed, minTime;
     @FXML private CheckBox considerPagesViewed, considerTime;
 
     @FXML private Button saveButton, cancelButton;

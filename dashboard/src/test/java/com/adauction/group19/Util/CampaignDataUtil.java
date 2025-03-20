@@ -5,6 +5,8 @@ import com.adauction.group19.model.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class CampaignDataUtil {
 
@@ -54,4 +56,8 @@ public class CampaignDataUtil {
         return data;
     }
 
+    public static <T> T randomChoice(List<T> list) {
+        int index = ThreadLocalRandom.current().nextInt(list.size());
+        return list.get(index);
+    }
 }
