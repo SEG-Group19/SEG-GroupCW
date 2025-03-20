@@ -82,7 +82,11 @@ public class FileParserDefectTest extends ApplicationTest {
     private File getTestFile(String filename) {
         URL resource = getClass().getResource("/" + filename);
         assertNotNull(resource, "Resource not found: " + filename);
-        return Paths.get(resource.getPath()).toFile();
+        try {
+            return new File(resource.toURI());
+        } catch (Exception e) {
+            return new File(resource.getPath());
+        }
     }
 
     private double roundToTwoDecimalPlaces(double value) {
