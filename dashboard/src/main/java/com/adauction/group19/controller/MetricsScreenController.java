@@ -707,16 +707,27 @@ public class MetricsScreenController {
     }
 
     /**
+     * Chooses a file to export the data to.
+     * @param format The format to export the data to.
+     * @return The file.
+     */
+    public File chooseFile(String format) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Export as " + format);
+        fileChooser.setInitialFileName("output");
+        fileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter(format + " file", "*." + format)
+        );
+        return fileChooser.showSaveDialog(stage);
+    }
+
+    /**
      * Chooses a file to export the data to.    
      * @param format The format to export the data to.
      * @param data The text data to export.
      */
     public void exportTextFile(String format, String data) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Export as " + format);
-        fileChooser.setInitialFileName("output");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(format + " file", "*." + format));
-        File file = fileChooser.showSaveDialog(stage);
+        File file = chooseFile(format);
         if (file != null) {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
                 writer.write(data);
