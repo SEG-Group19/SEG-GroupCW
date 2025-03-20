@@ -74,9 +74,16 @@ public class FileParserUnitTest extends ApplicationTest {
     }
 
     private File getTestFile(String filename) {
-        URL resource = getClass().getResource("/" + filename);
-        assertNotNull(resource, "Resource not found: " + filename);
-        return Paths.get(resource.getPath()).toFile();
+        try {
+            ClassLoader classLoader = getClass().getClassLoader();
+            URL resource = classLoader.getResource(filename); // No leading slash
+            assertNotNull(resource, "Resource not found: " + filename);
+            return new File(resource.toURI());
+        } catch (Exception e) {
+            System.out.println("Error loading test file: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private double roundToTwoDecimalPlaces(double value) {
