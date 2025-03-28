@@ -1,8 +1,11 @@
 package com.adauction.group19.controller;
 
 import com.adauction.group19.service.CampaignDataStore;
+import com.adauction.group19.service.UserSession;
 import com.adauction.group19.utils.ThemeManager;
 import com.adauction.group19.view.InputDataScreen;
+import com.adauction.group19.view.LoginScreen;
+import com.adauction.group19.view.UserManagementScreen;
 import com.adauction.group19.view.ViewMetricsScreen;
 import com.adauction.group19.view.ClickCostHistogramScreen;
 import javafx.event.ActionEvent;
@@ -14,13 +17,26 @@ import javafx.stage.Stage;
 
 public class MainMenuController {
 
-    @FXML
-    private Button toggleThemeButton;
+    @FXML private Button toggleThemeButton;
+    @FXML private Button userManagementButton;
+    @FXML private Button logoutButton;
 
     /**
      * The stage for the screen.
      */
     private Stage stage;
+
+    /**
+     * Initialize the controller.
+     */
+    @FXML
+    public void initialize() {
+        // Show/hide user management button based on admin status
+        if (userManagementButton != null) {
+            userManagementButton.setVisible(UserSession.getInstance().isAdmin());
+            userManagementButton.setManaged(UserSession.getInstance().isAdmin());
+        }
+    }
 
     /**
      * Sets the stage for the screen.
@@ -93,6 +109,46 @@ public class MainMenuController {
     }
 
     /**
+     * Handles the User Management button. Switches scene to the User Management screen.
+     * @param actionEvent The action event.
+     */
+    @FXML
+    public void handleUserManagementButton(ActionEvent actionEvent) {
+        if (!UserSession.getInstance().isAdmin()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Access Denied");
+            alert.setHeaderText("Admin Access Required");
+            alert.setContentText("You must be an administrator to access user management.");
+            alert.showAndWait();
+            return;
+        }
+
+        if (stage != null) {
+            Scene userManagementScene = UserManagementScreen.getScene(stage);
+            stage.setScene(userManagementScene);
+        } else {
+            System.out.println("Stage is not set.");
+        }
+    }
+
+    /**
+     * Handles the Logout button. Logs out the current user and returns to the login screen.
+     * @param actionEvent The action event.
+     */
+    @FXML
+    public void handleLogoutButton(ActionEvent actionEvent) {
+        // Clear the current user session
+        UserSession.getInstance().logout();
+
+        if (stage != null) {
+            Scene loginScene = LoginScreen.getScene(stage);
+            stage.setScene(loginScene);
+        } else {
+            System.out.println("Stage is not set.");
+        }
+    }
+
+    /**
      * Handles the toggle theme button. Toggles the theme of the scene.
      * @param actionEvent The action event.
      */
@@ -104,5 +160,4 @@ public class MainMenuController {
         // Toggle the text of the button
         toggleThemeButton.setText(ThemeManager.isDarkMode() ? "☀" : "🌙");
     }
-
 }

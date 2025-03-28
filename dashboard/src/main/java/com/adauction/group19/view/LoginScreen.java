@@ -28,7 +28,7 @@ public class LoginScreen {
       LoginController controller = loader.getController();
       controller.setStage(stage);
 
-      Scene scene = new Scene(root, 400, 300);
+      Scene scene = new Scene(root, 1200, 720);
       ThemeManager.applyTheme(scene);
 
       return scene;

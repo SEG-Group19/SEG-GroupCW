@@ -61,7 +61,6 @@ public class DatabaseManager {
           "id INT AUTO_INCREMENT PRIMARY KEY, " +
           "username VARCHAR(50) NOT NULL UNIQUE, " +
           "password_hash VARCHAR(255) NOT NULL, " +
-          "email VARCHAR(100) UNIQUE, " +
           "role VARCHAR(20) NOT NULL, " +
           "active BOOLEAN DEFAULT TRUE)");
 
@@ -86,18 +85,16 @@ public class DatabaseManager {
   private void createDefaultAdmin() throws SQLException {
     String username = "admin";
     String password = "admin123"; // In real-world application, use a stronger password
-    String email = "admin@adauction.com";
 
     String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
     try (Connection conn = getConnection();
         PreparedStatement pstmt = conn.prepareStatement(
-            "INSERT INTO users (username, password_hash, email, role) VALUES (?, ?, ?, ?)")) {
+            "INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)")) {
 
       pstmt.setString(1, username);
       pstmt.setString(2, hashedPassword);
-      pstmt.setString(3, email);
-      pstmt.setString(4, UserRole.ADMIN.name());
+      pstmt.setString(3, UserRole.ADMIN.name());
 
       pstmt.executeUpdate();
 
@@ -160,7 +157,6 @@ public class DatabaseManager {
           User user = new User();
           user.setId(rs.getInt("id"));
           user.setUsername(rs.getString("username"));
-          user.setEmail(rs.getString("email"));
           user.setRole(UserRole.valueOf(rs.getString("role")));
           user.setActive(rs.getBoolean("active"));
 
@@ -180,30 +176,28 @@ public class DatabaseManager {
    *
    * @param username The username
    * @param password The password (plain text, will be hashed)
-   * @param email    The email address
    * @param role     The user role
    * @return The newly created User object if successful, null otherwise
    */
-  public User registerUser(String username, String password, String email, UserRole role) {
+  public User registerUser(String username, String password, UserRole role) {
     // Hash the password
     String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
     try (Connection conn = getConnection();
         PreparedStatement pstmt = conn.prepareStatement(
-            "INSERT INTO users (username, password_hash, email, role) VALUES (?, ?, ?, ?)",
+            "INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)",
             Statement.RETURN_GENERATED_KEYS)) {
 
       pstmt.setString(1, username);
       pstmt.setString(2, hashedPassword);
-      pstmt.setString(3, email);
-      pstmt.setString(4, role.name());
+      pstmt.setString(3, role.name());
 
       int affectedRows = pstmt.executeUpdate();
 
       if (affectedRows == 1) {
         ResultSet generatedKeys = pstmt.getGeneratedKeys();
         if (generatedKeys.next()) {
-          User user = new User(username, hashedPassword, email, role);
+          User user = new User(username, hashedPassword, role);
           user.setId(generatedKeys.getInt(1));
           return user;
         }
@@ -233,7 +227,6 @@ public class DatabaseManager {
         user.setId(rs.getInt("id"));
         user.setUsername(rs.getString("username"));
         user.setPasswordHash(rs.getString("password_hash"));
-        user.setEmail(rs.getString("email"));
         user.setRole(UserRole.valueOf(rs.getString("role")));
         user.setActive(rs.getBoolean("active"));
 
@@ -264,7 +257,6 @@ public class DatabaseManager {
         user.setId(rs.getInt("id"));
         user.setUsername(rs.getString("username"));
         user.setPasswordHash(rs.getString("password_hash"));
-        user.setEmail(rs.getString("email"));
         user.setRole(UserRole.valueOf(rs.getString("role")));
         user.setActive(rs.getBoolean("active"));
 
@@ -287,13 +279,12 @@ public class DatabaseManager {
   public boolean updateUser(User user) {
     try (Connection conn = getConnection();
         PreparedStatement pstmt = conn.prepareStatement(
-            "UPDATE users SET username = ?, email = ?, role = ?, active = ? WHERE id = ?")) {
+            "UPDATE users SET username = ?, role = ?, active = ? WHERE id = ?")) {
 
       pstmt.setString(1, user.getUsername());
-      pstmt.setString(2, user.getEmail());
-      pstmt.setString(3, user.getRole().name());
-      pstmt.setBoolean(4, user.isActive());
-      pstmt.setInt(5, user.getId());
+      pstmt.setString(2, user.getRole().name());
+      pstmt.setBoolean(3, user.isActive());
+      pstmt.setInt(4, user.getId());
 
       int affectedRows = pstmt.executeUpdate();
       return affectedRows == 1;
@@ -374,28 +365,5 @@ public class DatabaseManager {
     }
   }
 
-  /**
-   * Checks if an email already exists in the database.
-   *
-   * @param email The email to check
-   * @return true if the email exists, false otherwise
-   */
-  public boolean emailExists(String email) {
-    try (Connection conn = getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(
-            "SELECT COUNT(*) FROM users WHERE email = ?")) {
 
-      pstmt.setString(1, email);
-      ResultSet rs = pstmt.executeQuery();
-
-      if (rs.next()) {
-        return rs.getInt(1) > 0;
-      }
-
-      return false;
-    } catch (SQLException e) {
-      System.err.println("Error checking if email exists: " + e.getMessage());
-      return false;
-    }
-  }
 }

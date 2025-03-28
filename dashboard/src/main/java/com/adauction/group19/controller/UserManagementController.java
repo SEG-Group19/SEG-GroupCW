@@ -25,7 +25,7 @@ public class UserManagementController {
   @FXML private TableView<User> userTable;
   @FXML private TableColumn<User, Integer> idColumn;
   @FXML private TableColumn<User, String> usernameColumn;
-  @FXML private TableColumn<User, String> emailColumn;
+  // Email column removed
   @FXML private TableColumn<User, String> roleColumn;
   @FXML private TableColumn<User, String> statusColumn;
 
@@ -47,7 +47,6 @@ public class UserManagementController {
     // Set up table columns
     idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
     usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
-    emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
 
     roleColumn.setCellValueFactory(cellData ->
         new SimpleStringProperty(cellData.getValue().getRole().getDisplayName()));
@@ -124,7 +123,7 @@ public class UserManagementController {
 
     // Create the username, email, and role fields
     TextField usernameField = new TextField(selectedUser.getUsername());
-    TextField emailField = new TextField(selectedUser.getEmail());
+    // Email field removed
     ComboBox<UserRole> roleComboBox = new ComboBox<>();
 
     roleComboBox.getItems().addAll(UserRole.values());
@@ -138,10 +137,8 @@ public class UserManagementController {
 
     grid.add(new Label("Username:"), 0, 0);
     grid.add(usernameField, 1, 0);
-    grid.add(new Label("Email:"), 0, 1);
-    grid.add(emailField, 1, 1);
-    grid.add(new Label("Role:"), 0, 2);
-    grid.add(roleComboBox, 1, 2);
+    grid.add(new Label("Role:"), 0, 1);
+    grid.add(roleComboBox, 1, 1);
 
     dialog.getDialogPane().setContent(grid);
 
@@ -153,7 +150,6 @@ public class UserManagementController {
       if (dialogButton == saveButtonType) {
         // Update user with new values
         selectedUser.setUsername(usernameField.getText());
-        selectedUser.setEmail(emailField.getText());
         selectedUser.setRole(roleComboBox.getValue());
         return selectedUser;
       }

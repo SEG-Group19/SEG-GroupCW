@@ -21,16 +21,13 @@ public class RegisterController {
   @FXML private TextField usernameField;
   @FXML private PasswordField passwordField;
   @FXML private PasswordField confirmPasswordField;
-  @FXML private TextField emailField;
   @FXML private ComboBox<UserRole> roleComboBox;
   @FXML private Button registerButton;
   @FXML private Button backButton;
 
   private Stage stage;
 
-  // Email validation pattern
-  private static final Pattern EMAIL_PATTERN =
-      Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+  // Email validation pattern removed
 
   /**
    * Initializes the controller after FXML is loaded.
@@ -66,7 +63,6 @@ public class RegisterController {
     String username = usernameField.getText().trim();
     String password = passwordField.getText();
     String confirmPassword = confirmPasswordField.getText();
-    String email = emailField.getText().trim();
     UserRole role = roleComboBox.getValue();
 
     // Default to USER role if not an admin
@@ -75,7 +71,7 @@ public class RegisterController {
     }
 
     // Validate input
-    if (!validateInput(username, password, confirmPassword, email)) {
+    if (!validateInput(username, password, confirmPassword)) {
       return;
     }
 
@@ -86,15 +82,10 @@ public class RegisterController {
       return;
     }
 
-    // Check if email already exists
-    if (DatabaseManager.getInstance().emailExists(email)) {
-      showAlert(Alert.AlertType.ERROR, "Registration Error",
-          "Email already exists. Please use a different email.");
-      return;
-    }
+    // Email check removed
 
     // Register the user
-    User newUser = DatabaseManager.getInstance().registerUser(username, password, email, role);
+    User newUser = DatabaseManager.getInstance().registerUser(username, password, role);
 
     if (newUser != null) {
       showAlert(Alert.AlertType.INFORMATION, "Registration Successful",
@@ -130,12 +121,11 @@ public class RegisterController {
    * @param username        The username.
    * @param password        The password.
    * @param confirmPassword The confirmed password.
-   * @param email           The email.
    * @return true if input is valid, false otherwise.
    */
-  private boolean validateInput(String username, String password, String confirmPassword, String email) {
+  private boolean validateInput(String username, String password, String confirmPassword) {
     // Check if any field is empty
-    if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || email.isEmpty()) {
+    if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
       showAlert(Alert.AlertType.ERROR, "Registration Error",
           "All fields are required.");
       return false;
@@ -162,12 +152,7 @@ public class RegisterController {
       return false;
     }
 
-    // Validate email format
-    if (!EMAIL_PATTERN.matcher(email).matches()) {
-      showAlert(Alert.AlertType.ERROR, "Registration Error",
-          "Please enter a valid email address.");
-      return false;
-    }
+    // Email validation removed
 
     return true;
   }

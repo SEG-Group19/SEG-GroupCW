@@ -7,7 +7,6 @@ public class User {
   private int id;
   private String username;
   private String passwordHash;
-  private String email;
   private UserRole role;
   private boolean active;
 
@@ -23,13 +22,11 @@ public class User {
    *
    * @param username     The username
    * @param passwordHash The hashed password
-   * @param email        The email address
    * @param role         The user role
    */
-  public User(String username, String passwordHash, String email, UserRole role) {
+  public User(String username, String passwordHash, UserRole role) {
     this.username = username;
     this.passwordHash = passwordHash;
-    this.email = email;
     this.role = role;
     this.active = true;
   }
@@ -60,13 +57,7 @@ public class User {
     this.passwordHash = passwordHash;
   }
 
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
+  // Email field has been removed
 
   public UserRole getRole() {
     return role;
@@ -98,7 +89,6 @@ public class User {
     return "User{" +
         "id=" + id +
         ", username='" + username + '\'' +
-        ", email='" + email + '\'' +
         ", role=" + role +
         ", active=" + active +
         '}';

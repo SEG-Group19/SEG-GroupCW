@@ -29,7 +29,7 @@ public class UserManagementScreen {
       controller.setStage(stage);
       controller.loadUsers(); // Load users when the screen is created
 
-      Scene scene = new Scene(root, 800, 600);
+      Scene scene = new Scene(root, 1200, 720);
       ThemeManager.applyTheme(scene);
 
       return scene;

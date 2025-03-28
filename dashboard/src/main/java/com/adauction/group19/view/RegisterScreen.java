@@ -28,7 +28,7 @@ public class RegisterScreen {
       RegisterController controller = loader.getController();
       controller.setStage(stage);
 
-      Scene scene = new Scene(root, 500, 400);
+      Scene scene = new Scene(root, 1200, 720);
       ThemeManager.applyTheme(scene);
 
       return scene;
