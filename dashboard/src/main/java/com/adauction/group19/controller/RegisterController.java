@@ -27,7 +27,6 @@ public class RegisterController {
 
   private Stage stage;
 
-  // Email validation pattern removed
 
   /**
    * Initializes the controller after FXML is loaded.
@@ -82,7 +81,6 @@ public class RegisterController {
       return;
     }
 
-    // Email check removed
 
     // Register the user
     User newUser = DatabaseManager.getInstance().registerUser(username, password, role);
@@ -152,7 +150,6 @@ public class RegisterController {
       return false;
     }
 
-    // Email validation removed
 
     return true;
   }

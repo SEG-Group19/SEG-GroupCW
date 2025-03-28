@@ -57,8 +57,6 @@ public class User {
     this.passwordHash = passwordHash;
   }
 
-  // Email field has been removed
-
   public UserRole getRole() {
     return role;
   }

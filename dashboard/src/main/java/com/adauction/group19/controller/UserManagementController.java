@@ -25,7 +25,6 @@ public class UserManagementController {
   @FXML private TableView<User> userTable;
   @FXML private TableColumn<User, Integer> idColumn;
   @FXML private TableColumn<User, String> usernameColumn;
-  // Email column removed
   @FXML private TableColumn<User, String> roleColumn;
   @FXML private TableColumn<User, String> statusColumn;
 
@@ -121,9 +120,8 @@ public class UserManagementController {
     ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
     dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
 
-    // Create the username, email, and role fields
+    // Create the username, and role fields
     TextField usernameField = new TextField(selectedUser.getUsername());
-    // Email field removed
     ComboBox<UserRole> roleComboBox = new ComboBox<>();
 
     roleComboBox.getItems().addAll(UserRole.values());
