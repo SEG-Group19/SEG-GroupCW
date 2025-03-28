@@ -2,7 +2,11 @@ package com.adauction.group19.controller;
 
 import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.service.UserSession;
+import com.adauction.group19.utils.DatabaseConsole;
 import com.adauction.group19.utils.ThemeManager;
+import javafx.application.Platform;
+import java.awt.Desktop;
+import java.net.URI;
 import com.adauction.group19.view.InputDataScreen;
 import com.adauction.group19.view.LoginScreen;
 import com.adauction.group19.view.UserManagementScreen;
@@ -19,6 +23,7 @@ public class MainMenuController {
 
     @FXML private Button toggleThemeButton;
     @FXML private Button userManagementButton;
+    @FXML private Button dbConsoleButton;
     @FXML private Button logoutButton;
 
     /**
@@ -31,10 +36,17 @@ public class MainMenuController {
      */
     @FXML
     public void initialize() {
-        // Show/hide user management button based on admin status
+        // Show/hide admin-only buttons based on admin status
+        boolean isAdmin = UserSession.getInstance().isAdmin();
+
         if (userManagementButton != null) {
-            userManagementButton.setVisible(UserSession.getInstance().isAdmin());
-            userManagementButton.setManaged(UserSession.getInstance().isAdmin());
+            userManagementButton.setVisible(isAdmin);
+            userManagementButton.setManaged(isAdmin);
+        }
+
+        if (dbConsoleButton != null) {
+            dbConsoleButton.setVisible(isAdmin);
+            dbConsoleButton.setManaged(isAdmin);
         }
     }
 
@@ -159,5 +171,56 @@ public class MainMenuController {
 
         // Toggle the text of the button
         toggleThemeButton.setText(ThemeManager.isDarkMode() ? "☀" : "🌙");
+    }
+    /**
+     * Handles the Database Console button click. Opens the H2 Console in a browser.
+     *
+     * @param actionEvent The action event.
+     */
+    @FXML
+    public void handleDbConsoleButton(ActionEvent actionEvent) {
+        if (!UserSession.getInstance().isAdmin()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Access Denied");
+            alert.setHeaderText("Admin Access Required");
+            alert.setContentText("You must be an administrator to access the database console.");
+            alert.showAndWait();
+            return;
+        }
+
+        try {
+            String url = DatabaseConsole.startConsole();
+
+            // Create an info alert with connection details
+            Alert infoAlert = new Alert(Alert.AlertType.INFORMATION);
+            infoAlert.setTitle("Database Console");
+            infoAlert.setHeaderText("H2 Console Started");
+            infoAlert.setContentText("The H2 Console has been started and will open in your browser.\n\n" +
+                "Connection Information:\n" +
+                "JDBC URL: " + DatabaseConsole.getConnectionURL() + "\n" +
+                "Username: sa\n" +
+                "Password: (leave empty)\n\n" +
+                "Click OK to open the console in your browser.");
+
+            infoAlert.showAndWait();
+
+            // Open the browser with the console URL
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                Desktop.getDesktop().browse(new URI(url));
+            } else {
+                // Fallback for systems without Desktop support
+                Alert fallbackAlert = new Alert(Alert.AlertType.INFORMATION);
+                fallbackAlert.setTitle("Browser Launch Failed");
+                fallbackAlert.setHeaderText("Could not launch browser automatically");
+                fallbackAlert.setContentText("Please open the following URL in your browser:\n" + url);
+                fallbackAlert.showAndWait();
+            }
+        } catch (Exception e) {
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setTitle("Error");
+            errorAlert.setHeaderText("Failed to start H2 Console");
+            errorAlert.setContentText("Error: " + e.getMessage());
+            errorAlert.showAndWait();
+        }
     }
 }

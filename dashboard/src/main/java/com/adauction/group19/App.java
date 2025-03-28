@@ -1,6 +1,7 @@
 package com.adauction.group19;
 
 import com.adauction.group19.service.DatabaseManager;
+import com.adauction.group19.utils.DatabaseConsole;
 import com.adauction.group19.view.LoginScreen;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -46,6 +47,11 @@ public class App extends Application {
      */
     @Override
     public void stop() {
+        // Stop database console if running
+        if (DatabaseConsole.isRunning()) {
+            DatabaseConsole.stopConsole();
+        }
+
         // Close database connection
         DatabaseManager.getInstance().closeConnection();
     }

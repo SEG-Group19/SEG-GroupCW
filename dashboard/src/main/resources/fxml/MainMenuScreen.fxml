@@ -15,6 +15,7 @@
             </padding>
             <Button fx:id="toggleThemeButton" onAction="#handleToggleThemeButton" text="🌙" />
             <Button fx:id="userManagementButton" onAction="#handleUserManagementButton" text="User Management" />
+            <Button fx:id="dbConsoleButton" onAction="#handleDbConsoleButton" text="Database Console" />
             <Button fx:id="logoutButton" onAction="#handleLogoutButton" text="Logout" />
         </HBox>
     </top>
