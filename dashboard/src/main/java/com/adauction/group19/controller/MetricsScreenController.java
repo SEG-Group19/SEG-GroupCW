@@ -25,6 +25,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import javafx.collections.FXCollections;
@@ -745,7 +746,7 @@ public class MetricsScreenController {
      * Get the Image of the LineChart.
      * @return The Image of the LineChart.
      */
-    private BufferedImage getLineChartImage() {
+    public BufferedImage getLineChartImage() {
         boolean wasDarkMode = ThemeManager.isDarkMode();
         if (wasDarkMode) {
             ThemeManager.toggleTheme(lineChart.getScene());
@@ -763,11 +764,7 @@ public class MetricsScreenController {
      */
     @FXML
     public void handleExportImage(ActionEvent actionEvent) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Export as Image");
-        fileChooser.setInitialFileName("output");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image file", "*.png"));
-        File file = fileChooser.showSaveDialog(stage);
+        File file = chooseFile("png");
         if (file == null) {
             return;
         }
@@ -783,35 +780,176 @@ public class MetricsScreenController {
         }
     }
 
+    public String getPerformanceAnalysisText() {
+        StringBuilder analysis = new StringBuilder();
+        analysis.append("#Ad Performance Analysis\n\n");
+        
+        // Hourly analysis
+        Map<Integer, Double> hourlyMetrics = getHourlyPerformance();
+        Map.Entry<Integer, Double> bestHourEntry = hourlyMetrics.entrySet().stream()
+            .max(Map.Entry.comparingByValue())
+            .orElse(null);
+        
+        if (bestHourEntry != null && bestHourEntry.getValue() > 0) {
+            analysis.append(String.format("• Peak Hour: %02d:00 (%d impressions)\n", 
+                bestHourEntry.getKey(), bestHourEntry.getValue().intValue()));
+        } else {
+            analysis.append("• No hourly data available\n");
+        }
+        
+        // Daily analysis
+        Map<DayOfWeek, Double> dailyMetrics = getDailyPerformance();
+        Map.Entry<DayOfWeek, Double> bestDayEntry = dailyMetrics.entrySet().stream()
+            .max(Map.Entry.comparingByValue())
+            .orElse(null);
+        
+        if (bestDayEntry != null && bestDayEntry.getValue() > 0) {
+            analysis.append(String.format("• Best Day: %s (%d impressions)\n",
+                bestDayEntry.getKey(), bestDayEntry.getValue().intValue()));
+        } else {
+            analysis.append("• No daily data available\n");
+        }
+        
+        // Total metrics
+        if (campaignData != null) {
+            analysis.append("\n#Summary Metrics:\n\n");
+            analysis.append(String.format("• Total Impressions: %d\n", campaignData.getTotalImpressions(filters)));
+            analysis.append(String.format("• Total Clicks: %d\n", campaignData.getTotalClicks(filters)));
+            analysis.append(String.format("• CTR: %.2f%%\n", campaignData.getCTR(filters)));
+        }
+        
+        return analysis.toString();
+    }
+
     /**
-     * Handles the export to PDF button.
-     * @param actionEvent The action event.
+     * Helper to get hourly performance metrics based on actual campaign data
      */
+    private Map<Integer, Double> getHourlyPerformance() {
+        Map<Integer, Double> hourlyMetrics = new HashMap<>();
+        
+        // Initialize all hours with 0
+        for (int hour = 0; hour < 24; hour++) {
+            hourlyMetrics.put(hour, 0.0);
+        }
+        
+        if (campaignData == null || campaignData.getImpressions(filters).isEmpty()) {
+            return hourlyMetrics;
+        }
+
+        // Count impressions by hour
+        for (Object[] impression : campaignData.getImpressions(filters)) {
+            LocalDateTime impressionTime = (LocalDateTime) impression[0];
+            int hour = impressionTime.getHour();
+            hourlyMetrics.put(hour, hourlyMetrics.get(hour) + 1);
+        }
+
+        return hourlyMetrics;
+    }
+
+    /**
+     * Helper to get daily performance metrics based on actual campaign data
+     */
+    private Map<DayOfWeek, Double> getDailyPerformance() {
+        Map<DayOfWeek, Double> dailyMetrics = new EnumMap<>(DayOfWeek.class);
+        
+        // Initialize all days with 0
+        for (DayOfWeek day : DayOfWeek.values()) {
+            dailyMetrics.put(day, 0.0);
+        }
+        
+        if (campaignData == null || campaignData.getImpressions(filters).isEmpty()) {
+            return dailyMetrics;
+        }
+
+        // Count impressions by day of week
+        for (Object[] impression : campaignData.getImpressions(filters)) {
+            LocalDateTime impressionTime = (LocalDateTime) impression[0];
+            DayOfWeek day = impressionTime.getDayOfWeek();
+            dailyMetrics.put(day, dailyMetrics.get(day) + 1);
+        }
+
+        return dailyMetrics;
+    }
+
     @FXML
     public void handleExportPDF(ActionEvent actionEvent) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Export as PDF");
-        fileChooser.setInitialFileName("output");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF file", "*.pdf"));
-        File file = fileChooser.showSaveDialog(stage);
+        File file = chooseFile("pdf");
         if (file == null) {
             return;
         }
+    
         try (PDDocument document = new PDDocument()) {
-            BufferedImage bufferedImage = getLineChartImage();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(bufferedImage, "png", baos);
-            byte[] imageBytes = baos.toByteArray();
-            double imageWidth = bufferedImage.getWidth();
-            double imageHeight = bufferedImage.getHeight();
-            PDPage page = new PDPage(new PDRectangle((float)imageWidth, (float)imageHeight));
+            // Create first page
+            PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
-            PDImageXObject pdImage = PDImageXObject.createFromByteArray(document, imageBytes, "image");
             
-            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
-                contentStream.drawImage(pdImage, 0, 0);
+            // Get the chart image
+            BufferedImage chartImage = getLineChartImage();
+            ByteArrayOutputStream chartBaos = new ByteArrayOutputStream();
+            ImageIO.write(chartImage, "png", chartBaos);
+            byte[] chartImageBytes = chartBaos.toByteArray();
+            PDImageXObject pdImage = PDImageXObject.createFromByteArray(document, chartImageBytes, "chart");
+    
+            // Calculate dimensions with margins
+            float margin = 30; // 30 points (~10mm) margin on all sides
+            float pageWidth = PDRectangle.A4.getWidth() - 2 * margin;
+            float pageHeight = PDRectangle.A4.getHeight() - 2 * margin;
+            
+            // Scale image to fit page width while maintaining aspect ratio
+            float scale = Math.min(pageWidth / pdImage.getWidth(), (pageHeight * 0.6f) / pdImage.getHeight());
+            float scaledWidth = pdImage.getWidth() * scale;
+            float scaledHeight = pdImage.getHeight() * scale;
+    
+            // First content stream for the first page
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+            
+            try {
+                // Add title
+                contentStream.beginText();
+                contentStream.setFont(PDType1Font.HELVETICA_BOLD, 16);
+                contentStream.newLineAtOffset(margin, PDRectangle.A4.getHeight() - margin - 20);
+                contentStream.showText("Campaign Performance Report");
+                contentStream.endText();
+    
+                // Add chart image (centered horizontally)
+                float imageX = margin + (pageWidth - scaledWidth) / 2;
+                float imageY = PDRectangle.A4.getHeight() - margin - scaledHeight - 30;
+                contentStream.drawImage(pdImage, imageX, imageY, scaledWidth, scaledHeight);
+    
+                // Add the analysis text
+                String analysisText = getPerformanceAnalysisText();
+                contentStream.beginText();
+                contentStream.setFont(PDType1Font.HELVETICA, 14);
+                contentStream.newLineAtOffset(margin, imageY-20);
+                
+                // Split text into lines and add to PDF
+                for (String line : analysisText.split("\n")) {
+                    String text = line.trim();
+                    if (text.startsWith("#")) {
+                        text = text.substring(1);
+                        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 14);
+                    } else {
+                        contentStream.setFont(PDType1Font.HELVETICA, 12);
+                    }
+                    contentStream.showText(text);
+                    contentStream.newLineAtOffset(0, -15); // Move to next line
+                }
+                contentStream.endText();
+    
+                // Add footer to last page
+                contentStream.beginText();
+                contentStream.setFont(PDType1Font.HELVETICA_OBLIQUE, 8);
+                contentStream.newLineAtOffset(margin, margin - 10);
+                contentStream.showText("Generated on: " + LocalDate.now().format(DateTimeFormatter.ISO_DATE));
+                contentStream.endText();
+            } finally {
+                contentStream.close();
             }
+    
             document.save(file);
+            System.out.println("PDF generated at: " + file.getAbsolutePath());
+            System.out.println("File size: " + file.length() + " bytes");
+            System.out.println("Content written:\n" + getPerformanceAnalysisText());
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
