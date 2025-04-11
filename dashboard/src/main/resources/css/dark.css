@@ -41,6 +41,14 @@ TextField Label {
     -fx-text-fill: rgba(255, 255, 255, 0.6);
 }
 
+PasswordField {
+    -fx-text-fill: white;
+}
+
+PasswordField Label {
+    -fx-text-fill: rgba(255, 255, 255, 0.6);
+}
+
 .metric-select Label {
     -fx-text-fill: white;
 }
@@ -78,5 +86,9 @@ TextField Label {
     -fx-text-fill: white;
 }
 .chart-legend-item {
+    -fx-text-fill: white;
+}
+
+.login-field {
     -fx-text-fill: white;
 }

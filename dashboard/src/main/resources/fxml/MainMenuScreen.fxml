@@ -1,43 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 
-<StackPane style="-fx-padding: 0 0;" alignment="CENTER" xmlns="http://javafx.com/javafx"
-           xmlns:fx="http://javafx.com/fxml"
-           fx:controller="com.adauction.group19.controller.MainMenuController">
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="com.adauction.group19.controller.MainMenuController">
 
-    <VBox style="-fx-padding: 0 270px;">
+    <top>
+        <HBox alignment="CENTER" spacing="10" styleClass="top-bar">
+            <HBox>
+                <Button styleClass="theme-button" fx:id="toggleThemeButton" onAction="#handleToggleThemeButton" text="☀" />
+            </HBox>
+            <Region fx:id="spacer">
+                <!-- This property tells the HBox to let the region grow -->
+                <HBox.hgrow>
+                    <Priority fx:constant="ALWAYS"/>
+                </HBox.hgrow>
+            </Region>
+            <HBox spacing="5" alignment="CENTER">
+                <Button styleClass="secondary-button" fx:id="userManagementButton" onAction="#handleUserManagementButton" text="User Management" />
+                <Button styleClass="secondary-button" fx:id="dbConsoleButton" onAction="#handleDbConsoleButton" text="Database Console" />
+                <Button styleClass="secondary-button" fx:id="logoutButton" onAction="#handleLogoutButton" text="Logout" />
+            </HBox>
+        </HBox>
+    </top>
 
-        <VBox styleClass="main-container">
-            <Label id="titleLabel" text="AdVantage"/>
+    <center>
+        <VBox alignment="CENTER" spacing="30.0">
+            <padding>
+                <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+            </padding>
 
-            <VBox>
-                <Button styleClass="primary-button" id="btnInputData" onAction="#handleInputDataButton">
-                    <graphic>
-                        <Label id="btnInputDataLabel" text="📋 Upload data"/>
-                    </graphic>
+            <Label text="AdVantage" id="titleLabel">
+                <font>
+                    <Font name="System Bold" size="28.0" />
+                </font>
+            </Label>
+
+            <VBox alignment="CENTER" spacing="20.0">
+                <Button onAction="#handleInputDataButton" text="Input Data" styleClass="primary-button" prefWidth="300" prefHeight="60">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
                 </Button>
 
-                <Button styleClass="primary-button" id="btnViewMetrics" onAction="#handleViewMetricsButton">
-                    <graphic>
-                        <Label id="btnViewMetricsLabel" text="📈 View metrics"/>
-                    </graphic>
+                <Button onAction="#handleViewMetricsButton" text="View Metrics" styleClass="primary-button" prefWidth="300" prefHeight="60">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
                 </Button>
 
-                <Button styleClass="primary-button" id="btnClickCost" onAction="#handleClickCostButton">
-                    <graphic>
-                        <Label id="btnClickCostLabel" text="📊 View click cost"/>
-                    </graphic>
+                <Button onAction="#handleClickCostButton" text="Click Cost Distribution" styleClass="primary-button" prefWidth="300" prefHeight="60">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
                 </Button>
             </VBox>
         </VBox>
+    </center>
 
-    </VBox>
+    <bottom>
+        <HBox alignment="CENTER">
+            <padding>
+                <Insets bottom="20.0" />
+            </padding>
+            <Label text="© 2025 AdVantage Team 19" />
+        </HBox>
+    </bottom>
 
-    <AnchorPane pickOnBounds="false">
-        <Button styleClass="theme-button" fx:id="toggleThemeButton" text="☀" onAction="#handleToggleThemeButton"
-                AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20"/>
-    </AnchorPane>
-
-</StackPane>
+</BorderPane>

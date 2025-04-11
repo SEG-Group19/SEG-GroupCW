@@ -1,6 +1,8 @@
 package com.adauction.group19;
 
-import com.adauction.group19.view.MainMenuScreen;
+import com.adauction.group19.service.DatabaseManager;
+import com.adauction.group19.utils.DatabaseConsole;
+import com.adauction.group19.view.LoginScreen;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
@@ -17,15 +19,18 @@ public class App extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Online Advertising Dashboard");
+        primaryStage.setTitle("AdVantage - Online Advertising Dashboard");
 
         Font.loadFont(getClass().getResource("/fonts/Roboto-Light.ttf").toExternalForm(), 12);
         Font.loadFont(getClass().getResource("/fonts/Roboto-Bold.ttf").toExternalForm(), 12);
         Font.loadFont(getClass().getResource("/fonts/Roboto-Regular.ttf").toExternalForm(), 12);
 
-        // Open the Main Menu by default
-        Scene mainMenuScene = MainMenuScreen.getScene(primaryStage);
-        primaryStage.setScene(mainMenuScene);
+        // Initialize database
+        DatabaseManager.getInstance();
+
+        // Start with the login screen
+        Scene loginScene = LoginScreen.getScene(primaryStage);
+        primaryStage.setScene(loginScene);
         primaryStage.show();
     }
 
@@ -35,5 +40,19 @@ public class App extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    /**
+     * Cleanup when the application is stopped.
+     */
+    @Override
+    public void stop() {
+        // Stop database console if running
+        if (DatabaseConsole.isRunning()) {
+            DatabaseConsole.stopConsole();
+        }
+
+        // Close database connection
+        DatabaseManager.getInstance().closeConnection();
     }
 }
