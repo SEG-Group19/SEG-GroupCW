@@ -21,6 +21,7 @@ VBox {
 
 .main-container {
     -fx-max-width: 600px;
+    -fx-max-height: 400px;
     -fx-background-color: rgba(255, 255, 255, 0.1);
     -fx-background-radius: 25px;
     -fx-spacing: 60;

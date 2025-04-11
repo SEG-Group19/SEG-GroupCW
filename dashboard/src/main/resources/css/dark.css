@@ -92,3 +92,7 @@ PasswordField Label {
 .login-field {
     -fx-text-fill: white;
 }
+
+.copyright {
+    -fx-text-fill: white;
+}

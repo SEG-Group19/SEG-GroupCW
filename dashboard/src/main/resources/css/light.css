@@ -84,3 +84,7 @@ PasswordField {
 .login-field {
     -fx-text-fill: black;
 }
+
+.copyright {
+    -fx-text-fill: black;
+}

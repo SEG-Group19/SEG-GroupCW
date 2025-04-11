@@ -28,7 +28,7 @@
     </top>
 
     <center>
-        <VBox alignment="CENTER" spacing="30.0">
+        <VBox alignment="CENTER" spacing="30.0" styleClass="main-container">
             <padding>
                 <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
             </padding>
@@ -66,7 +66,7 @@
             <padding>
                 <Insets bottom="20.0" />
             </padding>
-            <Label text="© 2025 AdVantage Team 19" />
+            <Label text="© 2025 AdVantage Team 19" styleClass="copyright" />
         </HBox>
     </bottom>
 
