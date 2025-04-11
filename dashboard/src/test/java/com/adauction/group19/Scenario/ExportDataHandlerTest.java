@@ -22,6 +22,7 @@ import com.adauction.group19.model.Income;
 import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.view.ViewMetricsScreen;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -45,7 +46,6 @@ public class ExportDataHandlerTest extends ApplicationTest {
 
   @TempDir
   Path tempDir;
-
 
   @BeforeEach
   public void setup() {
@@ -98,12 +98,12 @@ public class ExportDataHandlerTest extends ApplicationTest {
       }
 
       // Add clicks (about half of impressions)
-      for (int j = 0; j < (5 + i/2); j++) {
+      for (int j = 0; j < (5 + i / 2); j++) {
         data.addClick(morningTime, 0.3, "1");
       }
 
       // Add conversions (fewer than clicks)
-      for (int j = 0; j < (2 + i/3); j++) {
+      for (int j = 0; j < (2 + i / 3); j++) {
         // Check which method exists in your CampaignData class
         // Could be addConversion or addConversions - use the correct one
         data.addClick(morningTime, 0.3, "1"); // Treat clicks as conversions for testing purposes
@@ -121,7 +121,7 @@ public class ExportDataHandlerTest extends ApplicationTest {
       LocalDateTime afternoonTime = LocalDateTime.of(date, LocalTime.of(15, 0));
       // More impressions
       for (int j = 0; j < 15 + i; j++) {
-        data.addImpression(afternoonTime, "user" + (j+100),
+        data.addImpression(afternoonTime, "user" + (j + 100),
             j % 2 == 0 ? Gender.MALE : Gender.FEMALE,
             AgeRange.AGE_35_44,
             Income.HIGH,
@@ -130,12 +130,12 @@ public class ExportDataHandlerTest extends ApplicationTest {
       }
 
       // More clicks (about 40% of impressions)
-      for (int j = 0; j < (6 + i/2); j++) {
+      for (int j = 0; j < (6 + i / 2); j++) {
         data.addClick(afternoonTime, 0.4, "1");
       }
 
       // More conversions
-      for (int j = 0; j < (3 + i/3); j++) {
+      for (int j = 0; j < (3 + i / 3); j++) {
         // Use the same method as above for consistency
         data.addClick(afternoonTime, 0.4, "1"); // Treat clicks as conversions for testing purposes
       }
@@ -151,7 +151,6 @@ public class ExportDataHandlerTest extends ApplicationTest {
 
     return data;
   }
-
 
   @Test
   public void testExportCSV_CreatesFile() throws Exception {
@@ -187,6 +186,41 @@ public class ExportDataHandlerTest extends ApplicationTest {
     assertTrue(expectedFile.length() > 0);
   }
 
+  @Test
+  public void testExportImage_CreatesFile() throws Exception {
+    clickOn("#chkImpressions");
+    clickOn("#chkClicks");
+    clickOn("#chkCTR");
+    sleep(300);
+
+    MetricsScreenController controllerSpy = spy(controller);
+    File expectedFile = tempDir.resolve("test.png").toFile();
+    doReturn(expectedFile).when(controllerSpy).chooseFile("png");
+    BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+    doReturn(image).when(controllerSpy).getLineChartImage();
+
+    controllerSpy.handleExportImage(null);
+
+    assertTrue(expectedFile.exists());
+  }
+
+  @Test
+  public void testExportPDF_CreatesFile() throws Exception {
+    clickOn("#chkImpressions");
+    clickOn("#chkClicks");
+    clickOn("#chkCTR");
+    sleep(300);
+
+    MetricsScreenController controllerSpy = spy(controller);
+    File expectedFile = tempDir.resolve("test.pdf").toFile();
+    doReturn(expectedFile).when(controllerSpy).chooseFile("pdf");
+    BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+    doReturn(image).when(controllerSpy).getLineChartImage();
+
+    controllerSpy.handleExportPDF(null);
+
+    assertTrue(expectedFile.exists());
+  }
 
   @AfterEach
   public void cleanup() {
