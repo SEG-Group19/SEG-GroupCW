@@ -15,6 +15,10 @@ VBox {
     -fx-spacing: 20;
 }
 
+.top-bar {
+    -fx-padding: 20px 0px;
+}
+
 .main-container {
     -fx-max-width: 600px;
     -fx-background-color: rgba(255, 255, 255, 0.1);
@@ -61,8 +65,22 @@ TextField {
     -fx-padding: 5px;
 }
 
+PasswordField {
+    -fx-background-color: rgba(201, 201, 201, 0.2);
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-border-color: rgba(255, 255, 255, 0.5);
+    -fx-font-size: 18px;
+    -fx-padding: 5px;
+}
+
 TextField Label {
     -fx-font-size: 18px;
+}
+
+PasswordField Label {
+    -fx-font-size: 18px;
+
 }
 
 .metric-select Label {
@@ -105,4 +123,8 @@ TextField Label {
 
 .chart-legend-item {
     -fx-font-size: 16px;
+}
+
+.login-field {
+    -fx-font-size: 22px;
 }

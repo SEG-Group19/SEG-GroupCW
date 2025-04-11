@@ -37,6 +37,10 @@ TextField {
     -fx-prompt-text-fill: rgb(0, 0, 0, 0.9);
 }
 
+PasswordField {
+    -fx-prompt-text-fill: rgb(0, 0, 0, 0.9);
+}
+
 .metric-select Label {
     -fx-text-fill: black;
 }
@@ -74,5 +78,9 @@ TextField {
     -fx-text-fill: black;
 }
 .chart-legend-item {
+    -fx-text-fill: black;
+}
+
+.login-field {
     -fx-text-fill: black;
 }

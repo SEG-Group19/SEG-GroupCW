@@ -11,7 +11,7 @@
     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
   </padding>
 
-  <Label text="AdVantage - Register" styleClass="title-label">
+  <Label text="AdVantage - Register" id="titleLabel">
     <font>
       <Font name="System Bold" size="24.0" />
     </font>
@@ -30,21 +30,21 @@
       <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
     </rowConstraints>
 
-    <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+    <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="login-field"/>
     <TextField fx:id="usernameField" promptText="Enter username (min 4 characters)" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-    <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+    <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="login-field" />
     <PasswordField fx:id="passwordField" promptText="Enter password (min 6 characters)" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
-    <Label text="Confirm Password:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+    <Label text="Confirm Password:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="login-field" />
     <PasswordField fx:id="confirmPasswordField" promptText="Confirm password" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-    <Label text="Role:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+    <Label text="Role:" GridPane.columnIndex="0" GridPane.rowIndex="3" styleClass="login-field" />
     <ComboBox fx:id="roleComboBox" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
   </GridPane>
 
   <HBox alignment="CENTER" spacing="20.0">
-    <Button fx:id="registerButton" onAction="#handleRegister" text="Register" defaultButton="true" />
-    <Button fx:id="backButton" onAction="#handleBack" text="Back to Login" />
+    <Button fx:id="backButton" onAction="#handleBack" text="Back to Login" styleClass="primary-button" />
+    <Button fx:id="registerButton" onAction="#handleRegister" text="Register" defaultButton="true" styleClass="primary-button" />
   </HBox>
 </VBox>
