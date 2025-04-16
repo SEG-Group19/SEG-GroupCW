@@ -39,20 +39,26 @@
                 </font>
             </Label>
 
-            <VBox alignment="CENTER" spacing="20.0">
-                <Button onAction="#handleInputDataButton" text="Input Data" styleClass="primary-button" prefWidth="300" prefHeight="60">
+            <VBox alignment="CENTER" spacing="30.0">
+                <Button onAction="#handleInputDataButton" text="📋 Upload Data" styleClass="primary-button" prefWidth="400" prefHeight="60">
                     <font>
                         <Font size="18.0" />
                     </font>
                 </Button>
 
-                <Button onAction="#handleViewMetricsButton" text="View Metrics" styleClass="primary-button" prefWidth="300" prefHeight="60">
+                <Button onAction="#handleViewMetricsButton" text="📈 View Metrics" styleClass="primary-button" prefWidth="400" prefHeight="60">
                     <font>
                         <Font size="18.0" />
                     </font>
                 </Button>
 
-                <Button onAction="#handleClickCostButton" text="Click Cost Distribution" styleClass="primary-button" prefWidth="300" prefHeight="60">
+                <Button onAction="#handleClickCostButton" text="📊 Click Cost Distribution" styleClass="primary-button" prefWidth="400" prefHeight="60">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+                </Button>
+
+                <Button onAction="#handleManageSavedCampaignsButton" text="📝 Manage Saved Campaigns" styleClass="primary-button" prefWidth="400" prefHeight="60">
                     <font>
                         <Font size="18.0" />
                     </font>

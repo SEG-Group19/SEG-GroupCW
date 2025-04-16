@@ -4,14 +4,11 @@ import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.service.UserSession;
 import com.adauction.group19.utils.DatabaseConsole;
 import com.adauction.group19.utils.ThemeManager;
+import com.adauction.group19.view.*;
 import javafx.application.Platform;
 import java.awt.Desktop;
 import java.net.URI;
-import com.adauction.group19.view.InputDataScreen;
-import com.adauction.group19.view.LoginScreen;
-import com.adauction.group19.view.UserManagementScreen;
-import com.adauction.group19.view.ViewMetricsScreen;
-import com.adauction.group19.view.ClickCostHistogramScreen;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -114,6 +111,29 @@ public class MainMenuController {
             // Get the file path from the campaign data store
             String filePath = CampaignDataStore.getInstance().getClickLogPath();
             Scene clickCostScene = ClickCostHistogramScreen.getScene(stage, filePath);
+            stage.setScene(clickCostScene);
+        } else {
+            System.out.println("Stage is not set.");
+        }
+    }
+
+    /**
+     * Handles the Click Cost button. Switches scene to the Click Cost Histogram screen.
+     * @param actionEvent The action event.
+     */
+    @FXML
+    public void handleManageSavedCampaignsButton(ActionEvent actionEvent) {
+        if (CampaignDataStore.getInstance().getCampaignData() != null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No saved Campaign Data");
+            alert.setHeaderText("Campaign Data Not Found");
+            alert.setContentText("Please input data before managing your saved campaigns.");
+            alert.showAndWait();
+            return;
+        }
+
+        if (stage != null) {
+            Scene clickCostScene = ManageSavedCampaignsScreen.getScene(stage);
             stage.setScene(clickCostScene);
         } else {
             System.out.println("Stage is not set.");

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane style="-fx-padding: 0 0;" alignment="CENTER"
+           xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.adauction.group19.controller.ManageSavedCampaignsController">
+    <VBox>
+        <VBox styleClass="main-container" maxHeight="1000">
+            <Label id="titleLabel" text="Manage Saved Campaigns" style="-fx-font-size: 36px;"/>
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                        style="-fx-background: transparent; -fx-background-color: transparent;">
+                <content>
+                    <VBox fx:id="campaignListContainer" spacing="10">
+                        <HBox alignment="CENTER">
+                            <Label styleClass="label-text">
+                                Campaign 1
+                            </Label>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <HBox spacing="10">
+                                <Button styleClass="secondary-button" text="Change Name"/>
+                                <Button styleClass="red-button" text="Delete"/>
+                                <Button styleClass="primary-button, load-button" text="Load"/>
+                            </HBox>
+                        </HBox>
+                        <HBox alignment="CENTER">
+                            <Label styleClass="label-text">
+                                Campaign 2
+                            </Label>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <HBox spacing="10">
+                                <Button styleClass="secondary-button" text="Change Name"/>
+                                <Button styleClass="red-button" text="Delete"/>
+                                <Button styleClass="primary-button, load-button" text="Load"/>
+                            </HBox>
+                        </HBox>
+                        <HBox alignment="CENTER">
+                            <Label styleClass="label-text">
+                                Campaign 3
+                            </Label>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <HBox spacing="10">
+                                <Button styleClass="secondary-button" text="Change Name"/>
+                                <Button styleClass="red-button" text="Delete"/>
+                                <Button styleClass="primary-button, load-button" text="Load"/>
+                            </HBox>
+                        </HBox>
+                    </VBox>
+                </content>
+            </ScrollPane>
+        </VBox>
+    </VBox>
+
+    <AnchorPane pickOnBounds="false">
+        <Button styleClass="primary-button" id="goBackButton" text="⬅ Go back" onAction="#handleBackButton"
+                AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20"/>
+    </AnchorPane>
+</StackPane>
+
