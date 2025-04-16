@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 
  * Singleton class that manages campaign data operations.
  * Handles storing and retrieving campaign data, and managing viewer assignments.
  */
