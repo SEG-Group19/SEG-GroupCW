@@ -14,39 +14,6 @@
                         style="-fx-background: transparent; -fx-background-color: transparent;">
                 <content>
                     <VBox fx:id="campaignListContainer" spacing="10">
-                        <HBox alignment="CENTER">
-                            <Label styleClass="label-text">
-                                Campaign 1
-                            </Label>
-                            <Region HBox.hgrow="ALWAYS"/>
-                            <HBox spacing="10">
-                                <Button styleClass="secondary-button" text="Change Name"/>
-                                <Button styleClass="red-button" text="Delete"/>
-                                <Button styleClass="primary-button, load-button" text="Load"/>
-                            </HBox>
-                        </HBox>
-                        <HBox alignment="CENTER">
-                            <Label styleClass="label-text">
-                                Campaign 2
-                            </Label>
-                            <Region HBox.hgrow="ALWAYS"/>
-                            <HBox spacing="10">
-                                <Button styleClass="secondary-button" text="Change Name"/>
-                                <Button styleClass="red-button" text="Delete"/>
-                                <Button styleClass="primary-button, load-button" text="Load"/>
-                            </HBox>
-                        </HBox>
-                        <HBox alignment="CENTER">
-                            <Label styleClass="label-text">
-                                Campaign 3
-                            </Label>
-                            <Region HBox.hgrow="ALWAYS"/>
-                            <HBox spacing="10">
-                                <Button styleClass="secondary-button" text="Change Name"/>
-                                <Button styleClass="red-button" text="Delete"/>
-                                <Button styleClass="primary-button, load-button" text="Load"/>
-                            </HBox>
-                        </HBox>
                     </VBox>
                 </content>
             </ScrollPane>

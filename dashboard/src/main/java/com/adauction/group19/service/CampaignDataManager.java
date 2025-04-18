@@ -63,6 +63,18 @@ public class CampaignDataManager {
         }
     }
 
+    public void removeCampaign(int campaignId) {
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(
+                 "DELETE FROM campaigns WHERE id = ?")) {
+
+            pstmt.setInt(1, campaignId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error removing campaign: " + e.getMessage());
+        }
+    }
+
     /**
      * Retrieves all campaigns accessible to a user based on their role and assignments.
      *
@@ -103,6 +115,19 @@ public class CampaignDataManager {
             System.err.println("Error retrieving campaigns: " + e.getMessage());
         }
         return campaigns;
+    }
+
+    public void editCampaignName(int campaignId, String newName) {
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(
+                 "UPDATE campaigns SET campaign_name = ? WHERE id = ?")) {
+
+            pstmt.setString(1, newName);
+            pstmt.setInt(2, campaignId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error updating campaign name: " + e.getMessage());
+        }
     }
 
     /**
