@@ -21,7 +21,6 @@ public class RegisterController {
   @FXML private TextField usernameField;
   @FXML private PasswordField passwordField;
   @FXML private PasswordField confirmPasswordField;
-  @FXML private ComboBox<UserRole> roleComboBox;
   @FXML private Button registerButton;
   @FXML private Button backButton;
 
@@ -33,14 +32,6 @@ public class RegisterController {
    */
   @FXML
   public void initialize() {
-    // Initialize role combo box
-    roleComboBox.getItems().addAll(UserRole.values());
-    roleComboBox.setValue(UserRole.USER); // Default role
-
-    // Initially hide the role selector as it should only be visible to admins
-    boolean isAdmin = UserSession.getInstance().isAdmin();
-    roleComboBox.setVisible(isAdmin);
-    roleComboBox.setManaged(isAdmin);
   }
 
   /**
@@ -62,7 +53,7 @@ public class RegisterController {
     String username = usernameField.getText().trim();
     String password = passwordField.getText();
     String confirmPassword = confirmPasswordField.getText();
-    UserRole role = roleComboBox.getValue();
+    UserRole role = UserRole.VIEWER; // Default role
 
     // Default to USER role if not an admin
     if (!UserSession.getInstance().isAdmin()) {

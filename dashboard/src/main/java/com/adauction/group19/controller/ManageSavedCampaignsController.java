@@ -53,8 +53,10 @@ public class ManageSavedCampaignsController {
         campaigns = CampaignDataManager.getInstance().getUserCampaigns(user.getId(), user.getRole());
 
         for (Campaign campaign : campaigns) {
-            if (user.getRole() != UserRole.VIEWER)
-                campaignListContainer.getChildren().add(createCampaignRow(campaign));
+            if (user.getRole() == UserRole.USER)
+                campaignListContainer.getChildren().add(createUserCampaignRow(campaign));
+            else if (user.getRole() == UserRole.ADMIN)
+                campaignListContainer.getChildren().add(createAdminCampaignRow(campaign));
             else
                 campaignListContainer.getChildren().add(createViewerCampaignRow(campaign));
         }
@@ -81,7 +83,7 @@ public class ManageSavedCampaignsController {
         }
     }
 
-    private HBox createCampaignRow(Campaign c) {
+    private HBox createAdminCampaignRow(Campaign c) {
         HBox row = new HBox(10);
         row.setAlignment(Pos.CENTER);
 
@@ -91,7 +93,40 @@ public class ManageSavedCampaignsController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        Button btnRename = new Button("Change Name");
+        Button btnRename = new Button("Edit");
+        btnRename.getStyleClass().add("secondary-button");
+        btnRename.setOnAction(e -> onRename(c));
+
+        Button btnAssign = new Button("Assign");
+        btnAssign.getStyleClass().add("secondary-button");
+        btnAssign.setOnAction(e -> onAssign(c));
+
+        Button btnDelete = new Button("Delete");
+        btnDelete.getStyleClass().add("red-button");
+        btnDelete.setOnAction(e -> onDelete(c));
+
+        Button btnLoad = new Button("Load");
+        btnLoad.getStyleClass().addAll("primary-button", "load-button");
+        btnLoad.setOnAction(e -> onLoad(c));
+
+        HBox buttonBox = new HBox(10, btnDelete, btnAssign, btnRename, btnLoad);
+        buttonBox.setAlignment(Pos.CENTER_RIGHT);
+
+        row.getChildren().addAll(name, spacer, buttonBox);
+        return row;
+    }
+
+    private HBox createUserCampaignRow(Campaign c) {
+        HBox row = new HBox(10);
+        row.setAlignment(Pos.CENTER);
+
+        Label name = new Label(c.getCampaignName());
+        name.getStyleClass().add("label-text");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Button btnRename = new Button("Edit");
         btnRename.getStyleClass().add("secondary-button");
         btnRename.setOnAction(e -> onRename(c));
 
@@ -158,8 +193,10 @@ public class ManageSavedCampaignsController {
         campaigns = CampaignDataManager.getInstance().getUserCampaigns(user.getId(), user.getRole());
 
         for (Campaign campaign : campaigns) {
-            if (user.getRole() != UserRole.VIEWER)
-                campaignListContainer.getChildren().add(createCampaignRow(campaign));
+            if (user.getRole() == UserRole.USER)
+                campaignListContainer.getChildren().add(createUserCampaignRow(campaign));
+            else if (user.getRole() == UserRole.ADMIN)
+                campaignListContainer.getChildren().add(createAdminCampaignRow(campaign));
             else
                 campaignListContainer.getChildren().add(createViewerCampaignRow(campaign));
         }
@@ -207,5 +244,27 @@ public class ManageSavedCampaignsController {
         alert.setHeaderText(c.getCampaignName() + " Loaded");
         alert.setContentText("Campaign data loaded successfully.");
         alert.showAndWait();
+    }
+
+    private void onAssign(Campaign c) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AssignViewer.fxml"));
+            Parent root = loader.load();
+
+            // Create a stage
+            Stage popupStage = new Stage();
+            popupStage.setTitle("Assign Viewer");
+            popupStage.setScene(new Scene(root));
+            popupStage.setResizable(false);
+
+            AssignViewerController controller = loader.getController();
+            controller.setManageSavedCampaignsController(this);
+            controller.setCampaignId(c.getId());
+            controller.setStage(popupStage);
+
+            popupStage.showAndWait();  // Wait until user closes
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

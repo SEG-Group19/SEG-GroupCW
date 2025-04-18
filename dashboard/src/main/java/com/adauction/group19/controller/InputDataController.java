@@ -6,10 +6,14 @@ import com.adauction.group19.model.User;
 import com.adauction.group19.service.*;
 import com.adauction.group19.utils.SerializationUtil;
 import com.adauction.group19.view.MainMenuScreen;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -124,6 +128,7 @@ public class InputDataController {
             try {
                 campaignData = fileParserService.parseCampaignData(impressionFile, clickFile, serverFile);
             } catch (Exception e) {
+                e.printStackTrace();
                 // throw error message to user
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Error Parsing Campaign Data");
@@ -165,6 +170,7 @@ public class InputDataController {
             alert.showAndWait();
         }
     }
+
 
     /**
      * Opens a file chooser dialog to select a file.

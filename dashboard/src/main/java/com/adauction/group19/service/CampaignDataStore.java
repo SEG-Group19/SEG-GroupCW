@@ -70,4 +70,9 @@ public class CampaignDataStore {
     public String getClickLogPath() {
         return clickLogPath;
     }
+
+    public void clearCampaignData() {
+        this.campaignData = null;
+        this.clickLogPath = null;
+    }
 }

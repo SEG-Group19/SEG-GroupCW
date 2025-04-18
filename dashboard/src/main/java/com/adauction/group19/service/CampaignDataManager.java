@@ -2,6 +2,7 @@ package com.adauction.group19.service;
 
 import com.adauction.group19.model.Campaign;
 import com.adauction.group19.model.CampaignViewerAssignment;
+import com.adauction.group19.model.User;
 import com.adauction.group19.model.UserRole;
 
 import java.sql.*;
@@ -66,14 +67,14 @@ public class CampaignDataManager {
     public void deleteCampaign(int campaignId) {
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(
-                 "DELETE FROM campaigns WHERE id = ?")) {
-
+                     "DELETE FROM campaigns WHERE id = ?")) {
             pstmt.setInt(1, campaignId);
-            pstmt.executeUpdate();
+            pstmt.executeUpdate();  // assignments will be auto‑removed
         } catch (SQLException e) {
             System.err.println("Error removing campaign: " + e.getMessage());
         }
     }
+
 
     /**
      * Retrieves all campaigns accessible to a user based on their role and assignments.
@@ -120,7 +121,7 @@ public class CampaignDataManager {
     public void editCampaignName(int campaignId, String newName) {
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(
-                 "UPDATE campaigns SET campaign_name = ? WHERE id = ?")) {
+                     "UPDATE campaigns SET campaign_name = ? WHERE id = ?")) {
 
             pstmt.setString(1, newName);
             pstmt.setInt(2, campaignId);
@@ -128,6 +129,29 @@ public class CampaignDataManager {
         } catch (SQLException e) {
             System.err.println("Error updating campaign name: " + e.getMessage());
         }
+    }
+
+    public List<User> getAllViewersAssignedToCampaign(int campaignId) {
+        List<User> viewers = new ArrayList<>();
+        String sql = "SELECT u.* FROM users u " +
+                     "JOIN campaign_viewer_assignments cva ON u.id = cva.viewer_id " +
+                     "WHERE cva.campaign_id = ?";
+
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, campaignId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                User viewer = new User();
+                viewer.setId(rs.getInt("id"));
+                viewer.setUsername(rs.getString("username"));
+                viewers.add(viewer);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error retrieving viewers assigned to campaign: " + e.getMessage());
+        }
+        return viewers;
     }
 
     public int getTotalCampaignCount() {

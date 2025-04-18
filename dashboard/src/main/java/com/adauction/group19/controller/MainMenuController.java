@@ -1,6 +1,7 @@
 package com.adauction.group19.controller;
 
 import com.adauction.group19.model.User;
+import com.adauction.group19.model.UserRole;
 import com.adauction.group19.service.CampaignDataManager;
 import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.service.UserSession;
@@ -16,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class MainMenuController {
@@ -24,6 +26,7 @@ public class MainMenuController {
     @FXML private Button userManagementButton;
     @FXML private Button dbConsoleButton;
     @FXML private Button logoutButton;
+    @FXML private VBox mainMenuButtons;
 
     /**
      * The stage for the screen.
@@ -37,6 +40,7 @@ public class MainMenuController {
     public void initialize() {
         // Show/hide admin-only buttons based on admin status
         boolean isAdmin = UserSession.getInstance().isAdmin();
+        User user = UserSession.getInstance().getCurrentUser();
 
         if (userManagementButton != null) {
             userManagementButton.setVisible(isAdmin);
@@ -46,6 +50,17 @@ public class MainMenuController {
         if (dbConsoleButton != null) {
             dbConsoleButton.setVisible(isAdmin);
             dbConsoleButton.setManaged(isAdmin);
+        }
+
+        if (user.getRole() != UserRole.VIEWER) {
+            Button uploadData = new Button("📋 Upload Data");
+            uploadData.setOnAction(this::handleInputDataButton);
+            uploadData.getStyleClass().add("primary-button");
+            uploadData.setPrefWidth(400);
+            uploadData.setPrefHeight(60);
+            uploadData.setFont(new javafx.scene.text.Font(18));
+
+            mainMenuButtons.getChildren().add(0, uploadData);
         }
     }
 
@@ -174,6 +189,7 @@ public class MainMenuController {
     public void handleLogoutButton(ActionEvent actionEvent) {
         // Clear the current user session
         UserSession.getInstance().logout();
+        CampaignDataStore.getInstance().clearCampaignData();
 
         if (stage != null) {
             Scene loginScene = LoginScreen.getScene(stage);
