@@ -64,6 +64,22 @@ public class DatabaseManager {
           "role VARCHAR(20) NOT NULL, " +
           "active BOOLEAN DEFAULT TRUE)");
 
+      // Create campaigns table
+      stmt.execute("CREATE TABLE IF NOT EXISTS campaigns (" +
+          "id INT AUTO_INCREMENT PRIMARY KEY, " +
+          "user_id INT NOT NULL, " +
+          "campaign_name VARCHAR(100) NOT NULL, " +
+          "data BLOB, " +
+          "FOREIGN KEY (user_id) REFERENCES users(id))");
+
+      // Create campaign_viewer_assignments table
+      stmt.execute("CREATE TABLE IF NOT EXISTS campaign_viewer_assignments (" +
+          "id INT AUTO_INCREMENT PRIMARY KEY, " +
+          "campaign_id INT NOT NULL, " +
+          "viewer_id INT NOT NULL, " +
+          "FOREIGN KEY (campaign_id) REFERENCES campaigns(id), " +
+          "FOREIGN KEY (viewer_id) REFERENCES users(id))");
+
       // Check if there is at least one admin user
       ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM users WHERE role = 'ADMIN'");
       if (rs.next() && rs.getInt(1) == 0) {
