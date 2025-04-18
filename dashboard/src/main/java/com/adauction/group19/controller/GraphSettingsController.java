@@ -10,7 +10,6 @@ import org.controlsfx.control.CheckComboBox;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +23,7 @@ public class GraphSettingsController {
 
     @FXML public DatePicker startDatePicker, endDatePicker;
 
-    @FXML private CheckComboBox<String> ageCheckCombo, genderCheckCombo, contextCheckCombo, incomeCheckCombo;
+    @FXML private CheckComboBox<String> ageCheckCombo, genderCheckCombo, contextCheckCombo, incomeCheckCombo, metricCheckCombo;
     @FXML private Button saveButton;
 
     private Stage stage; // The popup stage if you want to close it
@@ -33,7 +32,7 @@ public class GraphSettingsController {
 
     private String lastTimeInterval = "";
 
-    private HashMap<String, Enum<?>> filterMap = new HashMap<>();
+    private HashMap<String, Enum<?>> filterNameMap = new HashMap<>();
 
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -47,21 +46,22 @@ public class GraphSettingsController {
         genderCheckCombo.getItems().addAll("Male", "Female");
         contextCheckCombo.getItems().addAll("News", "Shopping", "Social Media", "Blog");
         incomeCheckCombo.getItems().addAll("Low", "Medium", "High");
+        metricCheckCombo.getItems().addAll("Impressions", "Clicks", "Uniques", "Bounces", "Conversions", "Cost", "CTR", "CPA", "CPC", "CPM", "Bounce Rate");
 
-        filterMap.put("Under 25", AgeRange.AGE_25_MINUS);
-        filterMap.put("25-34", AgeRange.AGE_25_34);
-        filterMap.put("35-44", AgeRange.AGE_35_44);
-        filterMap.put("45-54", AgeRange.AGE_45_54);
-        filterMap.put("Over 54", AgeRange.AGE_55_PLUS);
-        filterMap.put("Male", Gender.MALE);
-        filterMap.put("Female", Gender.FEMALE);
-        filterMap.put("News", Context.NEWS);
-        filterMap.put("Shopping", Context.SHOPPING);
-        filterMap.put("Social Media", Context.SOCIAL_MEDIA);
-        filterMap.put("Blog", Context.BLOG);
-        filterMap.put("Low", Income.LOW);
-        filterMap.put("Medium", Income.MEDIUM);
-        filterMap.put("High", Income.HIGH);
+        filterNameMap.put("Under 25", AgeRange.AGE_25_MINUS);
+        filterNameMap.put("25-34", AgeRange.AGE_25_34);
+        filterNameMap.put("35-44", AgeRange.AGE_35_44);
+        filterNameMap.put("45-54", AgeRange.AGE_45_54);
+        filterNameMap.put("Over 54", AgeRange.AGE_55_PLUS);
+        filterNameMap.put("Male", Gender.MALE);
+        filterNameMap.put("Female", Gender.FEMALE);
+        filterNameMap.put("News", Context.NEWS);
+        filterNameMap.put("Shopping", Context.SHOPPING);
+        filterNameMap.put("Social Media", Context.SOCIAL_MEDIA);
+        filterNameMap.put("Blog", Context.BLOG);
+        filterNameMap.put("Low", Income.LOW);
+        filterNameMap.put("Medium", Income.MEDIUM);
+        filterNameMap.put("High", Income.HIGH);
 
         campaignData = CampaignDataStore.getInstance().getCampaignData();
 
@@ -150,27 +150,28 @@ public class GraphSettingsController {
             metricsScreenController.setTimeInterval(lastTimeInterval);
         }
 
-        // Apply filters
-        List<Set<Enum<?>>> filters = metricsScreenController.getFilters();
-        for (int i = 0; i < filters.size(); i++) filters.get(i).clear();
+        Map<String, List<Set<Enum<?>>>> filterMap = metricsScreenController.getFilterMap();
+        for (String impression : metricCheckCombo.getCheckModel().getCheckedItems()) {
+            List<Set<Enum<?>>> filters = filterMap.get(impression);
+            for (Set<Enum<?>> filter : filters) filter.clear();
 
-        for (String filter : genderCheckCombo.getCheckModel().getCheckedItems()) {
-            filters.get(0).add(filterMap.get(filter));
-        }
-        for (String filter : ageCheckCombo.getCheckModel().getCheckedItems()) {
-            filters.get(1).add(filterMap.get(filter));
-        }
-        for (String filter : incomeCheckCombo.getCheckModel().getCheckedItems()) {
-            filters.get(2).add(filterMap.get(filter));
-        }
-        for (String filter : contextCheckCombo.getCheckModel().getCheckedItems()) {
-            filters.get(3).add(filterMap.get(filter));
+            for (String filter : genderCheckCombo.getCheckModel().getCheckedItems()) {
+                filters.get(0).add(filterNameMap.get(filter));
+            }
+            for (String filter : ageCheckCombo.getCheckModel().getCheckedItems()) {
+                filters.get(1).add(filterNameMap.get(filter));
+            }
+            for (String filter : incomeCheckCombo.getCheckModel().getCheckedItems()) {
+                filters.get(2).add(filterNameMap.get(filter));
+            }
+            for (String filter : contextCheckCombo.getCheckModel().getCheckedItems()) {
+                filters.get(3).add(filterNameMap.get(filter));
+            }
         }
 
-        metricsScreenController.setFilters(filters);
+        metricsScreenController.setFilterMap(filterMap);
 
         metricsScreenController.updateGraph();
-
         // Potentially store these values or pass to main scene
         if (stage != null) {
             stage.close();
