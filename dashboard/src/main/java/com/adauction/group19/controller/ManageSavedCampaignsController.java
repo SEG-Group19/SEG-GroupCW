@@ -5,6 +5,7 @@ import com.adauction.group19.model.CampaignData;
 import com.adauction.group19.model.User;
 import com.adauction.group19.model.UserRole;
 import com.adauction.group19.service.*;
+import com.adauction.group19.utils.SerializationUtil;
 import com.adauction.group19.view.MainMenuScreen;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -165,10 +166,46 @@ public class ManageSavedCampaignsController {
     }
 
     private void onDelete(Campaign c) {
-        // delete 'c'
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete Campaign");
+        alert.setHeaderText("Are you sure you want to delete this campaign?");
+        alert.setContentText("This action cannot be undone.");
+
+        ButtonType confirmButton = new ButtonType("Delete", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(confirmButton, cancelButton);
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == confirmButton) {
+                CampaignDataManager.getInstance().deleteCampaign(c.getId());
+                refreshList();
+            }
+        });
     }
 
     private void onLoad(Campaign c) {
-        // load 'c' into your app
+        CampaignData campaignData;
+        try {
+            campaignData = (CampaignData) SerializationUtil.deserialise(c.getData());
+        } catch (Exception e) {
+            e.printStackTrace();
+            // throw error message to user
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Error Loading Campaign Data");
+            alert.setHeaderText("Error Loading Campaign Data");
+            alert.setContentText("Error loading campaign data: " + e.getMessage());
+            alert.showAndWait();
+
+            return;
+        }
+
+        CampaignDataStore.getInstance().setCampaignData(campaignData);
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Campaign Data Loaded");
+        alert.setHeaderText(c.getCampaignName() + " Loaded");
+        alert.setContentText("Campaign data loaded successfully.");
+        alert.showAndWait();
     }
 }

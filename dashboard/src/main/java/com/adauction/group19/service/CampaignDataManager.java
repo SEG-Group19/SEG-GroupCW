@@ -63,7 +63,7 @@ public class CampaignDataManager {
         }
     }
 
-    public void removeCampaign(int campaignId) {
+    public void deleteCampaign(int campaignId) {
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(
                  "DELETE FROM campaigns WHERE id = ?")) {
