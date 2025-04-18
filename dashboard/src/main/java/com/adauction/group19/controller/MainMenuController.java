@@ -1,5 +1,7 @@
 package com.adauction.group19.controller;
 
+import com.adauction.group19.model.User;
+import com.adauction.group19.service.CampaignDataManager;
 import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.service.UserSession;
 import com.adauction.group19.utils.DatabaseConsole;
@@ -123,7 +125,8 @@ public class MainMenuController {
      */
     @FXML
     public void handleManageSavedCampaignsButton(ActionEvent actionEvent) {
-        if (CampaignDataStore.getInstance().getCampaignData() != null) {
+        User user = UserSession.getInstance().getCurrentUser();
+        if (CampaignDataManager.getInstance().getUserCampaigns(user.getId(), user.getRole()).isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("No saved Campaign Data");
             alert.setHeaderText("Campaign Data Not Found");

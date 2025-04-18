@@ -1,10 +1,14 @@
 package com.adauction.group19.model;
 
+import java.io.Serializable;
+
 /**
  * This class encapsulates the criteria used to determine if a session should be
  * counted as a bounce.
  */
-public class BounceCriteria {
+public class BounceCriteria implements Serializable {
+  private static final long serialVersionUID = 1L;
+
   /** The minimum number of pages viewed to not be considered a bounce */
   private int minPagesViewed;
 

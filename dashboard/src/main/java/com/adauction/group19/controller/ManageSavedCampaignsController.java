@@ -1,8 +1,8 @@
 package com.adauction.group19.controller;
 
 import com.adauction.group19.model.CampaignData;
-import com.adauction.group19.service.CampaignDataStore;
-import com.adauction.group19.service.FileParserService;
+import com.adauction.group19.model.User;
+import com.adauction.group19.service.*;
 import com.adauction.group19.view.MainMenuScreen;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -31,6 +31,9 @@ public class ManageSavedCampaignsController {
     public void initialize() {
         // Store a reference for testing purposes.
         instance = this;
+
+        User user = UserSession.getInstance().getCurrentUser();
+        System.out.println(CampaignDataManager.getInstance().getUserCampaigns(user.getId(), user.getRole()));
     }
 
     /**
