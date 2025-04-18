@@ -130,6 +130,21 @@ public class CampaignDataManager {
         }
     }
 
+    public int getTotalCampaignCount() {
+        String sql = "SELECT COUNT(*) FROM campaigns";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error retrieving total campaign count: " + e.getMessage());
+        }
+        return 0;
+    }
+
     /**
      * Assigns a campaign to a viewer.
      *

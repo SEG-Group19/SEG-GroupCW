@@ -137,7 +137,7 @@ public class InputDataController {
 
             // Create default campaign name
             User user = UserSession.getInstance().getCurrentUser();
-            String campaignName = "Campaign " + (CampaignDataManager.getInstance().getUserCampaigns(user.getId(), user.getRole()).size() + 1);
+            String campaignName = "Campaign " + (CampaignDataManager.getInstance().getTotalCampaignCount() + 1);
 
             byte[] data;
             try {
