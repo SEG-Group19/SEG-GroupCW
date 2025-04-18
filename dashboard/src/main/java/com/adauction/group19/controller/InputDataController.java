@@ -1,18 +1,25 @@
 package com.adauction.group19.controller;
 
+import com.adauction.group19.model.Campaign;
 import com.adauction.group19.model.CampaignData;
-import com.adauction.group19.service.CampaignDataStore;
-import com.adauction.group19.service.FileParserService;
+import com.adauction.group19.model.User;
+import com.adauction.group19.service.*;
+import com.adauction.group19.utils.SerializationUtil;
 import com.adauction.group19.view.MainMenuScreen;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.Arrays;
 
 /**
  * This class represents the controller for the Input Data screen.
@@ -121,6 +128,7 @@ public class InputDataController {
             try {
                 campaignData = fileParserService.parseCampaignData(impressionFile, clickFile, serverFile);
             } catch (Exception e) {
+                e.printStackTrace();
                 // throw error message to user
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Error Parsing Campaign Data");
@@ -132,6 +140,27 @@ public class InputDataController {
 
             CampaignDataStore.getInstance().setCampaignData(campaignData);
 
+            // Create default campaign name
+            User user = UserSession.getInstance().getCurrentUser();
+            String campaignName = "Campaign " + (CampaignDataManager.getInstance().getTotalCampaignCount() + 1);
+
+            byte[] data;
+            try {
+                data = SerializationUtil.serialise(campaignData);
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                // throw error message to user
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Error Serializing Campaign Data");
+                alert.setHeaderText("Error Serializing Campaign Data");
+                alert.setContentText("Error serializing campaign data: " + e.getMessage());
+                alert.showAndWait();
+                return;
+            }
+
+            Campaign campaign = CampaignDataManager.getInstance().addCampaign(user.getId(),campaignName, data);
+
             System.out.println("Files uploaded successfully!");
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -141,6 +170,7 @@ public class InputDataController {
             alert.showAndWait();
         }
     }
+
 
     /**
      * Opens a file chooser dialog to select a file.

@@ -57,12 +57,40 @@ public class DatabaseManager {
         Statement stmt = conn.createStatement()) {
 
       // Create users table
-      stmt.execute("CREATE TABLE IF NOT EXISTS users (" +
-          "id INT AUTO_INCREMENT PRIMARY KEY, " +
-          "username VARCHAR(50) NOT NULL UNIQUE, " +
-          "password_hash VARCHAR(255) NOT NULL, " +
-          "role VARCHAR(20) NOT NULL, " +
-          "active BOOLEAN DEFAULT TRUE)");
+      stmt.execute("""
+CREATE TABLE IF NOT EXISTS users (
+  id            INT AUTO_INCREMENT PRIMARY KEY,
+  username      VARCHAR(50)  NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  role          VARCHAR(20)  NOT NULL,
+  active        BOOLEAN      DEFAULT TRUE
+)""");
+
+      // Create campaigns table
+      stmt.execute("""
+CREATE TABLE IF NOT EXISTS campaigns (
+  id            INT AUTO_INCREMENT PRIMARY KEY,
+  user_id       INT NOT NULL,
+  campaign_name VARCHAR(100) NOT NULL,
+  data          BLOB,
+  FOREIGN KEY (user_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE
+)""");
+
+      // Create campaign_viewer_assignments table
+      stmt.execute("""
+CREATE TABLE IF NOT EXISTS campaign_viewer_assignments (
+  id          INT AUTO_INCREMENT PRIMARY KEY,
+  campaign_id INT NOT NULL,
+  viewer_id   INT NOT NULL,
+  FOREIGN KEY (campaign_id)
+    REFERENCES campaigns(id)
+    ON DELETE CASCADE,
+  FOREIGN KEY (viewer_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE
+)""");
 
       // Check if there is at least one admin user
       ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM users WHERE role = 'ADMIN'");
@@ -100,6 +128,31 @@ public class DatabaseManager {
 
       System.out.println("Created default admin user. Username: admin, Password: admin123");
     }
+  }
+
+  public User getUserByUsername(String username) {
+    String sql = "SELECT * FROM users WHERE username = ?";
+    try (Connection conn = getConnection();
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+      pstmt.setString(1, username);
+      ResultSet rs = pstmt.executeQuery();
+
+      if (rs.next()) {
+        User user = new User();
+        user.setId(rs.getInt("id"));
+        user.setUsername(rs.getString("username"));
+        user.setPasswordHash(rs.getString("password_hash"));
+        user.setRole(UserRole.valueOf(rs.getString("role")));
+        user.setActive(rs.getBoolean("active"));
+
+        return user;
+      }
+    } catch (SQLException e) {
+      System.err.println("Error getting user by username: " + e.getMessage());
+    }
+
+    return null; // User not found
   }
 
   /**
@@ -190,7 +243,7 @@ public class DatabaseManager {
 
       pstmt.setString(1, username);
       pstmt.setString(2, hashedPassword);
-      pstmt.setString(3, role.name());
+      pstmt.setString(3, "VIEWER");
 
       int affectedRows = pstmt.executeUpdate();
 

@@ -1,0 +1,9 @@
+2025-04-18 16:49:43 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERS" already exists; SQL statement:
+CREATE TABLE users (
+  id            INT AUTO_INCREMENT PRIMARY KEY,
+  username      VARCHAR(50)  NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  role          VARCHAR(20)  NOT NULL,
+  active        BOOLEAN      DEFAULT TRUE
+) [42101-214]

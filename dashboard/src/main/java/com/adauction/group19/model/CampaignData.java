@@ -1,5 +1,6 @@
 package com.adauction.group19.model;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -9,7 +10,9 @@ import java.util.*;
 /**
  * This class represents the data for a campaign.
  */
-public class CampaignData {
+public class CampaignData implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     /**
      * The impressions, clicks, and server logs for the campaign.
      */

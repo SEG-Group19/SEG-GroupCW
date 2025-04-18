@@ -142,6 +142,11 @@
         </executions>
         <configuration>
           <mainClass>com.adauction.group19.GUIStarter</mainClass>
+
+          <options>
+            <option>-Xmx12G</option>
+            <option>-Xms512M</option>
+          </options>
         </configuration>
       </plugin>
 
