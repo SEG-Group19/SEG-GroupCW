@@ -77,6 +77,17 @@
         <CheckComboBox fx:id="incomeCheckCombo"   />
     </HBox>
 
+
+    <Label text="Filtering" styleClass="popup-title"/>
+
+    <HBox>
+        <Label>
+            Apply to metric:
+        </Label>
+        <Region HBox.hgrow="ALWAYS"/>
+        <CheckComboBox fx:id="metricCheckCombo"   />
+    </HBox>
+
     <!--
     <HBox spacing="10" alignment="CENTER">
         <Label text="Bounce registration (seconds)" style="-fx-font-size: 14; -fx-text-fill: #333;" />
