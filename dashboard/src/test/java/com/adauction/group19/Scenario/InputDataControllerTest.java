@@ -4,6 +4,7 @@ import com.adauction.group19.controller.InputDataController;
 import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.view.InputDataScreen;
 import com.adauction.group19.view.ViewMetricsScreen;
+import com.adauction.group19.Util.TestUtils;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -26,9 +27,11 @@ public class InputDataControllerTest extends ApplicationTest {
     @Override
     public void start(Stage stage) {
         this.stage = stage;
-
-
-        // Load the metrics screen
+        
+        // Set up authenticated session
+        TestUtils.setupAuthenticatedSession();
+        
+        // Load input data screen directly
         Scene scene = InputDataScreen.getScene(stage);
         stage.setScene(scene);
         stage.show();
