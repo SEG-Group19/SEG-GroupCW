@@ -4,7 +4,8 @@ import com.adauction.group19.controller.BounceRegistrationController;
 import com.adauction.group19.controller.GraphSettingsController;
 import com.adauction.group19.controller.MetricsScreenController;
 import com.adauction.group19.model.*;
-        import com.adauction.group19.Util.CampaignDataUtil;
+import com.adauction.group19.Util.TestUtils;
+import com.adauction.group19.Util.CampaignDataUtil;
 import com.adauction.group19.service.CampaignDataStore;
 import com.adauction.group19.view.ViewMetricsScreen;
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -71,8 +73,13 @@ public class GraphSettingsControllerTest extends ApplicationTest {
         CheckComboBox<String> genderCheckCombo = lookup("#genderCheckCombo").queryAs(CheckComboBox.class);
         CheckComboBox<String> contextCheckCombo = lookup("#contextCheckCombo").queryAs(CheckComboBox.class);
         CheckComboBox<String> incomeCheckCombo = lookup("#incomeCheckCombo").queryAs(CheckComboBox.class);
+        CheckComboBox<String> metricCheckCombo = lookup("#metricCheckCombo").queryAs(CheckComboBox.class);
 
         interact(() -> {
+            // Select at least one metric first - this is crucial!
+            metricCheckCombo.getCheckModel().check("Impressions");
+
+            // Then select the filters
             genderCheckCombo.getCheckModel().check("Male");
             ageCheckCombo.getCheckModel().check("Under 25");
             contextCheckCombo.getCheckModel().check("News");
@@ -83,18 +90,24 @@ public class GraphSettingsControllerTest extends ApplicationTest {
         interact(() -> {
             GraphSettingsController.instance.handleSave();
         });
-        List<Set<Enum<?>>> filters = controller.getFilters();
 
-        assertTrue(filters.get(0).contains(Gender.MALE));
-        assertFalse(filters.get(0).contains(Gender.FEMALE));
+        // Get the filterMap from the controller
+        Map<String, List<Set<Enum<?>>>> filterMap = controller.getFilterMap();
 
-        assertTrue(filters.get(1).contains(AgeRange.AGE_25_MINUS));
+        // Check filters for the "Impressions" metric
+        List<Set<Enum<?>>> impressionsFilters = filterMap.get("Impressions");
 
-        assertTrue(filters.get(2).contains(Income.MEDIUM));
-        assertTrue(filters.get(2).contains(Income.LOW));
-        assertFalse(filters.get(2).contains(Income.HIGH));
+        // Check that the filters are set correctly
+        assertTrue(impressionsFilters.get(0).contains(Gender.MALE));
+        assertFalse(impressionsFilters.get(0).contains(Gender.FEMALE));
 
-        assertTrue(filters.get(3).contains(Context.NEWS));
+        assertTrue(impressionsFilters.get(1).contains(AgeRange.AGE_25_MINUS));
+
+        assertTrue(impressionsFilters.get(2).contains(Income.MEDIUM));
+        assertTrue(impressionsFilters.get(2).contains(Income.LOW));
+        assertFalse(impressionsFilters.get(2).contains(Income.HIGH));
+
+        assertTrue(impressionsFilters.get(3).contains(Context.NEWS));
     }
 
     @Test
@@ -125,7 +138,7 @@ public class GraphSettingsControllerTest extends ApplicationTest {
         interact(() -> {
             GraphSettingsController.instance.handleCancel(null);
         });
-        List<Set<Enum<?>>> filters = controller.getFilters();
+        //List<Set<Enum<?>>> filters = controller.getFilters();
 
         assertTrue(filters.get(0).isEmpty());
         assertTrue(filters.get(1).isEmpty());
