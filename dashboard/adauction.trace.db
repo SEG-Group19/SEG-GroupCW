@@ -19,3 +19,21 @@ INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) ON DUPLICATE KEY UPDA
 2025-05-01 14:13:09 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) [*]ON DUPLICATE KEY UPDATE page_name = page_name"; SQL statement:
 INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE page_name = page_name [42000-214]
+2025-05-01 15:59:34 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) [*]ON DUPLICATE KEY UPDATE page_name = page_name"; SQL statement:
+INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE page_name = page_name [42000-214]
+2025-05-01 16:00:01 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) [*]ON DUPLICATE KEY UPDATE page_name = page_name"; SQL statement:
+INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE page_name = page_name [42000-214]
+2025-05-01 16:00:03 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) [*]ON DUPLICATE KEY UPDATE page_name = page_name"; SQL statement:
+INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE page_name = page_name [42000-214]
+2025-05-01 16:00:05 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) [*]ON DUPLICATE KEY UPDATE page_name = page_name"; SQL statement:
+INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE page_name = page_name [42000-214]
+2025-05-01 16:00:07 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) [*]ON DUPLICATE KEY UPDATE page_name = page_name"; SQL statement:
+INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE page_name = page_name [42000-214]
+2025-05-01 16:00:16 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) [*]ON DUPLICATE KEY UPDATE page_name = page_name"; SQL statement:
+INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE page_name = page_name [42000-214]
