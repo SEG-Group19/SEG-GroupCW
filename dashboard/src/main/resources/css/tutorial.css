@@ -1,0 +1,76 @@
+/* Tutorial overlay styling */
+
+.tutorial-overlay {
+    -fx-background-color: rgba(0, 0, 0, 0.5);
+}
+
+.tutorial-tooltip {
+    -fx-background-color: #3498db;
+    -fx-background-radius: 5;
+    -fx-padding: 20;
+    -fx-spacing: 10;
+}
+
+.tutorial-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.tutorial-description {
+    -fx-font-size: 14px;
+    -fx-text-fill: white;
+    -fx-wrap-text: true;
+}
+
+.tutorial-next-button {
+    -fx-background-color: white;
+    -fx-text-fill: #3498db;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 8 16;
+    -fx-background-radius: 4;
+}
+
+.tutorial-next-button:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+.tutorial-skip-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 8 16;
+    -fx-background-radius: 4;
+}
+
+.tutorial-skip-button:hover {
+    -fx-background-color: #c0392b;
+}
+
+.tutorial-finish-button {
+    -fx-background-color: #2ecc71;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 8 16;
+    -fx-background-radius: 4;
+}
+
+.tutorial-finish-button:hover {
+    -fx-background-color: #27ae60;
+}
+
+.spotlight-circle {
+    -fx-fill: rgba(255, 255, 255, 0);
+    -fx-stroke: rgba(52, 152, 219, 0.7);
+    -fx-stroke-width: 3;
+    -fx-stroke-dash-array: 5 3;
+    -fx-effect: dropshadow(three-pass-box, rgba(52, 152, 219, 0.8), 10, 0, 0, 0);
+}
+
+.button-box {
+    -fx-spacing: 10;
+    -fx-alignment: center;
+}

@@ -31,7 +31,8 @@ public class LoginController {
    */
   @FXML
   public void initialize() {
-    // Add action listeners, if needed
+    // No need to initialize the tutorial here anymore
+    // The LoginScreen class now handles showing the tutorial on first visit
   }
 
   /**

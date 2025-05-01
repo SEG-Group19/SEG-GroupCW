@@ -1,6 +1,8 @@
 package com.adauction.group19.view;
 
 import com.adauction.group19.controller.InputDataController;
+import com.adauction.group19.tutorial.ComponentTutorial;
+import com.adauction.group19.tutorial.PageVisitTracker;
 import com.adauction.group19.utils.ThemeManager;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -28,6 +30,14 @@ public class InputDataScreen {
 
             Scene scene = new Scene(root, 1200, 720);
             ThemeManager.applyTheme(scene);
+            
+            // Check if this is the first visit to this page and show tutorial if needed
+            if (!PageVisitTracker.getInstance().hasVisitedPage("inputData")) {
+                // Delay the tutorial slightly to ensure everything is loaded
+                javafx.application.Platform.runLater(() -> {
+                    ComponentTutorial.getInstance().startTutorial(scene, stage, "inputData");
+                });
+            }
 
             return scene;
         } catch (IOException e) {

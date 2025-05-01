@@ -11,8 +11,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
-import java.util.regex.Pattern;
-
 /**
  * Controller for the registration screen.
  */
@@ -26,12 +24,13 @@ public class RegisterController {
 
   private Stage stage;
 
-
   /**
    * Initializes the controller after FXML is loaded.
    */
   @FXML
   public void initialize() {
+    // No need to initialize the tutorial here
+    // The RegisterScreen class now handles showing the tutorial on first visit
   }
 
   /**
@@ -140,7 +139,6 @@ public class RegisterController {
           "Passwords do not match.");
       return false;
     }
-
 
     return true;
   }

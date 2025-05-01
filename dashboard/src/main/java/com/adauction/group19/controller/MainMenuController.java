@@ -211,6 +211,7 @@ public class MainMenuController {
         // Toggle the text of the button
         toggleThemeButton.setText(ThemeManager.isDarkMode() ? "☀" : "🌙");
     }
+    
     /**
      * Handles the Database Console button click. Opens the H2 Console in a browser.
      *
