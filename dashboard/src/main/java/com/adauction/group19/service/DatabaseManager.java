@@ -59,11 +59,12 @@ public class DatabaseManager {
       // Create users table
       stmt.execute("""
 CREATE TABLE IF NOT EXISTS users (
-  id            INT AUTO_INCREMENT PRIMARY KEY,
-  username      VARCHAR(50)  NOT NULL UNIQUE,
-  password_hash VARCHAR(255) NOT NULL,
-  role          VARCHAR(20)  NOT NULL,
-  active        BOOLEAN      DEFAULT TRUE
+  id                 INT AUTO_INCREMENT PRIMARY KEY,
+  username           VARCHAR(50)  NOT NULL UNIQUE,
+  password_hash      VARCHAR(255) NOT NULL,
+  role               VARCHAR(20)  NOT NULL,
+  active             BOOLEAN      DEFAULT TRUE,
+  tutorial_completed BOOLEAN      DEFAULT FALSE
 )""");
 
       // Create campaigns table
@@ -417,6 +418,52 @@ CREATE TABLE IF NOT EXISTS campaign_viewer_assignments (
       return false;
     }
   }
+  
+  /**
+   * Saves the tutorial completion status for a user.
+   *
+   * @param username The username
+   * @param completed Whether the tutorial has been completed
+   * @return true if the update was successful, false otherwise
+   */
+  public boolean saveTutorialStatus(String username, boolean completed) {
+    try (Connection conn = getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(
+             "UPDATE users SET tutorial_completed = ? WHERE username = ?")) {
 
+      pstmt.setBoolean(1, completed);
+      pstmt.setString(2, username);
 
+      int affectedRows = pstmt.executeUpdate();
+      return affectedRows == 1;
+    } catch (SQLException e) {
+      System.err.println("Error saving tutorial status: " + e.getMessage());
+      return false;
+    }
+  }
+
+  /**
+   * Checks if a user has completed the tutorial.
+   *
+   * @param username The username
+   * @return true if the tutorial has been completed, false otherwise
+   */
+  public boolean hasTutorialCompleted(String username) {
+    try (Connection conn = getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(
+             "SELECT tutorial_completed FROM users WHERE username = ?")) {
+
+      pstmt.setString(1, username);
+      ResultSet rs = pstmt.executeQuery();
+
+      if (rs.next()) {
+        return rs.getBoolean("tutorial_completed");
+      }
+
+      return false;
+    } catch (SQLException e) {
+      System.err.println("Error checking tutorial status: " + e.getMessage());
+      return false;
+    }
+  }
 }

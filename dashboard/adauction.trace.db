@@ -1,9 +1,3 @@
-2025-04-18 16:49:43 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERS" already exists; SQL statement:
-CREATE TABLE users (
-  id            INT AUTO_INCREMENT PRIMARY KEY,
-  username      VARCHAR(50)  NOT NULL UNIQUE,
-  password_hash VARCHAR(255) NOT NULL,
-  role          VARCHAR(20)  NOT NULL,
-  active        BOOLEAN      DEFAULT TRUE
-) [42101-214]
+2025-05-01 12:50:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) [*]ON DUPLICATE KEY UPDATE page_name = page_name"; SQL statement:
+INSERT INTO page_visits (user_id, page_name) VALUES (?, ?) ON DUPLICATE KEY UPDATE page_name = page_name [42000-214]

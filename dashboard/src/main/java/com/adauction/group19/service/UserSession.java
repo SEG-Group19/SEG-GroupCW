@@ -1,6 +1,7 @@
 package com.adauction.group19.service;
 
 import com.adauction.group19.model.User;
+import com.adauction.group19.tutorial.PageVisitTracker;
 
 /**
  * Manages the current user session.
@@ -44,6 +45,11 @@ public class UserSession {
    */
   public void setCurrentUser(User user) {
     this.currentUser = user;
+    
+    // Load tutorial progress for the new user
+    if (user != null) {
+      PageVisitTracker.getInstance().loadUserProgress();
+    }
   }
 
   /**

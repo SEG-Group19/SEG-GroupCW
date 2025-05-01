@@ -1,6 +1,8 @@
 package com.adauction.group19.view;
 
 import com.adauction.group19.controller.RegisterController;
+import com.adauction.group19.tutorial.ComponentTutorial;
+import com.adauction.group19.tutorial.PageVisitTracker;
 import com.adauction.group19.utils.ThemeManager;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -30,6 +32,14 @@ public class RegisterScreen {
 
       Scene scene = new Scene(root, 1200, 720);
       ThemeManager.applyTheme(scene);
+      
+      // Check if this is the first visit to this page and show tutorial if needed
+      if (!PageVisitTracker.getInstance().hasVisitedPage("register")) {
+        // Delay the tutorial slightly to ensure everything is loaded
+        javafx.application.Platform.runLater(() -> {
+          ComponentTutorial.getInstance().startTutorial(scene, stage, "register");
+        });
+      }
 
       return scene;
     } catch (IOException e) {
