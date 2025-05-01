@@ -29,6 +29,40 @@ import java.util.*;
  * Uses popups positioned relative to specific components rather than a full-screen overlay.
  */
 public class ComponentTutorial {
+    // Tutorial steps for login screen
+    public static final int LOGIN_WELCOME = 0;
+    public static final int LOGIN_USERNAME = 1;
+    public static final int LOGIN_PASSWORD = 2;
+    public static final int LOGIN_BUTTON = 3;
+    
+    // Tutorial steps for register screen
+    public static final int REGISTER_WELCOME = 4;
+    public static final int REGISTER_USERNAME = 5;
+    public static final int REGISTER_PASSWORD = 6;
+    public static final int REGISTER_CONFIRM_PASSWORD = 7;
+    public static final int REGISTER_BUTTON = 8;
+    
+    // Tutorial steps for main menu
+    public static final int MENU_WELCOME = 9;
+    public static final int MENU_CAMPAIGN_MANAGEMENT = 10;
+    public static final int MENU_VIEW_METRICS = 11;
+    public static final int MENU_USER_MANAGEMENT = 12;
+    public static final int MENU_SETTINGS = 13;
+    public static final int TUTORIAL_COMPLETE = 14;
+    
+    // Tutorial steps for input data screen
+    public static final int INPUT_WELCOME = 15;
+    public static final int INPUT_IMPRESSION_LOG = 16;
+    public static final int INPUT_CLICK_LOG = 17;
+    public static final int INPUT_SERVER_LOG = 18;
+    public static final int INPUT_UPLOAD_BUTTON = 19;
+    
+    // Tutorial steps for metrics screen
+    public static final int METRICS_WELCOME = 20;
+    public static final int METRICS_KPI_SECTION = 21;
+    public static final int METRICS_DATE_RANGE = 22;
+    public static final int METRICS_CHARTS = 23;
+    public static final int METRICS_EXPORT = 24;
     private static ComponentTutorial instance;
     
     private final Map<String, List<TutorialStep>> pageSteps = new HashMap<>();
@@ -157,6 +191,44 @@ public class ComponentTutorial {
                                           "Configure your application preferences, including theme options, data display settings, and user interface customization.", 
                                           Pos.CENTER_RIGHT, true));
         pageSteps.put("mainMenu", mainMenuSteps);
+        
+        // Input Data screen tutorial
+        List<TutorialStep> inputDataSteps = new ArrayList<>();
+        inputDataSteps.add(new TutorialStep(null, "Upload Campaign Data", 
+                                         "This screen allows you to upload your campaign data files. You'll need to provide click logs, impression logs, and server logs.", 
+                                         Pos.CENTER_LEFT, false));
+        inputDataSteps.add(new TutorialStep("impressionFilePath", "Impression Log", 
+                                         "Select your impression log file here. This file should contain information about ad impressions including demographics and context.", 
+                                         Pos.CENTER_RIGHT, false));
+        inputDataSteps.add(new TutorialStep("clickFilePath", "Click Log", 
+                                         "Select your click log file here. This file should contain information about clicks, including cost and timestamp.", 
+                                         Pos.CENTER_RIGHT, false));
+        inputDataSteps.add(new TutorialStep("serverFilePath", "Server Log", 
+                                         "Select your server log file here. This file should contain information about user sessions and page views.", 
+                                         Pos.CENTER_RIGHT, false));
+        inputDataSteps.add(new TutorialStep("uploadButton", "Upload Files", 
+                                         "Click this button to upload and process your files. Once uploaded, you'll be able to analyze the campaign performance.", 
+                                         Pos.BOTTOM_RIGHT, true));
+        pageSteps.put("inputData", inputDataSteps);
+        
+        // Metrics screen tutorial
+        List<TutorialStep> metricsSteps = new ArrayList<>();
+        metricsSteps.add(new TutorialStep(null, "Campaign Metrics", 
+                                        "This screen shows you the performance metrics for your campaign. You can analyze various aspects of your campaign here.", 
+                                        Pos.CENTER_LEFT, false));
+        metricsSteps.add(new TutorialStep("chkImpressions", "Key Performance Indicators", 
+                                        "These checkboxes control which metrics are displayed. You can select metrics like impressions, clicks, CTR, and cost information.", 
+                                        Pos.CENTER_LEFT, false));
+        metricsSteps.add(new TutorialStep("lineChart", "Performance Charts", 
+                                        "This chart visualizes your campaign performance over time. It updates based on the metrics you select.", 
+                                        Pos.CENTER_RIGHT, false));
+        metricsSteps.add(new TutorialStep("graphSettingsBtn", "Graph Settings", 
+                                        "Click here to adjust your graph settings like colors, labels, and axis scaling.", 
+                                        Pos.BOTTOM_CENTER, false));
+        metricsSteps.add(new TutorialStep("exportCSVButton", "Export Data", 
+                                        "These buttons let you export your metrics data in various formats including CSV, JSON, PDF, and image files.", 
+                                        Pos.TOP_RIGHT, true));
+        pageSteps.put("metrics", metricsSteps);
     }
     
     /**
